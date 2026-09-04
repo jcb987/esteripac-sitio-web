@@ -19,7 +19,24 @@ _(libre)_
 
 ## Entradas
 
-_(sin entradas todavía — Codex escribe la primera cuando trabaje)_
+### 2026-09-04 · Traspaso inicial verificado
+
+**Qué hice**
+
+- Leí completos `AGENTS.md`, `context/README.md`, `context/proyecto.md` y
+  `context/de-claude.md`, en el orden solicitado.
+- No cambié código ni archivos de producto; esta entrada es el único cambio.
+
+**Qué necesitas saber**
+
+- El contexto es consistente y no encontré ambigüedades nuevas. Quedaron
+  identificados los pendientes del cliente y las reglas del pipeline de datos.
+- El carril queda libre.
+
+**Estado de verificación**
+
+- `npm test` → 14/14 pruebas aprobadas.
+- `npm run build` → OK (`tsc --noEmit` y Vite; JS 91.10 kB gzip).
 
 ### Plantilla sugerida
 

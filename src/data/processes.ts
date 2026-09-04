@@ -66,7 +66,12 @@ export const PROCESSES: ProcessNode[] = [
     summary: 'Canales internos, lúmenes largos y superficies externas',
     intro:
       'Los lúmenes largos y estrechos de un endoscopio son el punto donde el biofilm se forma primero y donde la inspección visual no llega. Los kits de desafío reproducen esa geometría con tubos de diámetro y longitud definidos, de modo que la eficacia de la limpieza en el canal se pueda demostrar y no solo suponer, ciclo tras ciclo.',
-    variables: ['Diámetro del lumen', 'Longitud del canal', 'Remoción de residuo', 'Acción del reprocesador'],
+    variables: [
+      'Diámetro del lumen',
+      'Longitud del canal',
+      'Remoción de residuo',
+      'Acción del reprocesador',
+    ],
   },
   {
     slug: 'proteinas-residuales',

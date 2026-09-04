@@ -19,7 +19,11 @@ Lo mínimo que no puedes ignorar, aunque no leas nada más:
    enlaces `wa.me`.
 5. **No auto-parsees las especificaciones del PDF.** Está maquetado a varias
    columnas y produce datos silenciosamente equivocados. Ver `context/proyecto.md` §5.
-6. Antes de dar algo por terminado: `npm test && npm run build`.
+6. Antes de dar algo por terminado: `npm test && npm run build`, y **cierra con
+   un commit** con `[claude]` o `[codex]` en el mensaje.
+7. **No cambies `.prettierrc.json`.** El formato está fijado para que las dos
+   herramientas no se reescriban el código mutuamente. Si el build falla por
+   formato, corre `npm run format`.
 
 Al terminar cualquier tanda, deja una entrada en `context/de-claude.md` — es tu
 bitácora y el otro agente la lee para saber qué cambiaste. **Nunca escribas en

@@ -106,7 +106,11 @@ export function Producto() {
               <ul className="mt-5 space-y-1.5">
                 {product.highlights.map((highlight) => (
                   <li key={highlight} className="flex gap-2.5 text-[15px] text-navy-800">
-                    <svg viewBox="0 0 16 16" aria-hidden="true" className="mt-1 size-4 shrink-0 text-gold-600">
+                    <svg
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      className="mt-1 size-4 shrink-0 text-gold-600"
+                    >
                       <path
                         d="M3.5 8.5 6.5 11.5 12.5 4.5"
                         fill="none"

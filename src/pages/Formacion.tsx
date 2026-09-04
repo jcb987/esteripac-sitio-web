@@ -3,14 +3,7 @@ import { agentUrl } from '@/lib/whatsapp';
 import { routes } from '@/routes';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { WhatsAppIcon } from '@/components/layout/Header';
-import {
-  Badge,
-  Button,
-  Container,
-  ExternalButton,
-  Section,
-  SectionHeading,
-} from '@/components/ui';
+import { Badge, Button, Container, ExternalButton, Section, SectionHeading } from '@/components/ui';
 
 /**
  * Formación y eventos.

@@ -28,7 +28,11 @@ export function Soluciones() {
         return (
           <Section key={family.slug} tone={index % 2 === 0 ? 'mist' : 'white'}>
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <SectionHeading eyebrow={`${total} referencias`} title={family.name} lead={family.summary} />
+              <SectionHeading
+                eyebrow={`${total} referencias`}
+                title={family.name}
+                lead={family.summary}
+              />
               <LinkButton to={routes.familia(family.slug)} tone="secondary">
                 Ver la línea completa
               </LinkButton>

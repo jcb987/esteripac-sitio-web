@@ -155,10 +155,7 @@ export const DISPOSITIVOS: ProductSeed[] = [
     category: 'Auto-lectora',
     processes: ['dispositivos-digitales', 'proteinas-residuales'],
     indicatorType: null,
-    conditions: [
-      'Temperatura de funcionamiento: 60 °C',
-      'Programa PRO: 4 minutos a 60 °C',
-    ],
+    conditions: ['Temperatura de funcionamiento: 60 °C', 'Programa PRO: 4 minutos a 60 °C'],
     challengeLevel: null,
     biological: null,
     compliance: [],

@@ -34,11 +34,7 @@ export function ProductActions({
           <WhatsAppIcon />
           Consultar {product.skus[0] ?? 'esta referencia'}
         </ExternalButton>
-        <LinkButton
-          to={routes.conviertaseEnCliente()}
-          tone="secondary"
-          className="shrink-0 px-3"
-        >
+        <LinkButton to={routes.conviertaseEnCliente()} tone="secondary" className="shrink-0 px-3">
           Cuenta
         </LinkButton>
       </div>

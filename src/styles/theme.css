@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
    Sistema de marca — Corbi / Esteripac
@@ -26,8 +26,8 @@
   --color-gold-100: #fff1cf;
   --color-gold-50: #fff9ec;
 
-  --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 0.25rem;
 }
@@ -44,14 +44,18 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     @apply font-display text-navy-900;
     text-wrap: balance;
   }
 
   /* Cifras alineadas en las tablas de especificación: lee como instrumento
      técnico y no como página de marketing. */
-  table, .tabular {
+  table,
+  .tabular {
     font-variant-numeric: tabular-nums;
   }
 
@@ -60,8 +64,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }

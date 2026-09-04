@@ -78,7 +78,11 @@ export function ConviertaseEnCliente() {
               <ul className="mt-3 space-y-2">
                 {BENEFITS.map((benefit) => (
                   <li key={benefit} className="flex gap-2.5 text-sm text-navy-700">
-                    <svg viewBox="0 0 16 16" aria-hidden="true" className="mt-1 size-4 shrink-0 text-gold-600">
+                    <svg
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      className="mt-1 size-4 shrink-0 text-gold-600"
+                    >
                       <path
                         d="M3.5 8.5 6.5 11.5 12.5 4.5"
                         fill="none"
@@ -119,7 +123,10 @@ function SolicitudForm() {
           En esta versión del sitio el formulario todavía no envía la solicitud. Para avanzar hoy,
           escríbale al asistente y le damos trámite de inmediato.
         </p>
-        <ExternalButton href={agentUrl({ page: 'apertura de cuenta institucional' })} className="mt-5">
+        <ExternalButton
+          href={agentUrl({ page: 'apertura de cuenta institucional' })}
+          className="mt-5"
+        >
           <WhatsAppIcon />
           Continuar por WhatsApp
         </ExternalButton>
@@ -148,7 +155,12 @@ function SolicitudForm() {
         <Field name="email" label="Correo institucional" type="email" required />
         <Field name="telefono" label="Teléfono" type="tel" inputMode="tel" required />
         <Field name="ciudad" label="Ciudad" className="sm:col-span-2" required />
-        <Field name="procesos" label="Procesos que necesita controlar" as="textarea" className="sm:col-span-2" />
+        <Field
+          name="procesos"
+          label="Procesos que necesita controlar"
+          as="textarea"
+          className="sm:col-span-2"
+        />
       </div>
 
       <Button type="submit" className="mt-5 w-full">
@@ -210,12 +222,20 @@ const STEPS = [
   {
     title: 'Verificación con NIT',
     body: 'Confirmamos la institución y las condiciones comerciales. Es el paso que separa una cotización suelta de una relación de suministro.',
-    items: ['Validación de la institución', 'Condiciones de pago y despacho', 'Asignación de asesor técnico'],
+    items: [
+      'Validación de la institución',
+      'Condiciones de pago y despacho',
+      'Asignación de asesor técnico',
+    ],
   },
   {
     title: 'Activación de la cuenta',
     body: 'Queda habilitado el acceso con precios acordados y recompra directa de las referencias que ya usa, sin cotizar de nuevo cada mes.',
-    items: ['Precios acordados visibles', 'Recompra de referencias frecuentes', 'Historial de pedidos y documentos'],
+    items: [
+      'Precios acordados visibles',
+      'Recompra de referencias frecuentes',
+      'Historial de pedidos y documentos',
+    ],
   },
 ];
 

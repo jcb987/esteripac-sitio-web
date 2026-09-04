@@ -143,12 +143,7 @@ function Logo() {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" className="size-8">
       <rect width="32" height="32" rx="3" className="fill-navy-900" />
-      <path
-        d="M9 10h14M9 16h10M9 22h14"
-        stroke="white"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
+      <path d="M9 10h14M9 16h10M9 22h14" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
       <circle cx="23" cy="16" r="2.4" className="fill-gold-500" />
     </svg>
   );
@@ -168,7 +163,12 @@ export function WhatsAppIcon({ className }: { className?: string }) {
 function MenuIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6">
-      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M4 7h16M4 12h16M4 17h16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

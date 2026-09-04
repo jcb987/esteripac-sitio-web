@@ -79,12 +79,21 @@ como refactor.** Ver §7.
 ### Comandos
 
 ```bash
-npm run dev         # servidor de desarrollo
-npm run build       # tsc --noEmit && vite build
-npm run typecheck   # solo tipos
-npm test            # vitest run — pruebas de integridad del catálogo
-npm run preview     # sirve dist/
+npm run dev            # servidor de desarrollo
+npm run build          # format:check && tsc --noEmit && vite build
+npm run typecheck      # solo tipos
+npm test               # vitest run — pruebas de integridad del catálogo
+npm run format         # aplica el formato del proyecto
+npm run format:check   # verifica sin escribir (corre dentro del build)
+npm run preview        # sirve dist/
 ```
+
+**El formato está fijado en `.prettierrc.json` y `npm run build` lo verifica.**
+Es lo que impide que las dos herramientas se reformateen el código mutuamente:
+sin un estilo declarado, cada una aplica sus valores por defecto y el primer
+archivo que toca la otra sale reescrito entero en el diff. Si el build falla
+por formato, corre `npm run format` — nunca cambies `.prettierrc.json` para
+que tu estilo gane.
 
 Regenerar imágenes y virajes desde el PDF (rara vez hace falta):
 
@@ -331,9 +340,11 @@ git init && git add -A && git commit -m "Fase 1: sitio Esteripac"
      `package.json`, configs
 3. **`npm test && npm run build` antes de dar cualquier cosa por terminada.**
    Es el contrato compartido: si pasa, el otro agente puede seguir encima sin
-   revisar tu trabajo línea por línea.
-4. **Commit pequeño y frecuente**, con el nombre del agente en el mensaje
-   (`[claude]` / `[codex]`). Facilita ver quién tocó qué.
+   revisar tu trabajo línea por línea. El build incluye la verificación de
+   formato.
+4. **Cierra cada tanda con un commit**, con el nombre del agente en el mensaje
+   (`[claude]` / `[codex]`). Trabajo sin commitear es trabajo que el otro
+   agente puede pisar sin enterarse.
 5. **Si tocas algo de este archivo, actualízalo en el mismo turno.** Este
    documento es el punto de encuentro; desactualizado, hace más daño que bien.
 6. **No deshagas nada de §6 sin releer el PDF.** Si crees que un dato está mal,

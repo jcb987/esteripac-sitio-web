@@ -37,7 +37,9 @@ export function ProductSpecSheet({ product }: { product: Product }) {
             ))}
           </span>
         ) : (
-          <Unavailable>No aplica — es una solución de software, no una referencia de inventario</Unavailable>
+          <Unavailable>
+            No aplica — es una solución de software, no una referencia de inventario
+          </Unavailable>
         )}
       </SpecRow>
 
@@ -133,7 +135,9 @@ export function ProductSpecSheet({ product }: { product: Product }) {
                   className="inline-flex items-center gap-2 rounded-sm border border-navy-200 py-1 pr-2.5 pl-1 transition-colors hover:border-navy-400 hover:bg-navy-50"
                 >
                   <DeviceThumb product={device} />
-                  <span className="text-[13px] font-medium text-navy-800">{device.name.split(' para ')[0]}</span>
+                  <span className="text-[13px] font-medium text-navy-800">
+                    {device.name.split(' para ')[0]}
+                  </span>
                 </Link>
               </li>
             ))}
@@ -170,7 +174,10 @@ export function ProductSpecSheet({ product }: { product: Product }) {
             {product.documents.map((doc) => (
               <li key={doc.label}>
                 {doc.href ? (
-                  <a href={doc.href} className="font-medium text-navy-800 underline underline-offset-4">
+                  <a
+                    href={doc.href}
+                    className="font-medium text-navy-800 underline underline-offset-4"
+                  >
                     {doc.label}
                   </a>
                 ) : (
@@ -223,11 +230,7 @@ function Consultar() {
 }
 
 function Unavailable({ children }: { children?: ReactNode }) {
-  return (
-    <span className="text-navy-400">
-      {children ?? <span aria-label="Sin datos">—</span>}
-    </span>
-  );
+  return <span className="text-navy-400">{children ?? <span aria-label="Sin datos">—</span>}</span>;
 }
 
 function DeviceThumb({ product }: { product: Product }) {

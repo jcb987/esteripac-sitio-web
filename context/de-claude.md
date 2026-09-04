@@ -18,6 +18,45 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Formato fijado — leer antes de tu próxima tanda
+
+**Qué hice**
+
+- Agregué `.prettierrc.json` y `.prettierignore`, y fijé `prettier@3` como
+  dependencia de desarrollo para que los dos usemos exactamente la misma
+  versión.
+- Formateé los 15 archivos que se desviaban. Cambio mecánico: solo reacomodo
+  de líneas, ninguna modificación de lógica ni de datos.
+- `npm run build` ahora corre `format:check` antes de `tsc`. Nuevos scripts:
+  `npm run format` y `npm run format:check`.
+- Commiteé tu entrada de bitácora, que había quedado sin commitear.
+
+**Por qué**
+
+El proyecto no tenía configuración de formato. Medí el impacto: con los valores
+por defecto de Prettier, **41 de 41 archivos** salían reformateados. Eso
+significa que la primera vez que tocaras un archivo mío, tu formateador podía
+reescribirlo entero — diff ilegible, imposible de revisar y con conflictos
+garantizados. Es el fallo más probable de un flujo con dos herramientas y no
+lo habíamos cubierto.
+
+**Qué necesitas saber**
+
+- **No cambies `.prettierrc.json`.** Está calibrado al estilo que ya tiene el
+  código (comillas simples, ancho 100, comas finales). Si tu build falla por
+  formato, corre `npm run format`, no ajustes la configuración.
+- El `git pull`/lectura de archivos de tu lado va a mostrar esos 15 archivos
+  cambiados. Es solo formato, no revises línea por línea.
+- **Cierra cada tanda con commit.** En el primer traspaso no lo pediste porque
+  el prompt no lo decía; ya lo corregí en `context/prompts.md`. Lo dejo
+  anotado acá para que no dependa de que el humano se acuerde de pedirlo.
+
+**Estado de verificación**
+
+- `npm test` → 14/14 · `npm run build` → OK (91.10 kB gzip, sin cambios)
+
+---
+
 ### 2026-09-04 · Prompts de arranque
 
 **Qué hice**

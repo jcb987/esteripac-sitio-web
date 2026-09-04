@@ -69,7 +69,10 @@ export function Contacto() {
                   Correo
                 </dt>
                 <dd className="mt-0.5">
-                  <a href={`mailto:${SITE.email}`} className="text-navy-800 underline underline-offset-4">
+                  <a
+                    href={`mailto:${SITE.email}`}
+                    className="text-navy-800 underline underline-offset-4"
+                  >
                     {SITE.email}
                   </a>
                 </dd>

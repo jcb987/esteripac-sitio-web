@@ -34,7 +34,8 @@ En este primer turno NO cambies código. Respóndeme con:
 - El resultado de las pruebas y el build.
 - Cualquier cosa del contexto que te haya quedado ambigua o incompleta.
 
-Si el traspaso quedó bien, escribe tu primera entrada en context/de-codex.md.
+Si el traspaso quedó bien, escribe tu primera entrada en context/de-codex.md y
+ciérrala con un commit: git add -A && git commit -m "[codex] ...".
 Nunca escribas en context/de-claude.md: ese archivo es solo de Claude Code.
 ```
 

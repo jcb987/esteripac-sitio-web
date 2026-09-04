@@ -73,10 +73,7 @@ export const HIGIENE: ProductSeed[] = [
     category: 'Monitoreo de higiene',
     processes: ['proteinas-residuales'],
     indicatorType: null,
-    conditions: [
-      'Tiempo de lectura: 1 minuto a temperatura ambiente',
-      'Detección mínima: 1 µg',
-    ],
+    conditions: ['Tiempo de lectura: 1 minuto a temperatura ambiente', 'Detección mínima: 1 µg'],
     challengeLevel: null,
     biological: null,
     compliance: [],
@@ -100,10 +97,7 @@ export const HIGIENE: ProductSeed[] = [
     category: 'Monitoreo de higiene',
     processes: ['proteinas-residuales', 'endoscopios'],
     indicatorType: null,
-    conditions: [
-      'Tiempo de lectura: 1 minuto a temperatura ambiente',
-      'Detección mínima: 1 µg',
-    ],
+    conditions: ['Tiempo de lectura: 1 minuto a temperatura ambiente', 'Detección mínima: 1 µg'],
     challengeLevel: null,
     biological: null,
     compliance: [],

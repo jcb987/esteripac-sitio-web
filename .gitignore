@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# Python del script de extracción de assets
+__pycache__/
+*.pyc

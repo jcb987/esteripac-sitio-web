@@ -1,0 +1,555 @@
+{
+  "CDWU-Z": {
+    "page": 5,
+    "image": "/img/productos/cdwu-z.webp",
+    "colors": {
+      "inicial": "#0B61AB"
+    }
+  },
+  "CDWA4": {
+    "page": 5,
+    "image": "/img/productos/cdwa4.webp",
+    "colors": {
+      "inicial": "#E5087E"
+    }
+  },
+  "CDWA3": {
+    "page": 5,
+    "image": "/img/productos/cdwa3.webp",
+    "colors": {
+      "inicial": "#01A6E6"
+    }
+  },
+  "IT27W-1": {
+    "page": 8,
+    "image": "/img/productos/it27w-1.webp",
+    "colors": {
+      "inicial": "#D3E6CA",
+      "final": "#D0CBD1"
+    }
+  },
+  "IT27W-5": {
+    "page": 8,
+    "image": "/img/productos/it27w-5.webp",
+    "colors": {
+      "inicial": "#D3E6CA",
+      "final": "#D0CBD1"
+    }
+  },
+  "IT27W-10": {
+    "page": 8,
+    "image": "/img/productos/it27w-10.webp",
+    "colors": {
+      "inicial": "#D3E6CA",
+      "final": "#D0CBD1"
+    }
+  },
+  "PRO1 MICRO": {
+    "page": 13,
+    "image": "/img/productos/pro1-micro.webp",
+    "colors": {}
+  },
+  "PRO1 ENDO": {
+    "page": 13,
+    "image": "/img/productos/pro1-endo.webp",
+    "colors": {}
+  },
+  "KPRO2-E250": {
+    "page": 14,
+    "image": "/img/productos/kpro2-e250.webp",
+    "colors": {}
+  },
+  "KPRO2-E69": {
+    "page": 14,
+    "image": "/img/productos/kpro2-e69.webp",
+    "colors": {}
+  },
+  "CD28": {
+    "page": 17,
+    "image": "/img/productos/cd28.webp",
+    "colors": {
+      "inicial": "#C4B2C8",
+      "final": "#ACEFCE"
+    }
+  },
+  "CD23": {
+    "page": 17,
+    "image": "/img/productos/cd23.webp",
+    "colors": {
+      "inicial": "#F0B5BA",
+      "final": "#643E2F"
+    }
+  },
+  "CT22": {
+    "page": 17,
+    "image": "/img/productos/ct22.webp",
+    "colors": {
+      "inicial": "#F1E59A",
+      "final": "#643E2F"
+    }
+  },
+  "BD125X/1": {
+    "page": 18,
+    "image": "/img/productos/bd125x-1.webp",
+    "colors": {
+      "inicial": "#FEF075",
+      "final": "#302E1B"
+    }
+  },
+  "BD125X/2": {
+    "page": 18,
+    "image": "/img/productos/bd125x-2.webp",
+    "colors": {
+      "inicial": "#FEF075",
+      "final": "#302E1B"
+    }
+  },
+  "KBD8948X": {
+    "page": 19,
+    "image": "/img/productos/kbd8948x.webp",
+    "colors": {
+      "inicial": "#A77C8D",
+      "final": "#96CEA1"
+    }
+  },
+  "KBD8948X/1": {
+    "page": 19,
+    "image": "/img/productos/kbd8948x-1.webp",
+    "colors": {
+      "inicial": "#A77C8D",
+      "final": "#96CEA1"
+    }
+  },
+  "KH2X15-3.5BD/P": {
+    "page": 20,
+    "image": "/img/productos/kh2x15-3.5bd-p.webp",
+    "colors": {
+      "inicial": "#3D85BF",
+      "final": "#1C1D1D"
+    }
+  },
+  "KH2X15-3.5Y/P": {
+    "page": 20,
+    "image": "/img/productos/kh2x15-3.5y-p.webp",
+    "colors": {
+      "inicial": "#F6EB43",
+      "final": "#1C1D1D"
+    }
+  },
+  "KH2X15-5.3Y/P": {
+    "page": 20,
+    "image": "/img/productos/kh2x15-5.3y-p.webp",
+    "colors": {
+      "inicial": "#F6EB43",
+      "final": "#1C1D1D"
+    }
+  },
+  "KH2X15-7.0Y/P": {
+    "page": 20,
+    "image": "/img/productos/kh2x15-7.0y-p.webp",
+    "colors": {
+      "inicial": "#F6EB43",
+      "final": "#1C1D1D"
+    }
+  },
+  "CD29": {
+    "page": 21,
+    "image": "/img/productos/cd29.webp",
+    "colors": {
+      "inicial": "#EDDF0C",
+      "final": "#31312F"
+    }
+  },
+  "IT26-C": {
+    "page": 21,
+    "image": "/img/productos/it26-c.webp",
+    "colors": {}
+  },
+  "IT26-C EXTENDER": {
+    "page": 21,
+    "image": "/img/productos/it26-c-extender.webp",
+    "colors": {}
+  },
+  "IT26-1YS": {
+    "page": 21,
+    "image": "/img/productos/it26-1ys.webp",
+    "colors": {
+      "inicial": "#FEF075",
+      "final": "#302E1B"
+    }
+  },
+  "IT28": {
+    "page": 22,
+    "image": "/img/productos/it28.webp",
+    "colors": {
+      "inicial": "#009FB5",
+      "final": "#1C1D1C"
+    }
+  },
+  "BT225": {
+    "page": 23,
+    "image": "/img/productos/bt225.webp",
+    "colors": {}
+  },
+  "BT224": {
+    "page": 23,
+    "image": "/img/productos/bt224.webp",
+    "colors": {}
+  },
+  "BT222": {
+    "page": 24,
+    "image": "/img/productos/bt222.webp",
+    "colors": {}
+  },
+  "BT220": {
+    "page": 24,
+    "image": "/img/productos/bt220.webp",
+    "colors": {}
+  },
+  "KPCD224-2": {
+    "page": 25,
+    "image": "/img/productos/kpcd224-2.webp",
+    "colors": {}
+  },
+  "KPCD224-C": {
+    "page": 25,
+    "image": "/img/productos/kpcd224-c.webp",
+    "colors": {}
+  },
+  "KPCD225-2": {
+    "page": 25,
+    "image": "/img/productos/kpcd225-2.webp",
+    "colors": {}
+  },
+  "KPCD225-C": {
+    "page": 25,
+    "image": "/img/productos/kpcd225-c.webp",
+    "colors": {}
+  },
+  "KPCD220-2": {
+    "page": 26,
+    "image": "/img/productos/kpcd220-2.webp",
+    "colors": {}
+  },
+  "KPCD220-C": {
+    "page": 26,
+    "image": "/img/productos/kpcd220-c.webp",
+    "colors": {}
+  },
+  "KPCD222-2": {
+    "page": 26,
+    "image": "/img/productos/kpcd222-2.webp",
+    "colors": {}
+  },
+  "KPCD222-C": {
+    "page": 26,
+    "image": "/img/productos/kpcd222-c.webp",
+    "colors": {}
+  },
+  "BT20": {
+    "page": 27,
+    "image": "/img/productos/bt20.webp",
+    "colors": {}
+  },
+  "CD43": {
+    "page": 29,
+    "image": "/img/productos/cd43.webp",
+    "colors": {
+      "inicial": "#8C5084",
+      "final": "#86C27D"
+    }
+  },
+  "CD48": {
+    "page": 29,
+    "image": "/img/productos/cd48.webp",
+    "colors": {
+      "inicial": "#895FC3",
+      "final": "#68BD9D"
+    }
+  },
+  "CT40": {
+    "page": 29,
+    "image": "/img/productos/ct40.webp",
+    "colors": {
+      "inicial": "#8C5084",
+      "final": "#86C27D"
+    }
+  },
+  "CD40": {
+    "page": 30,
+    "image": "/img/productos/cd40.webp",
+    "colors": {
+      "inicial": "#8C5084",
+      "final": "#86C27D"
+    }
+  },
+  "CD42": {
+    "page": 30,
+    "image": "/img/productos/cd42.webp",
+    "colors": {
+      "inicial": "#E42C2C",
+      "final": "#F2E701"
+    }
+  },
+  "BT96": {
+    "page": 31,
+    "image": "/img/productos/bt96.webp",
+    "colors": {}
+  },
+  "BT91": {
+    "page": 31,
+    "image": "/img/productos/bt91.webp",
+    "colors": {}
+  },
+  "BT98": {
+    "page": 31,
+    "image": "/img/productos/bt98.webp",
+    "colors": {}
+  },
+  "CD13": {
+    "page": 33,
+    "image": "/img/productos/cd13.webp",
+    "colors": {
+      "inicial": "#5AC2E7",
+      "final": "#7AB82C"
+    }
+  },
+  "CD16": {
+    "page": 33,
+    "image": "/img/productos/cd16.webp",
+    "colors": {
+      "inicial": "#7A251B",
+      "final": "#A2BC1C"
+    }
+  },
+  "CT10": {
+    "page": 33,
+    "image": "/img/productos/ct10.webp",
+    "colors": {
+      "inicial": "#E86B38",
+      "final": "#728352"
+    }
+  },
+  "IT12": {
+    "page": 34,
+    "image": "/img/productos/it12.webp",
+    "colors": {
+      "inicial": "#AA1918",
+      "final": "#FED01C"
+    }
+  },
+  "BT10": {
+    "page": 34,
+    "image": "/img/productos/bt10.webp",
+    "colors": {}
+  },
+  "BT110": {
+    "page": 34,
+    "image": "/img/productos/bt110.webp",
+    "colors": {}
+  },
+  "CD53": {
+    "page": 36,
+    "image": "/img/productos/cd53.webp",
+    "colors": {
+      "inicial": "#BD5757",
+      "final": "#A1C659"
+    }
+  },
+  "CT50": {
+    "page": 36,
+    "image": "/img/productos/ct50.webp",
+    "colors": {
+      "inicial": "#99250B",
+      "final": "#8FC470"
+    }
+  },
+  "KH2X15-F1": {
+    "page": 36,
+    "image": "/img/productos/kh2x15-f1.webp",
+    "colors": {
+      "inicial": "#A45254",
+      "final": "#96B83C"
+    }
+  },
+  "CD50": {
+    "page": 37,
+    "image": "/img/productos/cd50.webp",
+    "colors": {
+      "inicial": "#B95451",
+      "final": "#96B83C"
+    }
+  },
+  "BT102": {
+    "page": 37,
+    "image": "/img/productos/bt102.webp",
+    "colors": {}
+  },
+  "CD33": {
+    "page": 39,
+    "image": "/img/productos/cd33.webp",
+    "colors": {
+      "inicial": "#557B8D",
+      "final": "#7B4E47"
+    }
+  },
+  "CT30": {
+    "page": 39,
+    "image": "/img/productos/ct30.webp",
+    "colors": {
+      "inicial": "#2A303D",
+      "final": "#702526"
+    }
+  },
+  "CD30": {
+    "page": 39,
+    "image": "/img/productos/cd30.webp",
+    "colors": {
+      "inicial": "#2A418E",
+      "final": "#BF9975"
+    }
+  },
+  "IT31": {
+    "page": 40,
+    "image": "/img/productos/it31.webp",
+    "colors": {
+      "inicial": "#4A5699",
+      "final": "#BF8F6C"
+    }
+  },
+  "BT30": {
+    "page": 40,
+    "image": "/img/productos/bt30.webp",
+    "colors": {}
+  },
+  "BPH": {
+    "page": 49,
+    "image": "/img/productos/bph.webp",
+    "colors": {}
+  },
+  "BHY": {
+    "page": 49,
+    "image": "/img/productos/bhy.webp",
+    "colors": {}
+  },
+  "IC10/20FRLCD": {
+    "page": 50,
+    "image": "/img/productos/ic10-20frlcd.webp",
+    "colors": {}
+  },
+  "IC10/20FR": {
+    "page": 50,
+    "image": "/img/productos/ic10-20fr.webp",
+    "colors": {}
+  },
+  "MINIBIO": {
+    "page": 51,
+    "image": "/img/productos/minibio.webp",
+    "colors": {}
+  },
+  "MINIPRO": {
+    "page": 51,
+    "image": "/img/productos/minipro.webp",
+    "colors": {}
+  },
+  "CG3": {
+    "page": 52,
+    "image": "/img/productos/cg3.webp",
+    "colors": {}
+  },
+  "IC10/20": {
+    "page": 52,
+    "image": "/img/productos/ic10-20.webp",
+    "colors": {}
+  },
+  "CDWAH": {
+    "page": 8,
+    "image": "/img/productos/cdwah.webp",
+    "colors": {}
+  },
+  "CDWAH-U": {
+    "page": 8,
+    "image": "/img/productos/cdwah-u.webp",
+    "colors": {}
+  },
+  "CDWU-H": {
+    "page": 5,
+    "image": "/img/productos/cdwu-h.webp",
+    "colors": {}
+  },
+  "LUMENIA L1": {
+    "page": 10,
+    "image": "/img/productos/lumenia-l1.webp",
+    "colors": {}
+  },
+  "LUMENIA L2": {
+    "page": 10,
+    "image": "/img/productos/lumenia-l2.webp",
+    "colors": {}
+  },
+  "LUMENIA L122": {
+    "page": 10,
+    "image": "/img/productos/lumenia-l122.webp",
+    "colors": {}
+  },
+  "LSF1": {
+    "page": 10,
+    "image": "/img/productos/lsf1.webp",
+    "colors": {}
+  },
+  "SWE-1.7": {
+    "page": 13,
+    "image": "/img/productos/swe-1.7.webp",
+    "colors": {}
+  },
+  "SWE-2.0": {
+    "page": 13,
+    "image": "/img/productos/swe-2.0.webp",
+    "colors": {}
+  },
+  "SWE-2.7": {
+    "page": 13,
+    "image": "/img/productos/swe-2.7.webp",
+    "colors": {}
+  },
+  "SWE-3.0": {
+    "page": 13,
+    "image": "/img/productos/swe-3.0.webp",
+    "colors": {}
+  },
+  "IT27-3YS": {
+    "page": 22,
+    "image": "/img/productos/it27-3ys.webp",
+    "colors": {}
+  },
+  "IT27-4YS": {
+    "page": 22,
+    "image": "/img/productos/it27-4ys.webp",
+    "colors": {}
+  },
+  "IT27-5YS": {
+    "page": 22,
+    "image": "/img/productos/it27-5ys.webp",
+    "colors": {}
+  },
+  "IT27-7YS": {
+    "page": 22,
+    "image": "/img/productos/it27-7ys.webp",
+    "colors": {}
+  },
+  "IT27-18YS": {
+    "page": 22,
+    "image": "/img/productos/it27-18ys.webp",
+    "colors": {}
+  },
+  "KH2X025-P1/P": {
+    "page": 30,
+    "image": "/img/productos/kh2x025-p1-p.webp",
+    "colors": {}
+  },
+  "KH2X12-P1/P": {
+    "page": 30,
+    "image": "/img/productos/kh2x12-p1-p.webp",
+    "colors": {}
+  }
+}

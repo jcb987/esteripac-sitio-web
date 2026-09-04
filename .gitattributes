@@ -1,0 +1,8 @@
+# Normaliza los finales de línea: sin esto, los diffs entre Claude Code y Codex
+# en Windows salen con el archivo entero marcado como modificado.
+* text=auto eol=lf
+
+*.png binary
+*.webp binary
+*.jpg binary
+*.pdf binary

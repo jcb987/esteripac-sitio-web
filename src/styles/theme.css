@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Sistema de marca — Corbi / Esteripac
+   Navy #16233A · Dorado #FFB703 · Gris #F4F6F9 · Blanco
+   Los neutros se derivan del navy (matiz frío), no son grises puros: es lo que
+   evita que el sitio se lea como plantilla.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-navy-950: #0d1524;
+  --color-navy-900: #16233a;
+  --color-navy-800: #1f3050;
+  --color-navy-700: #2b4067;
+  --color-navy-600: #3d5480;
+  --color-navy-500: #5a6f97;
+  --color-navy-400: #8494b2;
+  --color-navy-300: #adb8cd;
+  --color-navy-200: #d0d7e3;
+  --color-navy-100: #e3e8f0;
+  --color-navy-50: #f4f6f9;
+
+  --color-gold-700: #b57f00;
+  --color-gold-600: #d99900;
+  --color-gold-500: #ffb703;
+  --color-gold-300: #ffd166;
+  --color-gold-100: #fff1cf;
+  --color-gold-50: #fff9ec;
+
+  --font-display: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 0.25rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white font-sans text-navy-800 antialiased;
+    /* El CTA fijo del asistente no debe tapar el final del contenido en móvil. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-navy-900;
+    text-wrap: balance;
+  }
+
+  /* Cifras alineadas en las tablas de especificación: lee como instrumento
+     técnico y no como página de marketing. */
+  table, .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-gold-500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility scroll-rail {
+  /* Carril horizontal para dispositivos compatibles / productos relacionados en móvil. */
+  @apply -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2;
+  scrollbar-width: thin;
+}

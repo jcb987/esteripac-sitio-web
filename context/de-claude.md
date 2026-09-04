@@ -18,6 +18,63 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Fase 3 — se encontró y clonó el blueprint del agente
+
+**Qué pasó**
+
+El link que dio el humano (`tododeia.com/community/whatsapp-closer-agentkit`)
+resolvió a `github.com/Hainrixz/whatsapp-closer-agentkit`. No es una librería:
+es un blueprint MIT que Claude Code lee y ejecuta fase por fase dentro de su
+propia carpeta, generando un backend Python a medida (Railway, Claude API,
+Meta Cloud API/Zernio, Google Calendar, Supabase como CRM). Encaja casi
+perfecto: usa `usted` como una de sus tres opciones de tratamiento, y su regla
+de "no inventa ningún precio que no esté en el material" es exactamente la
+política de precios de Esteripac.
+
+**Qué hice**
+
+- Cloné el repo como hermano de este: `../whatsapp-closer-agentkit/` (fuera de
+  este git, tiene el suyo propio).
+- Leí su README, `blueprint/00-mapa.md`, `knowledge/README.md` y el arranque
+  de `blueprint/20-entrevista.md` para entender la arquitectura real antes de
+  prometer nada.
+- Escribí `scripts/export_catalog_markdown.ts` en ESTE repo: exporta las 91
+  fichas del catálogo a Markdown, agrupadas por proceso, con la política de
+  "no inventar precio" explícita al inicio. Lo corrí y copié el resultado a
+  `../whatsapp-closer-agentkit/knowledge/negocio/catalogo-esteripac.md`
+  (97 KB, 101 bloques — algunos productos aparecen en más de un proceso a
+  propósito). Verificado que ese archivo queda ignorado por el git del otro
+  repo (`knowledge/` no se sube nunca).
+- Documenté toda la arquitectura en `context/proyecto.md` §13.
+- `npm test` (14/14) y `npm run build` siguen pasando.
+
+**Lo más importante que debes saber**
+
+**No se puede correr `/start` ni ningún otro comando del kit desde una sesión
+tuya rooteada en ESTE repo.** Esos comandos son skills de
+`whatsapp-closer-agentkit/.claude/skills/` y Claude Code solo los registra
+cuando la sesión arranca con esa carpeta como raíz. Lo comprobé: ninguno
+aparecía en mi lista de skills disponibles en esta sesión. El humano tiene
+que abrir una terminal nueva, `cd whatsapp-closer-agentkit`, correr `claude`,
+y ahí sí `/start`.
+
+**Lo que sigue sin decidir** (está detallado en `proyecto.md` §13, sección
+"Pendiente antes de correr /start"):
+1. Meta Cloud API vs. Zernio como proveedor de WhatsApp.
+2. Migrar el número de pruebas del cliente (hoy es la app normal de WhatsApp
+   Business, que no permite automatización) a esa API.
+3. `ANTHROPIC_API_KEY` para el modelo del agente.
+4. `knowledge/closer/` (metodología de venta, manejo de objeciones) está
+   vacío — el propio kit espera que lo escriba el dueño del negocio con
+   `/playbook`, no que se invente. Esto NO lo resolví yo a propósito.
+
+**Si el humano vuelve a pedir "sigamos con WhatsApp" en este repo:** no hay
+más que hacer del lado del sitio hasta que vuelva de la sesión en
+`whatsapp-closer-agentkit/`. Si el catálogo cambia mientras tanto, hay que
+volver a correr `scripts/export_catalog_markdown.ts` y copiar el resultado.
+
+---
+
 ### 2026-09-04 · Fase 3 iniciada — agente de WhatsApp — SIN CÓDIGO TODAVÍA
 
 **Contexto de esta entrada**

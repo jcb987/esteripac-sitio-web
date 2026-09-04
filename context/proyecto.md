@@ -34,7 +34,7 @@ evaluando**. Por eso el sitio es mobile-first de verdad.
 |---|---|---|
 | **1** | Sitio estático de alta conversión. Sin backend, sin precios, sin carrito. | **Terminada** |
 | **2** | Portal B2B: login real, verificación con NIT, precios, carrito de recompra restringido. | Pendiente |
-| **3** | Agente de IA de WhatsApp conectado de verdad. | Pendiente |
+| **3** | Agente de IA de WhatsApp conectado de verdad. | **En construcción** — ver §13 |
 
 **El código de la fase 1 debe dejar las fases 2 y 3 como cambios aditivos, no
 como refactor.** Ver §7.
@@ -366,3 +366,90 @@ En la raíz del repo, `CLAUDE.md` y `AGENTS.md` son punteros cortos hacia esta
 carpeta: Claude Code lee el primero automáticamente y Codex el segundo.
 
 ---
+
+
+---
+
+## 13. Fase 3 — Agente de IA por WhatsApp
+
+### Dónde vive
+
+**Repositorio aparte, no dentro de este.** Es Python + Railway, con su propio
+ciclo de vida de despliegue; nada que ver con el Vite/TS de este sitio.
+
+```
+Esteripac/
+  Whatsapp Esteripac/          este repo (el sitio)
+  whatsapp-closer-agentkit/    el backend del agente — repo git independiente
+```
+
+Clonado de <https://github.com/Hainrixz/whatsapp-closer-agentkit> (MIT). No es
+una librería que se instala: es un *blueprint* que Claude Code lee y ejecuta
+dentro de esa carpeta, fase por fase, generando código Python a medida.
+
+### Cómo se construye — IMPORTANTE
+
+**No se construye desde una sesión de Claude Code que tenga como raíz este
+repo.** Los comandos (`/start`, `/armar-cerrador`, `/configurar`, `/playbook`,
+`/conectar`, `/probar`, `/revisar`, `/publicar`, `/bandeja`, `/soltar`) son
+skills de ESE proyecto (`.claude/skills/` dentro de `whatsapp-closer-agentkit`)
+y solo se registran cuando la sesión arranca con esa carpeta como raíz.
+
+Para construirlo: abrir una terminal nueva, `cd` a
+`whatsapp-closer-agentkit/`, correr `claude`, y adentro `/start`. Ese kit tiene
+su propio estado de reanudación (`.wca-estado.json`), así que sobrevive a
+cortes de sesión igual que este proyecto sobrevive con `context/`.
+
+### Decisiones ya tomadas
+
+- **Railway, no Vercel.** El plan Hobby de Vercel prohíbe uso comercial en sus
+  ToS; esto es para un cliente de pago. Railway es además el default del
+  propio blueprint.
+- **Alcance: catálogo + closer de ventas.** No es un bot de Q&A pasivo — debe
+  calificar al que escribe, resolver objeciones con un playbook, y empujar
+  hacia "Conviértase en cliente". Como Esteripac no publica precios, "cerrar"
+  acá significa llevar a la apertura de cuenta institucional, no negociar un
+  número — encaja de fábrica con la regla del kit de "no inventa ningún precio
+  que no esté en el material".
+- **Trato de usted.** Coincide con la Q3 del kit (tratamiento formal), que ya
+  es la convención de este sitio.
+- **Número de pruebas:** un WhatsApp Business (app) que el cliente ya tiene.
+  Antes de automatizar hay que migrarlo a la API real (Meta Cloud API o
+  Zernio) — la app normal de WhatsApp Business no permite automatización.
+
+### El catálogo como base de conocimiento
+
+El kit lee `knowledge/negocio/` (catálogo, precios, políticas) y
+`knowledge/closer/` (metodología de venta, objeciones) para escribir
+`config/playbook.yaml`. ***Esa carpeta no se sube a git*** (puede tener datos
+de clientes o material con licencia ajena) — solo viaja lo que el kit escribe
+a partir de ella.
+
+`scripts/export_catalog_markdown.ts`, en **este** repo, exporta las 91 fichas
+del catálogo tipado a Markdown, agrupadas por proceso, con la política de
+precios explícita al inicio del archivo. Es la única fuente de productos que
+el agente puede citar — nada que no esté ahí existe para él.
+
+```bash
+npx tsx scripts/export_catalog_markdown.ts > salida.md
+cp salida.md ../whatsapp-closer-agentkit/knowledge/negocio/catalogo-esteripac.md
+```
+
+**Vuelve a correrlo cada vez que cambie algo en `src/data/products/`.** El
+archivo generado no se versiona (vive en `knowledge/`, fuera de git), así que
+no hay riesgo de que quede desactualizado en el historial — pero sí puede
+quedar desactualizado en disco si alguien edita el catálogo y no vuelve a
+exportar.
+
+`knowledge/closer/` (la metodología de venta y el manejo de objeciones) NO
+está resuelto: el propio kit espera que lo escriba el dueño del negocio con
+`/playbook`, no que se invente. Es un pendiente real, no solo de datos.
+
+### Pendiente antes de correr `/start`
+
+1. Elegir proveedor de WhatsApp: Meta Cloud API (oficial, gratis, requiere
+   verificación de negocio) vs. Zernio (pasarela sobre Meta). Sin decidir.
+2. Migrar o conectar el número de pruebas del cliente a esa API.
+3. `ANTHROPIC_API_KEY` para el modelo del agente.
+4. Escribir `knowledge/closer/` con el manejo de objeciones real de Esteripac
+   (o dejar que `/playbook` lo levante con las respuestas del cliente).

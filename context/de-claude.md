@@ -18,6 +18,69 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Fase 3 iniciada — agente de WhatsApp — SIN CÓDIGO TODAVÍA
+
+**Contexto de esta entrada**
+
+El humano quiere arrancar la Fase 3 (agente de IA real conectado a WhatsApp).
+No alcancé a escribir código: se cerró la sesión por límite de contexto justo
+en la etapa de decisiones de arquitectura. Esta entrada es el traspaso.
+
+**Decisiones ya tomadas — respétalas**
+
+- **Backend: Railway, NO Vercel.** Yo sugerí Vercel porque vi que estaba
+  conectado a la cuenta vía MCP, pero el humano corrigió: el plan Hobby de
+  Vercel prohíbe uso comercial en sus ToS, y esto es para un cliente de pago.
+  Railway además es mejor para un webhook que debe estar siempre activo (sin
+  cold-starts). **No propongas Vercel para el backend de WhatsApp.**
+- **Alcance del agente: TODO.** No es solo Q&A del catálogo — debe actuar
+  como un closer de ventas: responder preguntas técnicas Y guiar al cliente
+  hacia la conversión (idealmente hacia "Conviértase en cliente"). Más
+  ambicioso que un bot de consulta pasivo.
+- **Número de pruebas:** el humano va a usar un WhatsApp Business (la app,
+  no la API todavía) que él mismo tiene, como número de pruebas. Antes de
+  automatizar hay que migrarlo o conectarlo a una API real (ver pendiente
+  abajo) — la app de WhatsApp Business normal NO permite automatización.
+
+**Pendiente urgente — pregúntaselo al humano apenas retomes**
+
+1. **Repo de GitHub de referencia.** El humano dijo textualmente: "Mira te
+   tengo un proyecto en github que te puede servir como base si quieres y
+   coges ideas de ahi" — pero la sesión se cortó antes de que me pasara el
+   link. **Pídeselo explícitamente antes de diseñar nada:** puede ahorrar
+   trabajo o fijar un patrón que ya prefiere.
+2. **Proveedor de la API de WhatsApp — sin decidir.** El humano "solo tiene
+   el número de WhatsApp", nada de infraestructura de API todavía. Falta
+   elegir entre Meta Cloud API directo (oficial, gratis, requiere
+   verificación de negocio en Meta Business) vs. un BSP (Twilio, 360dialog,
+   Gupshup — más rápido de levantar, tiene costo mensual). No asumas ninguno.
+3. **Motor de IA del agente.** No se discutió qué modelo/API usa el agente
+   (Claude API es lo natural dado el resto del stack, pero no está
+   confirmado) ni cómo se le da el catálogo como base de conocimiento (los
+   91 productos son pocos — probablemente caben completos en el prompt sin
+   necesitar RAG/vectores, pero valídalo con el humano).
+4. **Dónde vive el código del backend.** ¿Carpeta nueva dentro de este mismo
+   repo (ej. `server/`) o repositorio aparte? No se decidió.
+
+**Estado del repo: sin cambios desde el último commit**
+
+```
+669d4fe [claude] Fija el formato del código para el trabajo con dos herramientas
+```
+
+Nada de fase 3 está commiteado. `WHATSAPP_AGENT` en `src/config/site.ts` sigue
+con el número placeholder `573000000000`.
+
+**Qué necesitas saber del hilo de la conversación**
+
+El humano probó primero que Claude Code y Codex se pasaran contexto
+correctamente (funcionó — ver entradas anteriores) y pidió dos prompts
+genéricos reutilizables para replicar el sistema en otros proyectos (se los
+di, no se guardaron en este repo porque no aplican solo a Esteripac). Después
+de eso pasó directo a pedir que pusiéramos WhatsApp a funcionar de verdad.
+
+---
+
 ### 2026-09-04 · Formato fijado — leer antes de tu próxima tanda
 
 **Qué hice**

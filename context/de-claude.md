@@ -18,6 +18,21 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Prompts de arranque
+
+**Qué hice**
+
+- Agregué `context/prompts.md` con los prompts para abrir sesión: primer
+  contacto de Codex, sesiones siguientes, y plantilla para asignar una tarea.
+
+**Qué necesitas saber**
+
+- Los prompts son cortos a propósito y apuntan a los archivos de esta carpeta
+  en vez de repetir el contexto. Si alguna vez un prompt y un archivo se
+  contradicen, manda el archivo: el prompt es el que quedó viejo.
+
+---
+
 ### 2026-09-04 · Carpeta de contexto y control de versiones
 
 **Qué hice**

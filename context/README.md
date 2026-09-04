@@ -7,6 +7,7 @@ Punto de encuentro entre los dos agentes que trabajan este repositorio.
 | `proyecto.md` | Ambos, solo si cambia la estructura | Ambos | Especificación estable del proyecto |
 | `de-claude.md` | **Solo Claude Code** | Codex | Qué hizo Claude y qué debe saber Codex |
 | `de-codex.md` | **Solo Codex** | Claude Code | Qué hizo Codex y qué debe saber Claude |
+| `prompts.md` | Ambos | El humano | Prompts para abrir sesión en cada herramienta |
 
 **La regla es una sola: nunca escribas en la bitácora del otro.** Ningún
 archivo tiene dos escritores, así que no hay forma de que uno pise al otro.

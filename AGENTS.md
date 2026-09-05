@@ -29,7 +29,14 @@ Hay hechos ya verificados contra el PDF renderizado en `context/proyecto.md` §6
 FDA, matriz de compatibilidad, colores de `IT28`, cruce `CG3`/`IC10/20`). El
 texto plano del PDF engaña: no los "corrijas" sin releer el catálogo.
 
-Al terminar cualquier tanda, deja una entrada en `context/de-codex.md` — es tu
-bitácora y el otro agente la lee para saber qué cambiaste. **Nunca escribas en
-la bitácora del otro.** Anota tu carril de trabajo al inicio de ese mismo
-archivo antes de empezar, y bórralo al terminar.
+**Anota tu carril en `context/de-codex.md` ANTES de empezar, y actualízalo
+cada vez que tomes una decisión** — no al terminar. Una sesión se puede cortar
+por límite de contexto y ahí ya no queda presupuesto para escribir nada; el
+carril actualizado es lo único que sobrevive y alcanza para que el otro agente
+retome. Ya pasó tres veces en este proyecto.
+
+**Commitea seguido, no solo al cerrar.** El commit no depende de que te queden
+tokens.
+
+Al terminar la tanda, convierte el carril en una entrada de bitácora y bórralo.
+**Nunca escribas en la bitácora del otro.**

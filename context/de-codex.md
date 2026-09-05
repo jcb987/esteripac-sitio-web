@@ -13,7 +13,8 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-_(libre)_
+**Fase 3/backend:** construcción del agente en
+`../whatsapp-closer-agentkit` (Meta Cloud API, Railway y Claude Haiku 4.5).
 
 ---
 

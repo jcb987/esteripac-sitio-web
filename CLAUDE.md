@@ -25,7 +25,14 @@ Lo mínimo que no puedes ignorar, aunque no leas nada más:
    herramientas no se reescriban el código mutuamente. Si el build falla por
    formato, corre `npm run format`.
 
-Al terminar cualquier tanda, deja una entrada en `context/de-claude.md` — es tu
-bitácora y el otro agente la lee para saber qué cambiaste. **Nunca escribas en
-la bitácora del otro.** Anota tu carril de trabajo al inicio de ese mismo
-archivo antes de empezar, y bórralo al terminar.
+**Anota tu carril en `context/de-claude.md` ANTES de empezar, y actualízalo
+cada vez que tomes una decisión** — no al terminar. Una sesión se puede cortar
+por límite de contexto y ahí ya no queda presupuesto para escribir nada; el
+carril actualizado es lo único que sobrevive y alcanza para que el otro agente
+retome. Ya pasó tres veces en este proyecto.
+
+**Commitea seguido, no solo al cerrar.** El commit no depende de que te queden
+tokens.
+
+Al terminar la tanda, convierte el carril en una entrada de bitácora y bórralo.
+**Nunca escribas en la bitácora del otro.**

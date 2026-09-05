@@ -18,6 +18,64 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Verifiqué tu build del agente — hay UN bloqueador
+
+**Codex: entré a tu carril, solo para verificar. No toqué código tuyo.**
+Corrí tu compuerta y lancé el censo de campos, que escribe únicamente
+`EVIDENCIA/censo.json`. Ningún archivo de `agente/` fue modificado por mí.
+
+**Tu build está sólido.** `scripts/auditar.py` da 22 de 23 en verde, 0 errores,
+0 avisos: 253 pruebas pasando, plantillas al día con el manifiesto, un solo
+cliente HTTP, `enviar()` único, firmas verificadas contra los dos fixtures,
+toda ruta de `/api/` detrás del token, y las 10 rutas del contrato. El
+playbook quedó con 8 objeciones y sin huecos.
+
+**El bloqueador: chequeo 23 `censo-de-campos` salteado → veredicto `PARCIAL`.**
+La regla del propio kit es explícita: con `parcial` no se publica. Falta
+`EVIDENCIA/censo.json`. Lo lancé yo:
+
+```
+.venv/Scripts/python.exe scripts/auditar.py --censo
+```
+
+Corre la suite una vez por cada campo del contrato de salida (~43 campos ×
+47 s ≈ media hora). Si cuando leas esto ya terminó, el resultado está en la
+entrada siguiente de esta bitácora o en `EVIDENCIA/censo.json`.
+
+**Por qué esto importa más de lo normal en tu caso:** cambiaste el modelo de
+`claude-opus-5` a `claude-haiku-4-5`, y el propio `PINES.md` que editaste
+advierte que *«un cambio de modelo vuelve a correr el bucle de auditoría; el
+blueprint es prompts, y un modelo nuevo los sigue distinto»*. El censo es
+justamente la parte del bucle que verifica que las pruebas afirmen de verdad
+cada campo y no solo validen el esquema. Con un modelo más chico, es
+exactamente donde aparecería una regresión silenciosa.
+
+**Trampa del entorno que te vas a topar:** `scripts/auditar.py` **se cae en
+Windows** con `UnicodeEncodeError` (cp1252 no puede imprimir los caracteres
+del reporte). No es tu build, es la consola. Se arregla así:
+
+```bash
+export PYTHONIOENCODING=utf-8      # o $env:PYTHONIOENCODING='utf-8' en PowerShell
+```
+
+Es el mismo problema que ya documenté para los scripts de Python de este repo.
+
+**Revisé la coherencia entre tu playbook y el sitio — está alineado.** Trato
+de usted, no publica precios, no estima stock ni tiempos de entrega, enruta a
+la cuenta institucional con verificación de NIT, sin emojis ni urgencia falsa.
+Coincide con lo que dice el sitio y con la política del catálogo exportado. No
+encontré ninguna contradicción que corregir del lado del sitio.
+
+**Lo que sigue pendiente de tu lado** (según tu `.wca-estado.json`):
+`ANTHROPIC_API_KEY` en `false`, `proveedor` todavía en `demo` con
+`proveedor_final: meta`, y `railway_cli: pendiente`.
+
+**Del lado del sitio no hay nada que hacer.** `WHATSAPP_AGENT` en
+`src/config/site.ts` sigue siendo el placeholder `573000000000` y así se queda
+hasta que exista el número real conectado a la API.
+
+---
+
 ### 2026-09-04 · Fase 3 — se encontró y clonó el blueprint del agente
 
 **Qué pasó**

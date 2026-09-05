@@ -19,6 +19,105 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-04 · Backend en GitHub privado — y la CI en Linux resolvió el misterio de la compuerta
+
+**Qué hice en `../whatsapp-closer-agentkit`** (solo remotos, ni una línea del
+agente):
+
+1. **`origin` ya no apunta al repo de Hainrixz.** Lo renombré a `upstream` y
+   además le inhabilité el push:
+   `git remote set-url --push upstream DISABLED`. Sirve para traer mejoras del
+   kit, pero empujar hacia allá por descuido ya es imposible, no solo
+   improbable.
+2. **Repo privado creado y subido:**
+   <https://github.com/jcb987/esteripac-whatsapp-agent> · `main` · `10e32ac`
+   con el historial completo, incluidos los commits MIT del kit, que es lo que
+   permite seguir haciendo `fetch upstream`.
+
+Verificado antes y después: ningún secreto real en todo el historial (el único
+match era `SUPABASE_KEY_DE_PRUEBAS`, una constante de prueba), `.env` nunca
+rastreado, repo `PRIVATE`, y `Dockerfile` + `railway.json` +
+`requirements.txt` presentes para que Railway construya.
+
+---
+
+#### Lo importante: la compuerta corrió en Linux y confirmó el diagnóstico
+
+El kit trae `.github/workflows/compuerta.yml`, así que el push disparó la
+compuerta en GitHub Actions. Ese era justo el experimento que te propuse.
+
+**Check 19 `pruebas` en Linux: `256 passed, 1 warning in 16.72s`.**
+
+En Windows/OneDrive medí **364 s y 1007 s** sobre el mismo código. En Linux,
+**16,72 s**. Son **60 veces** más rápido. Queda confirmado: la suite nunca
+estuvo lenta, y tus tres pruebas de Esteripac nunca fueron el problema. Era el
+entorno — el repo dentro de OneDrive, con `.venv` y los `__pycache__` adentro.
+
+**Corolario práctico: la CI es ahora la fuente de verdad de la compuerta, no
+tu máquina.** Y no hace falta mover el repo de OneDrive para tener una lectura
+confiable; basta con mirar Actions.
+
+#### Pero Linux destapó dos cosas que Windows ocultaba
+
+En local daba 21/23. En Linux da **FAIL · 2 errores · 1 aviso · 2 salteados**,
+y las diferencias no son ruido:
+
+1. **Check 16 `contrato` salta en Linux** — «todavía no hay fixtures de salida
+   en `pruebas/` (`salida*.json`)». La causa: `pruebas/salida-caso-01.json`
+   está **en `.gitignore`** (línea 118). Existe en tu disco, no en el repo. O
+   sea: **en local ese chequeo estaba pasando gracias a un archivo que no está
+   versionado.** Eso es exactamente el tipo de verde que no vale.
+2. **Check 02 `manifiesto` falla en Linux** — «un archivo generado se apartó de
+   su plantilla». En Windows pasaba. Descarté los finales de línea:
+   `git ls-files --eol` da `i/lf w/lf` para `agente/firmas.py` y
+   `plantillas/seguridad/firmas.py`, así que no es CRLF. **No lo root-causé**,
+   y es tuyo para mirar. Arrastra al check 18 `firmas`, que se niega a correr
+   un archivo que no es el que el kit envió (2 de 4 comprobaciones).
+
+3. Check 23 `censo` sigue salteado: no hay `EVIDENCIA/censo.json` en el repo,
+   y es correcto que no lo haya (es evidencia local).
+
+**Camino actualizado, y ahora sí barato:**
+
+- Ya no hace falta mover el repo de OneDrive para diagnosticar: **mira
+  Actions**. `gh run list --repo jcb987/esteripac-whatsapp-agent`.
+- Arregla el 02 (y el 18 cae solo detrás).
+- Decide qué hacer con `salida-caso-01.json`: o se versiona para que el 16
+  corra en CI, o se acepta que ese chequeo solo existe en local — pero
+  entonces el verde local vale menos de lo que parecía.
+- Registra `test_esteripac.py` en `ARCHIVOS_DE_PRUEBA` (sigue pendiente).
+- El censo, al final y sobre el árbol congelado.
+- **No subas el umbral de 120 s.** Ya sabemos que no era el problema.
+
+**Aviso:** mientras la compuerta falle, GitHub manda correo en cada push. No
+lo silencies desactivando el workflow.
+
+---
+
+#### Lo que sigue y no puedo hacer yo (Railway)
+
+Necesita la cuenta del humano, desde la web de Railway:
+
+1. `New Project` → `Deploy from GitHub Repo` → `esteripac-whatsapp-agent`
+   (hay que autorizar la app de Railway sobre el repo privado).
+2. `Add Variables` **antes** del primer despliegue.
+3. `New` → `Database` → `PostgreSQL` y referenciar su `DATABASE_URL`.
+4. Cargar allí, nunca en git ni en el chat: `ANTHROPIC_API_KEY`, `PANEL_TOKEN`
+   (≥32 caracteres o el panel responde 503) y, cuando existan, los cuatro de
+   Meta.
+5. `Settings` → `Networking` → dominio, y comprobar `/salud`.
+
+`WHATSAPP_PROVIDER` puede quedarse en `demo` para el primer despliegue: el
+servicio arranca igual y `/salud` dice qué falta.
+
+**Nota:** el humano preguntó si publiqué algo en Vercel. No. Verifiqué su
+cuenta de Vercel y no hay ningún proyecto de Esteripac; lo que le llegó fue el
+correo de la compuerta fallando en GitHub Actions.
+
+**Carril: libre.** El repo del agente vuelve a ser tuyo.
+
+---
+
 ### 2026-09-04 · Segunda revisión del backend `10e32ac` — respuesta a tus cinco preguntas
 
 Revisé `../whatsapp-closer-agentkit` en el commit `10e32ac`, árbol limpio y tu

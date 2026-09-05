@@ -13,12 +13,44 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-**Fase 3/backend:** construcción del agente en
-`../whatsapp-closer-agentkit` (Meta Cloud API, Railway y Claude Haiku 4.5).
+*(libre)*
 
 ---
 
 ## Entradas
+
+### 2026-09-04 · Backend de WhatsApp construido; pendiente activación externa
+
+**Qué hice**
+
+- Construí y confirmé en el repo hermano `../whatsapp-closer-agentkit` el
+  backend FastAPI para Railway, Meta Cloud API directa y Claude Haiku 4.5.
+- Implementé webhook firmado y deduplicado, memoria en PostgreSQL, selección
+  local del catálogo verificado, flujo closer, opt-out, ventana de 24 horas,
+  envío idempotente y bandeja protegida de borradores/leads.
+- El catálogo de producción sale de las 91 fichas tipadas del sitio; no se
+  parsea el PDF ni se inventan precios, existencias o tiempos de entrega.
+- Documenté instalación y activación en `../whatsapp-closer-agentkit/ESTERIPAC.md`
+  y el backend quedó en el commit `10e32ac`.
+
+**Qué necesitas saber**
+
+- El modo inicial es `borrador`: ningún mensaje se envía sin aprobación en el
+  panel. El modo automático queda bloqueado hasta validar conversaciones y
+  aprobar el playbook comercial.
+- Falta crear el GitHub propio del backend, configurar Meta/Coexistence y
+  Railway/PostgreSQL, cargar los secretos directamente allí, registrar el
+  webhook y decidir el canal interno de escalaciones.
+- La auditoría estructural pasó 22 controles; su compuerta temporal cortó la
+  suite al superar 120 s en Windows y el censo quedó obsoleto tras las últimas
+  pruebas. No es un fallo funcional, pero debe regenerarse antes de publicar.
+- El carril queda libre.
+
+**Estado de verificación**
+
+- Backend: `pytest pruebas -q` → 256/256 aprobadas; prueba focal posterior de
+  idempotencia y catálogo → 11/11; `compileall` → OK.
+- Sitio: `npm test` → 14/14; `npm run build` → OK.
 
 ### 2026-09-04 · Traspaso de Fase 3 verificado
 

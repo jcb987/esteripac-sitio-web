@@ -34,7 +34,7 @@ evaluando**. Por eso el sitio es mobile-first de verdad.
 |---|---|---|
 | **1** | Sitio estático de alta conversión. Sin backend, sin precios, sin carrito. | **Terminada** |
 | **2** | Portal B2B: login real, verificación con NIT, precios, carrito de recompra restringido. | Pendiente |
-| **3** | Agente de IA de WhatsApp conectado de verdad. | **En construcción** — ver §13 |
+| **3** | Agente de IA de WhatsApp conectado de verdad. | **Backend construido; activación externa pendiente** — ver §13 |
 
 **El código de la fase 1 debe dejar las fases 2 y 3 como cambios aditivos, no
 como refactor.** Ver §7.
@@ -413,17 +413,24 @@ cortes de sesión igual que este proyecto sobrevive con `context/`.
   que no esté en el material".
 - **Trato de usted.** Coincide con la Q3 del kit (tratamiento formal), que ya
   es la convención de este sitio.
+- **Proveedor:** Meta Cloud API directa. Railway aloja el backend; no es un
+  proveedor de WhatsApp. Se descartó agregar una pasarela mientras Meta cubra
+  el caso de uso, para evitar otro costo y otro punto de falla.
+- **Modelo:** Claude Haiku 4.5, elegido por calidad conversacional y costo. El
+  contexto del catálogo se selecciona localmente por consulta para no enviar
+  sus 91 fichas completas en cada turno.
 - **Número de pruebas:** un WhatsApp Business (app) que el cliente ya tiene.
-  Antes de automatizar hay que migrarlo a la API real (Meta Cloud API o
-  Zernio) — la app normal de WhatsApp Business no permite automatización.
+  Antes de automatizar hay que confirmar en Meta si puede usar **Coexistence**;
+  no se inicia una migración destructiva del número sin esa comprobación.
 
 ### El catálogo como base de conocimiento
 
-El kit lee `knowledge/negocio/` (catálogo, precios, políticas) y
-`knowledge/closer/` (metodología de venta, objeciones) para escribir
-`config/playbook.yaml`. ***Esa carpeta no se sube a git*** (puede tener datos
-de clientes o material con licencia ajena) — solo viaja lo que el kit escribe
-a partir de ella.
+El backend lee `knowledge/negocio/` (catálogo, precios, políticas) y
+`knowledge/closer/` (metodología de venta, objeciones). Los PDF originales y
+los datos sensibles no se suben a git. La exportación técnica
+`catalogo-esteripac.md` sí se versiona en el repo de producción para que
+Railway disponga de la misma fuente verificada; no contiene precios ni datos
+de clientes.
 
 `scripts/export_catalog_markdown.ts`, en **este** repo, exporta las 91 fichas
 del catálogo tipado a Markdown, agrupadas por proceso, con la política de
@@ -435,21 +442,33 @@ npx tsx scripts/export_catalog_markdown.ts > salida.md
 cp salida.md ../whatsapp-closer-agentkit/knowledge/negocio/catalogo-esteripac.md
 ```
 
-**Vuelve a correrlo cada vez que cambie algo en `src/data/products/`.** El
-archivo generado no se versiona (vive en `knowledge/`, fuera de git), así que
-no hay riesgo de que quede desactualizado en el historial — pero sí puede
-quedar desactualizado en disco si alguien edita el catálogo y no vuelve a
-exportar.
+**Vuelve a correrlo y confirma el cambio versionado cada vez que cambie algo
+en `src/data/products/`.** Así el sitio y el agente no divergen.
 
-`knowledge/closer/` (la metodología de venta y el manejo de objeciones) NO
-está resuelto: el propio kit espera que lo escriba el dueño del negocio con
-`/playbook`, no que se invente. Es un pendiente real, no solo de datos.
+El playbook comercial incluido es provisional y conservador: guía hacia una
+solicitud de cuenta institucional, recoge institución, NIT, responsable,
+proceso, referencia, cantidad, ciudad y urgencia, y escala reclamos, enojo o
+peticiones de una persona. Esteripac debe aprobar el trato y las respuestas a
+objeciones antes de activar el modo automático.
 
-### Pendiente antes de correr `/start`
+### Estado de la implementación
 
-1. Elegir proveedor de WhatsApp: Meta Cloud API (oficial, gratis, requiere
-   verificación de negocio) vs. Zernio (pasarela sobre Meta). Sin decidir.
-2. Migrar o conectar el número de pruebas del cliente a esa API.
-3. `ANTHROPIC_API_KEY` para el modelo del agente.
-4. Escribir `knowledge/closer/` con el manejo de objeciones real de Esteripac
-   (o dejar que `/playbook` lo levante con las respuestas del cliente).
+El backend ya está construido en `../whatsapp-closer-agentkit`: webhook
+firmado y deduplicado de Meta, conversación persistente en PostgreSQL,
+memoria reciente, búsqueda determinista del catálogo, Claude Haiku 4.5,
+bandeja protegida de borradores y leads, envío idempotente, opt-out, ventana
+de 24 horas y despliegue por Docker en Railway. Arranca deliberadamente en
+modo `borrador`; aprobar una respuesta en el panel es el único camino de envío
+durante la validación.
+
+Pendientes externos para hacerlo real:
+
+1. Crear el repositorio GitHub propio de Esteripac para el backend; el remoto
+   actual sigue apuntando al blueprint de referencia y no se publica allí.
+2. Configurar la app Business de Meta, verificar el negocio y confirmar
+   Coexistence para el número actual.
+3. Crear el servicio y PostgreSQL en Railway y cargar allí, nunca en git ni en
+   el chat, los tokens de Meta, `ANTHROPIC_API_KEY` y `PANEL_TOKEN`.
+4. Registrar el webhook de Railway en Meta y probar primero con borradores.
+5. Aprobar el playbook y definir el canal interno de escalaciones antes de
+   pasar a modo automático.

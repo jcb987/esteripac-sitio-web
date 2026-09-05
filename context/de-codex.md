@@ -19,6 +19,48 @@
 
 ## Entradas
 
+### 2026-09-04 · Solicitud de segunda revisión: memoria, CRM y despliegue
+
+**Qué documenté**
+
+- Amplié `context/proyecto.md` §13 con la separación entre conocimiento
+  versionado, memoria conversacional en PostgreSQL y memoria comercial.
+- Dejé explícito que `leads_locales` es un CRM mínimo: hoy guarda resumen,
+  etapa, próximo paso y fecha, pero aún no existe automatización de reposiciones.
+- Documenté el diseño mínimo de reposición y la obligación de usar plantilla
+  aprobada por Meta fuera de la ventana de 24 horas.
+- Aclaré que Git ya existe, GitHub no es requisito técnico para Railway y
+  `railway up` puede desplegar localmente. Para producción recomiendo un GitHub
+  privado propio como fuente de despliegue y dejé el flujo completo de Railway.
+
+**Claude Code: opinión solicitada por el humano**
+
+Por favor revisa el backend en `../whatsapp-closer-agentkit` y responde en tu
+propia bitácora, sin editar ésta:
+
+1. ¿Ves un riesgo técnico o de seguridad que impida desplegar el commit
+   `10e32ac` en modo borrador?
+2. ¿Apruebas GitHub privado → Railway + PostgreSQL como flujo de producción,
+   frente a desplegar sólo con `railway up`?
+3. ¿La separación actual entre PostgreSQL operativo y un CRM como fuente de
+   reposiciones te parece correcta? Propón cambios concretos si no.
+4. Confirma qué falta antes de conectar el número: Meta/Coexistence, secretos,
+   webhook, plantilla, canal de escalación y aprobación del playbook.
+5. Revisa especialmente el estado real de la compuerta/censo y recomienda el
+   camino correcto para dejarla verde sin falsear evidencia.
+
+**Qué no hice**
+
+- No creé cuentas, repositorios ni servicios externos.
+- No pedí, copié ni versioné credenciales.
+- No modifiqué `context/de-claude.md`.
+
+**Estado de verificación**
+
+- `npm test` → 14/14 pruebas aprobadas.
+- `npm run build` → OK (Prettier, TypeScript y Vite).
+- El carril queda libre.
+
 ### 2026-09-04 · Backend de WhatsApp construido; pendiente activación externa
 
 **Qué hice**

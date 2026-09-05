@@ -461,6 +461,77 @@ de 24 horas y despliegue por Docker en Railway. Arranca deliberadamente en
 modo `borrador`; aprobar una respuesta en el panel es el único camino de envío
 durante la validación.
 
+### Dónde vive el contexto y la memoria
+
+No existe un único archivo llamado «contexto del bot». Hay tres capas:
+
+1. **Conocimiento estable, versionado en Git:** catálogo técnico en
+   `knowledge/negocio/catalogo-esteripac.md`, reglas de venta en
+   `config/playbook.yaml`, identidad en `config/marca.yaml` y datos generales
+   en `config/negocio.yaml`. La búsqueda local selecciona las fichas relevantes
+   para no enviar las 91 a Claude en cada turno.
+2. **Memoria operativa, en PostgreSQL de Railway:** `contactos`,
+   `conversaciones`, `mensajes`, `leads_locales`, `pendientes` y `eventos`.
+   Guarda todo el historial; por economía y pertinencia, el modelo recibe los
+   12 mensajes recientes. En desarrollo existe `wca.db`, ignorado por Git, pero
+   ese SQLite local no es la base de producción.
+3. **Memoria comercial:** `leads_locales` conserva etapa, score, temperatura,
+   resumen, próximo paso y fecha. Opcionalmente se puede reflejar en una tabla
+   `leads` de Supabase, pero esa integración no está configurada y una tabla de
+   Supabase no equivale por sí sola a un CRM comercial completo.
+
+### CRM y recordatorios de reposición — pendiente explícito
+
+Hoy se puede guardar «próximo paso» y «próxima fecha», pero **todavía no existe
+un flujo de reposición que despierte solo y vuelva a contactar al cliente**. El
+recordatorio de citas existente no debe confundirse con reposiciones; además,
+su scheduler persistente está detenido sobre PostgreSQL en el blueprint actual.
+
+La solución profesional debe usar como fuente de verdad el CRM que Esteripac
+ya tenga. Si no tiene uno, hay que decidir entre ampliar el panel como CRM
+ligero o integrar uno antes de automatizar reposiciones. Como mínimo debe
+guardar institución, NIT, responsable, SKU confirmado, última compra,
+cantidad, frecuencia acordada o estimada, próxima fecha, consentimiento,
+responsable interno, estado y resultado del seguimiento.
+
+Un proceso programado consultará los seguimientos vencidos, generará un
+borrador personalizado y lo enviará sólo después de aprobación —al menos
+durante la validación—. Fuera de la ventana de 24 horas debe utilizar una
+plantilla aprobada por Meta; siempre respeta opt-out y nunca inventa consumo,
+stock, precio o fecha de entrega.
+
+### Git, GitHub y fuente de despliegue
+
+- **Git ya existe localmente:** ambos repos tienen historial y commits.
+- **GitHub no es técnicamente obligatorio:** Railway admite desplegar una
+  carpeta local mediante `railway up`, además de repositorios GitHub e imágenes
+  Docker. Documentación oficial: <https://docs.railway.com/services>.
+- **Decisión recomendada para producción:** repositorio GitHub privado propio
+  de Esteripac. Aporta respaldo remoto, colaboración entre agentes, trazabilidad
+  y despliegue automático por commit. El enlace solicitado es el del repo nuevo,
+  por ejemplo `https://github.com/propietario/esteripac-whatsapp-agent`, no el
+  repositorio de referencia de Hainrixz.
+- El repo se crea vacío, sin README, licencia ni `.gitignore`. Después el remoto
+  de referencia se conserva como `upstream`, el nuevo repo se configura como
+  `origin` y se sube la rama construida.
+
+Flujo acordado para Railway:
+
+1. `New Project` → `Deploy from GitHub Repo` y escoger el repo privado.
+2. Elegir `Add Variables` antes del primer despliegue real.
+3. `New` → `Database` → `PostgreSQL`.
+4. Referenciar `DATABASE_URL` del servicio PostgreSQL desde el backend y cargar
+   los demás secretos directamente en Railway, nunca en Git ni en el chat.
+5. Railway construye el `Dockerfile`; en `Settings` → `Networking` se genera
+   el dominio público.
+6. Comprobar `https://<dominio>/salud`; después se registra
+   `/webhook/meta` en Meta y se valida primero en modo borrador.
+
+También es viable crear y subir el proyecto desde la carpeta local con
+`railway up --new --name esteripac-whatsapp`, pero no es el flujo elegido para
+producción. Referencias: <https://docs.railway.com/cli/up> y
+<https://docs.railway.com/quick-start>.
+
 Pendientes externos para hacerlo real:
 
 1. Crear el repositorio GitHub propio de Esteripac para el backend; el remoto

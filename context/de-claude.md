@@ -19,6 +19,111 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-06 · CAMBIO DE REQUISITO — el agente va en automático y es un filtro
+
+**Léelo antes de tocar nada del backend. Cambia el propósito del agente.**
+
+El cliente revisó otro proyecto suyo (Menta Assistant, una clínica dental con
+GoHighLevel) y a partir de esa comparación redefinió lo que quiere. Tres
+decisiones nuevas, todas confirmadas explícitamente:
+
+#### 1 · Modo automático, NO borrador
+
+**El bot contesta solo.** Nada de aprobar cada mensaje en el panel. Fue
+enfático: «Nooooo. Cuando dices que hace el borrador y espera a que yo lo mande
+eso no es lo que yo quiero.»
+
+El panel sigue siendo útil para *ver* conversaciones, así que `PANEL_TOKEN`
+sigue haciendo falta — pero deja de ser un paso obligatorio de envío.
+
+Ojo con cómo se activa: `agente/config.py:45 modo_efectivo()` exige que los
+pasos **3, 4 y 5** estén los tres en `automatico` dentro de
+`config/cerrador.yaml`. Ese archivo **hoy no existe**, y por eso todo arranca
+en borrador.
+
+#### 2 · El agente es un FILTRO de entrada
+
+El problema real del cliente: a la oficina de Esteripac le llegaban demasiados
+mensajes al WhatsApp, muchos de gente queriendo venderles a ellos. El agente
+vive en otro número y hace de primer filtro.
+
+**Regla acordada** (se la planteé como tres opciones y eligió ésta):
+
+> El bot responde preguntas del catálogo **y acompaña al comprador** —toma
+> NIT, institución, referencia, cantidad—. Solo deriva a la oficina lo que lo
+> supera: reclamos, negociación de precio, enojo, o algo fuera del catálogo.
+
+O sea: el paso 6 que ya construiste **es exactamente esto**. No hay que
+inventar el filtro, hay que configurarlo.
+
+#### 3 · La derivación avisa a la oficina, NO manda al cliente a otro chat
+
+Su idea original era darle al cliente el `wa.me` de la oficina para que se
+cambiara de chat. Le propuse lo contrario y lo aceptó:
+
+> **La oficina recibe el aviso interno con el motivo y el enlace al chat del
+> cliente, y la oficina escribe primero.** El cliente no se mueve de donde
+> está ni tiene que repetir todo.
+
+Eso es justo lo que hace hoy `paso_6_handoff.py` con `avisar_interno()`. **No
+lo cambies.** Solo falta configurarle a dónde avisar.
+
+---
+
+#### Los tres huecos concretos que lo bloquean
+
+| Qué | Estado | Efecto |
+|---|---|---|
+| `config/cerrador.yaml` | no existe | nunca sale de borrador |
+| `canal_interno` en `config/negocio.yaml` | `null` | el paso 6 detecta la escalación y **no avisa a nadie** |
+| Número/canal de la oficina | sin definir | falta el dato del cliente |
+
+`palabras_escalacion` sale de la clave `escalacion` de `negocio.yaml`
+(`agente/config.py:32`). Hoy conviene revisarla contra el caso real: el ruido
+que quieren filtrar son **vendedores ofreciéndole cosas a Esteripac**, que no
+es lo mismo que un cliente enojado.
+
+---
+
+#### Dos cosas de Menta que el cliente quiere copiar
+
+Las revisé en `C:\...\Clientes\Menta Assistant` (solo lectura, no toqué nada).
+Son 21 archivos en Vercel contra tus 148, porque allá GHL pone el canal de
+WhatsApp, el CRM y el calendario, y el código solo pone el cerebro. Pero hay
+dos ideas buenas que allá están y acá no:
+
+1. **Cadencia humana** (`api/whatsapp.js`): espera ~2,5 s por si el usuario
+   sigue escribiendo y agrupa los mensajes; parte la respuesta en máximo 3
+   mensajes cortos; y mete una pausa proporcional al largo entre cada uno.
+   En WhatsApp la diferencia se siente muchísimo.
+2. **Aprendizaje diario** (`api/cron-playbook.js`): un cron destila las
+   conversaciones recientes en el playbook, y cada cierre exitoso se guarda en
+   una base vectorial para recuperarlo por RAG en conversaciones futuras.
+
+El cliente las quiere las dos. **Pero no ahora** — ver el orden abajo.
+
+---
+
+#### El orden que acordé con él, y por qué
+
+1. **Desplegar en Railway tal como está.** Aunque quede en borrador. Solo para
+   confirmar que construye, que Postgres conecta y que `/salud` responde. Si
+   la infraestructura falla, mejor descubrirlo con el código simple.
+2. **Conectar Meta.** Es lo lento: la verificación del negocio depende de los
+   tiempos de Meta, no nuestros.
+3. **Recién ahí pasar a automático.** Antes no tiene sentido: no se pueden
+   probar respuestas automáticas sin WhatsApp conectado.
+4. **Al final, la cadencia y el aprendizaje.**
+
+**Y antes del paso 4: arregla la compuerta.** Sigue en rojo (checks 02, 16 y
+18 — ver mi entrada del 2026-09-04). Construir funcionalidad nueva sobre una
+compuerta roja significa que cuando algo se rompa no vas a poder distinguir si
+fue lo nuevo o lo que ya estaba mal.
+
+**Carril:** libre. No toqué código del backend en esta tanda.
+
+---
+
 ### 2026-09-04 · Backend en GitHub privado — y la CI en Linux resolvió el misterio de la compuerta
 
 **Qué hice en `../whatsapp-closer-agentkit`** (solo remotos, ni una línea del

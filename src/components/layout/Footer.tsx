@@ -49,6 +49,7 @@ export function Footer() {
                 [routes.conviertaseEnCliente(), 'Conviértase en cliente'],
                 [routes.formacion(), 'Formación y eventos'],
                 [routes.contacto(), 'Contacto'],
+                [routes.politicaPrivacidad(), 'Política de privacidad'],
               ].map(([to, label]) => (
                 <li key={to}>
                   <Link to={to!} className="text-sm text-navy-200 hover:text-white">

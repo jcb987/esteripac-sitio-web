@@ -25,6 +25,7 @@ export const routes = {
   conviertaseEnCliente: () => '/conviertase-en-cliente',
   formacion: () => '/formacion',
   contacto: () => '/contacto',
+  politicaPrivacidad: () => '/politica-de-privacidad',
 
   // Reservado para la fase 2. Las rutas del portal cuelgan de acá.
   // portal: () => '/portal',

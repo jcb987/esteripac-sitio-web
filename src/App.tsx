@@ -13,6 +13,7 @@ import { Producto } from '@/pages/Producto';
 import { ConviertaseEnCliente } from '@/pages/ConviertaseEnCliente';
 import { Formacion } from '@/pages/Formacion';
 import { Contacto } from '@/pages/Contacto';
+import { PoliticaPrivacidad } from '@/pages/PoliticaPrivacidad';
 import { NotFound } from '@/pages/NotFound';
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="/conviertase-en-cliente" element={<ConviertaseEnCliente />} />
             <Route path="/formacion" element={<Formacion />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

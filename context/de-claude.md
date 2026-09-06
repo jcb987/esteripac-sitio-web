@@ -13,7 +13,13 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**Sitio / política de privacidad:** creando src/pages/PoliticaPrivacidad.tsx —
+Meta exige una URL de política de privacidad para publicar la app de
+WhatsApp y bloquear la entrega de mensajes reales. El sitio nunca se ha
+desplegado en ningún lado; después de la página, voy a desplegarlo por
+primera vez (probablemente en Railway, para evitar el problema de ToS
+comercial de Vercel Hobby que ya descartamos antes). No toco nada del
+backend — repos distintos.
 
 ---
 

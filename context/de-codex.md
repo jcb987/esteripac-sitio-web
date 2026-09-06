@@ -19,6 +19,45 @@
 
 ## Entradas
 
+### 2026-09-06 · Compuerta verde y escalación interna lista
+
+**Qué cambié en el backend**
+
+- Encontré la causa real de los checks 02, 16 y 18: la CI auditaba antes de
+  reconstruir `config/playbook-base.yaml` y `pruebas/salida-caso-01.json`, dos
+  artefactos deliberadamente ignorados. No era CRLF ni una deriva de
+  `agente/firmas.py`. Ambos siguen fuera de Git; el workflow copia el primero y
+  genera el segundo al correr la suite antes de la auditoría.
+- El workflow ahora regenera también el censo antes de abrir la compuerta.
+  `test_esteripac.py` ya figuraba en `ARCHIVOS_DE_PRUEBA`; lo confirmé y añadí
+  cinco pruebas Esteripac al archivo.
+- Configuré `canal_interno: slack`. En Railway sólo faltará el secreto
+  `SLACK_WEBHOOK_URL`; el aviso existente del paso 6 incluye motivo, contacto y
+  enlace al chat.
+- Reservé las palabras de escalación para un comprador con reclamo, negociación
+  de precio, enojo, petición de persona o consulta confirmada fuera del
+  catálogo. Un vendedor que ofrece productos o servicios recibe un cierre
+  cortés desde prompt/playbook, sin recopilar datos ni avisar a la oficina.
+- No reescribí el paso 6, no creé `config/cerrador.yaml`, no activé automático y
+  no empecé cadencia ni aprendizaje diario.
+
+**Qué revisar**
+
+- Backend publicado en `origin/main`: `e3f83be` y corrección de esquema
+  `dd7388c`. La primera forma del filtro agregó una propiedad no admitida por el
+  esquema estricto; quedó corregida dentro del campo `tono` ya permitido.
+- CI Linux `34048212270`: 23/23 checks, 258 pruebas, 0 errores, 0 avisos y 0
+  salteados. Check 16: una salida válida con seis pasos; check 18: 4/4 firmas;
+  check 23: 43 campos declarados, 40 afirmados y 0 sin prueba ejecutable.
+- Próximo paso externo: Railway + PostgreSQL y secretos; después conectar Meta
+  en borrador y comprobar Slack antes de crear el cerrador automático.
+
+**Estado de verificación**
+
+- Sitio: `npm test` → 14/14; `npm run build` → OK.
+- Backend: CI Linux → PASS en 6m18s sobre `dd7388c`.
+- El carril queda libre.
+
 ### 2026-09-04 · Solicitud de segunda revisión: memoria, CRM y despliegue
 
 **Qué documenté**

@@ -411,6 +411,18 @@ cortes de sesión igual que este proyecto sobrevive con `context/`.
   acá significa llevar a la apertura de cuenta institucional, no negociar un
   número — encaja de fábrica con la regla del kit de "no inventa ningún precio
   que no esté en el material".
+- **Modo final automático.** El agente responderá sin aprobación mensaje por
+  mensaje. Durante el primer despliegue sigue en borrador únicamente para
+  comprobar Railway/PostgreSQL y conectar Meta; `config/cerrador.yaml` se crea
+  después de esa conexión, cuando ya se pueda probar el canal real.
+- **Filtro de entrada.** Acompaña a compradores institucionales y recoge NIT,
+  institución, referencia y cantidad. Una persona que intenta venderle
+  productos o servicios a Esteripac recibe un cierre cortés y no se deriva a
+  la oficina. Sí se derivan reclamos, negociación de precio, enojo, solicitudes
+  de una persona y consultas confirmadas fuera del catálogo.
+- **El cliente no cambia de chat al derivarse.** El paso 6 calla el agente y
+  avisa internamente a la oficina con motivo y enlace al mismo chat. La oficina
+  entra a esa conversación; no se entrega otro número al comprador.
 - **Trato de usted.** Coincide con la Q3 del kit (tratamiento formal), que ya
   es la convención de este sitio.
 - **Proveedor:** Meta Cloud API directa. Railway aloja el backend; no es un
@@ -456,10 +468,25 @@ objeciones antes de activar el modo automático.
 El backend ya está construido en `../whatsapp-closer-agentkit`: webhook
 firmado y deduplicado de Meta, conversación persistente en PostgreSQL,
 memoria reciente, búsqueda determinista del catálogo, Claude Haiku 4.5,
-bandeja protegida de borradores y leads, envío idempotente, opt-out, ventana
-de 24 horas y despliegue por Docker en Railway. Arranca deliberadamente en
-modo `borrador`; aprobar una respuesta en el panel es el único camino de envío
-durante la validación.
+bandeja protegida de conversaciones y leads, envío idempotente, opt-out,
+ventana de 24 horas y despliegue por Docker en Railway. El primer despliegue
+arranca deliberadamente en `borrador`, pero ése ya no es el comportamiento
+final: después de conectar y probar Meta se habilitan juntos los pasos 3, 4 y
+5 en automático. El panel permanece como observabilidad, no como cola de
+aprobación obligatoria.
+
+La escalación interna usa **Slack**. `config/negocio.yaml` declara
+`canal_interno: slack`; sólo falta cargar `SLACK_WEBHOOK_URL` como secreto en
+Railway. Se eligió sobre avisar a otro WhatsApp porque no consume una plantilla
+de Meta, no depende de la ventana de 24 horas y entrega un enlace clicable al
+chat del cliente.
+
+La compuerta del backend quedó verde en Linux en el commit `dd7388c`: los 23
+chequeos pasaron sin errores, avisos ni salteados, incluidas 258 pruebas, el
+contrato con sus seis pasos, las cuatro comprobaciones de firmas y el censo de
+campos. La CI reconstruye antes de auditar `config/playbook-base.yaml` y
+`pruebas/salida-caso-01.json`; ambos siguen ignorados porque son artefactos
+generados, no fuentes que deban versionarse.
 
 ### Dónde vive el contexto y la memoria
 
@@ -506,18 +533,16 @@ stock, precio o fecha de entrega.
 - **GitHub no es técnicamente obligatorio:** Railway admite desplegar una
   carpeta local mediante `railway up`, además de repositorios GitHub e imágenes
   Docker. Documentación oficial: <https://docs.railway.com/services>.
-- **Decisión recomendada para producción:** repositorio GitHub privado propio
-  de Esteripac. Aporta respaldo remoto, colaboración entre agentes, trazabilidad
-  y despliegue automático por commit. El enlace solicitado es el del repo nuevo,
-  por ejemplo `https://github.com/propietario/esteripac-whatsapp-agent`, no el
-  repositorio de referencia de Hainrixz.
-- El repo se crea vacío, sin README, licencia ni `.gitignore`. Después el remoto
-  de referencia se conserva como `upstream`, el nuevo repo se configura como
-  `origin` y se sube la rama construida.
+- **Producción ya tiene repositorio GitHub privado:**
+  <https://github.com/jcb987/esteripac-whatsapp-agent>. `origin` apunta allí;
+  el blueprint de Hainrixz quedó como `upstream` con push deshabilitado.
+  Railway se conectará a `origin/main`, de modo que cada despliegue quede
+  asociado a un commit revisable.
 
 Flujo acordado para Railway:
 
-1. `New Project` → `Deploy from GitHub Repo` y escoger el repo privado.
+1. `New Project` → `Deploy from GitHub Repo` y escoger
+   `jcb987/esteripac-whatsapp-agent`.
 2. Elegir `Add Variables` antes del primer despliegue real.
 3. `New` → `Database` → `PostgreSQL`.
 4. Referenciar `DATABASE_URL` del servicio PostgreSQL desde el backend y cargar
@@ -534,12 +559,12 @@ producción. Referencias: <https://docs.railway.com/cli/up> y
 
 Pendientes externos para hacerlo real:
 
-1. Crear el repositorio GitHub propio de Esteripac para el backend; el remoto
-   actual sigue apuntando al blueprint de referencia y no se publica allí.
+1. Crear el servicio y PostgreSQL en Railway desde el GitHub privado; cargar
+   `ANTHROPIC_API_KEY`, `PANEL_TOKEN` y `SLACK_WEBHOOK_URL` directamente allí.
 2. Configurar la app Business de Meta, verificar el negocio y confirmar
    Coexistence para el número actual.
-3. Crear el servicio y PostgreSQL en Railway y cargar allí, nunca en git ni en
-   el chat, los tokens de Meta, `ANTHROPIC_API_KEY` y `PANEL_TOKEN`.
-4. Registrar el webhook de Railway en Meta y probar primero con borradores.
-5. Aprobar el playbook y definir el canal interno de escalaciones antes de
-   pasar a modo automático.
+3. Cargar en Railway, nunca en Git ni en el chat, los cuatro secretos de Meta,
+   registrar el webhook y probar el canal primero en borrador.
+4. Confirmar que los avisos llegan al canal de Slack de la oficina y aprobar
+   el playbook del filtro.
+5. Sólo entonces crear `config/cerrador.yaml` y activar el modo automático.

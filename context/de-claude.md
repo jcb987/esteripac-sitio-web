@@ -13,18 +13,170 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Sitio / política de privacidad:** creando src/pages/PoliticaPrivacidad.tsx —
-Meta exige una URL de política de privacidad para publicar la app de
-WhatsApp y bloquear la entrega de mensajes reales. El sitio nunca se ha
-desplegado en ningún lado; después de la página, voy a desplegarlo por
-primera vez (probablemente en Railway, para evitar el problema de ToS
-comercial de Vercel Hobby que ya descartamos antes). No toco nada del
-backend — repos distintos.
+_(libre)_
 
 ---
 
 ## Entradas
 
+### 2026-09-06 · TRASPASO COMPLETO — sesión cortada por límite de tokens
+
+**Lee esta entrada entera antes de tocar nada. Está escrita para alguien sin
+ningún contexto previo.** El humano va a seguir trabajando en Codex mientras
+tanto, y luego retomará conmigo desde una terminal nueva.
+
+---
+
+## 1. Qué se logró hoy — el circuito de Meta funciona hasta un punto exacto
+
+Conectamos Esteripac a Meta WhatsApp Cloud API de punta a punta, EXCEPTO por
+un bloqueador identificado con evidencia real (no especulación):
+
+1. **App de Meta creada:** "Esteripac", bajo el portafolio empresarial
+   **"Esteripac SAS"** (no el personal del humano — separación correcta desde
+   el inicio). App ID: `1433421498664621`.
+2. **Número de pruebas de Meta** (gratuito, sandbox): `+1 (555) 676-5855`.
+   `Phone Number ID: 1298460000026011`. `WABA ID: 4511421805762832`.
+3. **Las 4 credenciales de Meta ya están cargadas en Railway**
+   (`esteripac-whatsapp-agent` → Variables): `WHATSAPP_TOKEN`,
+   `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET`.
+   **`WHATSAPP_PROVIDER` ya está en `meta`, no en `demo`.**
+4. **Confirmado por `/salud`:** `{"ok":true,"proveedor":"meta","base":"postgresql", ...}`.
+   Ver `https://esteripac-whatsapp-agent-production.up.railway.app/salud`.
+5. **Webhook verificado y guardado en Meta** (check verde ✓). Callback URL:
+   `https://esteripac-whatsapp-agent-production.up.railway.app/webhook/meta`.
+   Campo `messages` está **Suscrito** — el requisito crítico para recibir
+   avisos de mensajes nuevos.
+
+## 2. EL BLOQUEADOR — con evidencia, no sospecha
+
+**Mientras la app de Meta no esté "publicada" (Live), los mensajes reales NO
+llegan al webhook.** Se probó dos veces:
+
+- Se envió "Hola" desde el WhatsApp personal del humano (`+1-531-291-7415`,
+  verificado como destinatario de prueba) al número de prueba, a las **14:32**.
+- Se revisaron los `Deploy Logs` de Railway en tiempo real: hay entradas cada
+  60s exactos (`GET /panel`, de alguien con esa pestaña abierta) sin ningún
+  hueco alrededor de las 14:32-14:33. **Cero entradas de `POST /webhook/meta`.**
+- La propia pantalla de Meta lo advierte: *"Las aplicaciones solo podrán
+  recibir webhooks de prueba enviados desde el panel de la aplicación mientras
+  esta no esté publicada."*
+
+**Conclusión: hay que publicar la app de Meta.**
+
+## 3. Por qué no se pudo publicar todavía — y qué se resolvió ya
+
+El botón **"Publicar"** (Meta → Panel → Publicar) estaba deshabilitado porque
+faltaba la **URL de política de privacidad**, requisito obligatorio de Meta.
+
+**El sitio de Esteripac nunca tuvo página de política de privacidad, y
+nunca se ha desplegado en ningún lado — solo existe en este disco.**
+
+Esta sesión ya resolvió la mitad:
+
+- ✅ Escribí `src/pages/PoliticaPrivacidad.tsx` — contenido real (no genérico):
+  qué recoge el bot de WhatsApp, con qué proveedores se integra (Meta,
+  Anthropic, Railway), derechos bajo Ley 1581 de 2012 colombiana.
+- ✅ Conectada en `routes.ts`, `App.tsx`, y enlazada en el footer.
+- ✅ `npm test` (14/14) y `npm run build` pasan.
+- ✅ Commiteado: `5767337 [claude] Agrega pagina de politica de privacidad, requerida por Meta`.
+
+**Lo que falta — EXACTAMENTE tres pasos, en este orden:**
+
+1. **Crear un repo de GitHub para el SITIO** (hoy `git remote -v` en este
+   repo no devuelve nada — no tiene remoto). Comando ya preparado:
+   ```bash
+   gh repo create esteripac-sitio-web --public --description "Sitio web de Esteripac S.A.S." --source . --remote origin
+   ```
+   **Esto quedó bloqueado por el clasificador de modo automático** — crear un
+   repo nuevo es una acción externa que pide confirmación explícita del
+   humano. Pídesela de nuevo, o pídele que lo corra él mismo y avise.
+   Público a propósito: es el sitio de marketing, sin secretos (ya verificado
+   antes con el backend que el patrón de auditoría de secretos no encuentra
+   nada sensible en este tipo de repo).
+
+2. **Desplegar el sitio en Railway** (mismo patrón que el backend, mismo
+   proyecto o uno nuevo — a decidir). **No usar Vercel**: el plan Hobby
+   prohíbe uso comercial en sus ToS, decisión ya tomada hace varias sesiones.
+   Railway sirve bien un SPA de Vite con `vite preview` o un servidor estático
+   simple; a diferencia de GitHub Pages, no tiene los problemas de rutas del
+   lado del cliente con React Router.
+
+3. **Con la URL pública en mano:**
+   - Pégala en Meta → Configuración de la aplicación → Información básica →
+     "URL de la Política de privacidad", usando
+     `https://<dominio-del-sitio>/politica-de-privacidad`.
+   - Vuelve a Meta → Publicar → el botón debería estar habilitado ahora →
+     click **Publicar**.
+   - **Repite la prueba real:** manda un mensaje de WhatsApp real al número
+     de prueba y revisa los Deploy Logs de Railway del backend — debería
+     aparecer un `POST /webhook/meta` esta vez. Si aparece, el agente ya
+     puede recibir mensajes reales.
+
+## 4. Después de eso — NO lo hagas todavía
+
+- **`config/cerrador.yaml` sigue sin existir a propósito.** Sin ese archivo,
+  el agente arranca en modo `borrador` (`agente/config.py:modo_efectivo()`
+  exige que los pasos 3, 4 y 5 estén los tres en `automatico`). El cliente
+  pidió explícitamente **modo automático, no borrador** — pero eso va
+  DESPUÉS de confirmar que los mensajes reales llegan de verdad (paso 3
+  de arriba). No lo actives antes.
+- El playbook comercial lo debe aprobar Esteripac antes de soltar el modo
+  automático — sigue pendiente esa aprobación humana del negocio.
+
+## 5. Trabajo en paralelo de Codex — no lo dupliques ni lo toques
+
+Codex tiene el carril activo (ver su propia entrada en `context/de-codex.md`,
+que **yo no edito**) extendiendo el contrato de salida con un bloque
+`comercial` (institución, NIT, SKU confirmado, cantidad, ciudad, frecuencia
+estimada, consentimiento de reposición) — esto resuelve el hueco de CRM que
+identifiqué en mi revisión anterior. Su plan: los 7 campos son nullable, se
+persisten en `leads_locales` como columnas nuevas, ajusta el prompt para
+extraerlos conversacionalmente, actualiza fixtures/golden, y corre la
+compuerta + censo solo al final sobre el árbol terminado. **No toca
+`config/cerrador.yaml` ni modo automático** — coordinado con lo de arriba.
+
+Mientras Codex trabaje ahí, **este trabajo mío (sitio + Meta + Railway) no
+tiene ningún conflicto de archivos** — son repos distintos.
+
+## 6. Credenciales — dónde están, no qué son
+
+Ninguna está escrita en texto plano en ningún archivo de este repo (verificado
+repetidamente). El humano las tiene guardadas aparte:
+
+- `ANTHROPIC_API_KEY` — creada en la cuenta PERSONAL de Anthropic del humano
+  (decisión consciente: es solo para pruebas). **Pendiente sin urgencia:**
+  cuando Esteripac tenga su propia organización de Anthropic con su propia
+  tarjeta, la migración es solo cambiar esta variable en Railway y borrar la
+  vieja — no hay "transferencia", se regenera y se reemplaza.
+- `PANEL_TOKEN` — generado por el humano en PowerShell, ≥32 caracteres.
+- `WHATSAPP_TOKEN` — **es el token TEMPORAL de 24 horas** de Meta (Paso 1.
+  Probar → Identificador de acceso). **Si pasó más de un día desde que se
+  generó, ya expiró.** Para regenerarlo: Meta → Casos de uso → Conectar en
+  WhatsApp → Paso 1. Probar → "Generar nuevo identificador" → copiar →
+  actualizar `WHATSAPP_TOKEN` en Railway → Deploy. Es el primer sospechoso si
+  algo deja de responder al retomar esto.
+- `WHATSAPP_VERIFY_TOKEN` y `META_APP_SECRET` — ya cargados en Railway, no
+  caducan por tiempo.
+- **Pendiente de revisar, no resuelto hoy:** la cuenta de Railway usada es la
+  personal del humano, igual que pasó con Anthropic. No se discutió
+  explícitamente separarla para Esteripac — queda para cuando se hable de
+  producción real, mismo criterio que ya se aplicó a GitHub/Anthropic/Vercel.
+
+## 7. Dónde está todo lo demás
+
+- Arquitectura completa: `context/proyecto.md` §13.
+- Historial completo de decisiones de esta fase: entradas anteriores de esta
+  misma bitácora (`context/de-claude.md`), en orden cronológico descendente.
+- Repo del backend: `github.com/jcb987/esteripac-whatsapp-agent` (privado).
+- Repo del sitio: **todavía sin remoto** — ver paso 1 de la sección 3.
+- Prompts de arranque para retomar con cualquiera de las dos herramientas:
+  `context/prompts.md`.
+
+**Carril: lo dejo libre.** No hay nada mío a medias en el disco — el commit
+de la política de privacidad ya está hecho y verificado.
+
+---
 ### 2026-09-06 · Primer despliegue en Railway — backend en vivo con Postgres real
 
 **Hito de infraestructura, hecho con el humano desde la web de Railway, no desde código.**

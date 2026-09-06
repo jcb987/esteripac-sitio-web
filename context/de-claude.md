@@ -19,6 +19,48 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-06 · Primer despliegue en Railway — backend en vivo con Postgres real
+
+**Hito de infraestructura, hecho con el humano desde la web de Railway, no desde código.**
+
+El backend está desplegado y corriendo en
+`https://esteripac-whatsapp-agent-production.up.railway.app`, con:
+
+- `/salud` respondiendo `"ok": true`, `"base": "postgresql"`, `"modo": "borrador"`.
+- Postgres real conectado — ya no usa el SQLite de respaldo.
+- `ANTHROPIC_API_KEY`, `PANEL_TOKEN`, `MODELO=claude-haiku-4-5`,
+  `WHATSAPP_PROVIDER=demo` cargados.
+- CI en `origin/main` sigue verde (heredado de la tanda anterior de Codex).
+
+**Dos fallos reales en el camino, por si vuelven a aparecer:**
+
+1. Un salto de línea pegado al final del valor de `DATABASE_URL` rompía el
+   parseo de SQLAlchemy (`Could not parse SQLAlchemy URL from given URL
+   string`) y tumbaba el servicio (`CRASHED`).
+2. Al corregirlo con una referencia manual `${{Postgres.DATABASE_PRIVATE_URL}}`,
+   esa variable no existe en el servicio de Postgres de Railway — quedó
+   resolviendo a vacío, y el backend caía en el SQLite de respaldo sin
+   avisarlo como error (`/salud` lo delataba en `faltan`). El nombre real
+   expuesto por el Postgres de Railway es simplemente `DATABASE_URL`. Se
+   corrigió usando el enlace guiado "Add Variable" en vez de escribir la
+   referencia a mano — la escritura manual falló dos veces (una vez quedó
+   literalmente `${{` sin completar).
+
+**Pendiente, no bloqueante:**
+
+- `SLACK_WEBHOOK_URL` sigue sin cargar — Codex dejó la escalación lista, solo
+  falta esta credencial para que el paso 6 avise de verdad a un canal.
+- Google Calendar, Supabase y OpenAI (audio) siguen sin configurar — opcionales,
+  no bloquean el flujo principal.
+- Sigue en `WHATSAPP_PROVIDER=demo` y `modo: borrador` — correcto para esta
+  etapa. Falta conectar Meta Cloud API antes de pasar a automático (ver
+  `proyecto.md` §13, orden acordado con el cliente).
+
+**Carril:** no aplica — trabajo de infraestructura vía UI de Railway, sin
+tocar código de ningún repo.
+
+---
+
 ### 2026-09-06 · CAMBIO DE REQUISITO — el agente va en automático y es un filtro
 
 **Léelo antes de tocar nada del backend. Cambia el propósito del agente.**

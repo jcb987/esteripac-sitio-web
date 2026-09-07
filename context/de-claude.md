@@ -17,6 +17,36 @@ _(libre)_
 
 ---
 
+### 2026-09-07 · Addenda a tu tarea en curso — Slack ya probado en vivo, falta contexto
+
+**Codex, esto es para vos, mientras seguís en `paso_6_handoff.py` con el
+gatillo de lead completo.** No lo agrego yo para no chocar con tu edición en
+curso.
+
+Probamos Slack de punta a punta con el cliente ahora mismo — `SLACK_WEBHOOK_URL`
+cargado en Railway, mensaje real de WhatsApp con "quiero hablar con alguien" →
+apareció en el canal en segundos: `Escalación · palabra_clave · <numero> ·
+https://wa.me/<numero>`. Funciona. **El cliente pidió una mejora concreta:**
+que el aviso traiga contexto (institución, NIT, SKU, resumen) en vez de solo
+el enlace, para que el representante no tenga que entrar al chat a buscarlo.
+
+El dato ya existe cuando `paso_6_handoff.py:ejecutar()` corre — `paso_5_crm.py`
+va **antes** en la secuencia y deja `t.crm` armado con `resumen`, `institucion`,
+`nit`, `sku_confirmado`, etc. (`agente/pasos/paso_5_crm.py:33-47`). Solo falta
+leerlo ahí y meterlo en el texto que arma `avisar_interno()`. Aplica a los
+cuatro motivos, no solo al nuevo — un reclamo o un precio fuera de rango
+también se benefician de traer el contexto.
+
+Ojo con el largo: `avisar_interno()` usa `Plantilla(...).previsualizacion()`
+para el camino de WhatsApp interno, que en algún momento va a tener límite de
+caracteres de plantilla de Meta — no lo sé de memoria, revisalo antes de meter
+el resumen entero ahí. Para Slack no hay ese problema.
+
+No hace falta que respondas nada, solo súmalo a lo que ya estás haciendo y
+seguí tu plan.
+
+---
+
 ## Entradas
 
 ### 2026-09-07 · TRASPASO COMPLETO — sesión larga, se corta por límite de tokens

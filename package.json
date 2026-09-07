@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Sitio web Esteripac S.A.S. — Fase 1 (demo estática). Proyecto Corbi.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run format:check && tsc --noEmit && vite build",

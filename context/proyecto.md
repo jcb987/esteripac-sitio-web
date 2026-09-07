@@ -481,12 +481,23 @@ Railway. Se eligió sobre avisar a otro WhatsApp porque no consume una plantilla
 de Meta, no depende de la ventana de 24 horas y entrega un enlace clicable al
 chat del cliente.
 
-La compuerta del backend quedó verde en Linux en el commit `dd7388c`: los 23
-chequeos pasaron sin errores, avisos ni salteados, incluidas 258 pruebas, el
+La compuerta del backend quedó verde en Linux en el commit `4ee2f71`: los 23
+chequeos pasaron sin errores, avisos ni salteados, incluidas 263 pruebas, el
 contrato con sus seis pasos, las cuatro comprobaciones de firmas y el censo de
-campos. La CI reconstruye antes de auditar `config/playbook-base.yaml` y
-`pruebas/salida-caso-01.json`; ambos siguen ignorados porque son artefactos
-generados, no fuentes que deban versionarse.
+51 campos (47 afirmados por pruebas y 4 no mutables por diseño). La fuente de
+verdad es la CI Linux `34078084299`. La CI reconstruye antes de auditar
+`config/playbook-base.yaml` y `pruebas/salida-caso-01.json`; ambos siguen
+ignorados porque son artefactos generados, no fuentes que deban versionarse.
+El golden del wire schema y su manifiesto usan LF canónico para que sus hashes
+sean idénticos en Windows y Linux.
+
+El contrato de salida incorpora un bloque `comercial` estructurado con
+institución, NIT, SKU confirmado, cantidad, ciudad, frecuencia estimada y
+consentimiento de reposición. El bloque siempre está presente y cada valor es
+nullable: sólo se completa con algo que el contacto haya dicho o confirmado.
+`cantidad` y `frecuencia_estimada` conservan el texto y la unidad declarados;
+el paso 5 los persiste en columnas de `leads_locales` sin borrar con nulos un
+dato válido de un turno anterior.
 
 ### Dónde vive el contexto y la memoria
 
@@ -503,14 +514,17 @@ No existe un único archivo llamado «contexto del bot». Hay tres capas:
    12 mensajes recientes. En desarrollo existe `wca.db`, ignorado por Git, pero
    ese SQLite local no es la base de producción.
 3. **Memoria comercial:** `leads_locales` conserva etapa, score, temperatura,
-   resumen, próximo paso y fecha. Opcionalmente se puede reflejar en una tabla
-   `leads` de Supabase, pero esa integración no está configurada y una tabla de
-   Supabase no equivale por sí sola a un CRM comercial completo.
+   resumen, próximo paso y fecha, más institución, NIT, SKU confirmado,
+   cantidad, ciudad, frecuencia estimada y consentimiento de reposición.
+   Opcionalmente se puede reflejar en una tabla `leads` de Supabase, pero esa
+   integración no está configurada y una tabla de Supabase no equivale por sí
+   sola a un CRM comercial completo.
 
 ### CRM y recordatorios de reposición — pendiente explícito
 
-Hoy se puede guardar «próximo paso» y «próxima fecha», pero **todavía no existe
-un flujo de reposición que despierte solo y vuelva a contactar al cliente**. El
+Hoy ya se capturan de forma estructurada los datos mínimos del comprador y se
+pueden guardar «próximo paso» y «próxima fecha», pero **todavía no existe un
+flujo de reposición que despierte solo y vuelva a contactar al cliente**. El
 recordatorio de citas existente no debe confundirse con reposiciones; además,
 su scheduler persistente está detenido sobre PostgreSQL en el blueprint actual.
 

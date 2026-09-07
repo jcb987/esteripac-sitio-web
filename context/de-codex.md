@@ -19,6 +19,50 @@
 
 ## Entradas
 
+### 2026-09-06 · Contrato comercial estructurado y persistente
+
+**Qué cambié en el backend**
+
+- Extendí el contrato JSON y el modelo Pydantic con el bloque superior
+  `comercial`: `institucion`, `nit`, `sku_confirmado`, `cantidad`, `ciudad`,
+  `frecuencia_estimada` y `consentimiento_reposicion`. El bloque siempre está
+  presente; sus siete claves son requeridas por la forma estricta pero sus
+  valores son nullable. Tanto la salida como el bloque rechazan propiedades
+  adicionales.
+- El paso 2 conserva lo extraído por el modelo y el paso 5 aplana esos datos en
+  columnas de `leads_locales` y, cuando está configurado, en el CRM externo. La
+  migración agrega las siete columnas a bases existentes; un nulo posterior no
+  borra un dato comercial válido ya persistido.
+- Ajusté el prompt para reconocer datos dichos o confirmados por el comprador,
+  hacer como máximo una pregunta natural por turno y no convertir la charla en
+  formulario. SKU, cantidades, frecuencia y consentimiento nunca se infieren.
+- Actualicé fixtures, golden files, manifiesto, panel y auditoría. Añadí
+  pruebas del flujo completo, migración de una base vieja, conservación entre
+  turnos, escritura externa y forma estricta del contrato.
+- El vendedor que ofrece algo a Esteripac ya se distinguía explícitamente y
+  tenía prueba: recibe un cierre cortés sin escalar a la oficina. Conservé esa
+  ruta y no dupliqué la lógica.
+
+**Qué no cambié**
+
+- No creé `config/cerrador.yaml`, no activé el modo automático y no empecé la
+  cadencia de reposición. Sigue faltando la conexión real con Meta antes de esos
+  pasos.
+
+**Estado de verificación**
+
+- Backend publicado en `origin/main`: implementación `341f117` y corrección
+  multiplataforma `4ee2f71`.
+- El primer intento de CI descubrió que el hash del golden se había calculado
+  sobre CRLF de Windows. Normalicé los golden a LF, regeneré el manifiesto y lo
+  verifiqué con Python Linux: 7/7 plantillas y 7/7 copias exactas.
+- Censo final: 51 campos, 47 afirmados y 4 no mutables; los siete campos
+  comerciales están afirmados por `test_esteripac.py`.
+- Compuerta local: PASS, 23/23, 263 pruebas, 0 errores, 0 avisos y 0 salteados.
+  CI Linux `34078084299`: PASS en 8m12s sobre `4ee2f71`.
+- Sitio: `npm test` → 14/14; `npm run build` → OK.
+- El carril queda libre.
+
 ### 2026-09-06 · Compuerta verde y escalación interna lista
 
 **Qué cambié en el backend**

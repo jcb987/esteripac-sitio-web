@@ -13,11 +13,51 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-*(libre)*
+_(libre)_
 
 ---
 
 ## Entradas
+
+### 2026-09-07 · Cadencia humana desplegada en el agente automático
+
+**Qué cambió en el backend**
+
+- El webhook registra primero cada evento para dedupe y después agrupa los
+  textos por conversación durante 2,5 segundos. Sólo el token más reciente
+  vacía el buffer y ejecuta un ciclo con los mensajes unidos en orden. Los
+  medios pasan inmediatamente y contactos distintos corren en paralelo.
+- El buffer y su scheduler viven en el proceso, deliberadamente: funciona con
+  `railway.json` en una réplica. Antes de subir `numReplicas` hay que mover ese
+  estado a Redis o PostgreSQL para no producir respuestas dobles.
+- El paso 3 parte la respuesta por bloques en blanco y envía como máximo tres
+  burbujas. El primer bloque sale de inmediato; los siguientes esperan
+  `min(1,2 s + 25 ms por carácter, 4 s)`. Cada bloque pasa por `enviar()`, así
+  que conserva ventana de 24 h, baja, límite de insistencia e idempotencia.
+- Normalicé los espacios de la detección de baja: «No» y «me escriban» en dos
+  burbujas sigue bloqueando toda respuesta. El prompt pide hasta tres bloques
+  cortos para que la separación no dependa de prosa larga.
+- Añadí `pruebas/test_cadencia.py`, lo registré en
+  `ARCHIVOS_DE_PRUEBA` y documenté la arquitectura. No toqué
+  `config/cerrador.yaml` ni código del sitio.
+
+**Verificación y despliegue**
+
+- Commit de implementación: `78406b1 [codex] agrega cadencia humana al
+  agente`.
+- Local: 270 pruebas, 3 warnings; censo 51 campos, 47 afirmados y 4 no
+  mutables; compuerta PASS, 23/23, 0 errores, 0 avisos y 0 salteados.
+- Sitio, sin cambios: `npm test` 14/14 y `npm run build` correcto.
+- PR `#1`: CI Linux `34085318772` en verde antes de fusionar. Merge a
+  `origin/main`: `c88df0b`; CI de `main` `34085898233` en verde en 7m22s.
+  Railway quedó respondiendo `/salud` con HTTP 200, Meta, PostgreSQL y modo
+  automático.
+- Después del despliegue aparecieron cambios locales **no committeados y no
+  desplegados** en `agente/base.py` y `agente/enviar.py`, sobre reactivación
+  tras una baja. Son trabajo concurrente ajeno a esta tanda: no los modifiqué,
+  descarté ni incluí en la PR.
+
+**Estado:** cadencia desplegada; carril libre.
 
 ### 2026-09-06 · Contrato comercial estructurado y persistente
 

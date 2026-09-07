@@ -13,13 +13,19 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Retomando el traspaso del 2026-09-06 (sección 3):** voy a crear el repo de
-GitHub del sitio, desplegarlo en Railway, y con la URL pública actualizar la
-política de privacidad en Meta y publicar la app. Codex tiene su propio carril
-activo en el backend (`agente/`) con el bloque `comercial` — no lo toco, repos
-distintos.
+_(libre)_
 
-**Avance:**
+---
+
+## Entradas
+
+### 2026-09-06 · EL AGENTE CONTESTA SOLO EN WHATSAPP — circuito cerrado
+
+**Se terminó la sección 3 del traspaso y dos bugs más que estaban debajo.**
+El agente recibe mensajes reales de WhatsApp y responde solo, sin panel.
+
+## 1 · Publicar el sitio y desbloquear Meta (sección 3 del traspaso)
+
 - ✅ Repo creado y público: `github.com/jcb987/esteripac-sitio-web`.
 - ✅ Desplegado en Railway, mismo proyecto que el backend. Dos baches de build
   reales, ninguno relacionado con mi código de negocio — los dos por
@@ -91,16 +97,73 @@ reciba de verdad). **Dato nuevo: el repo del sitio ya tiene remoto
 (`jcb987/esteripac-sitio-web`) y está desplegado en Railway — cualquier push a
 `master` sale en vivo.**
 
-- **Ojo con el flujo nuevo de Meta:** la pantalla de WhatsApp tiene 3 pasos —
-  Paso 1 Probar (✓), **Paso 2 Configuración de producción (pendiente)**,
-  **Paso 3 Verificación de la empresa (pendiente)**. Si la hipótesis de la
-  WABA se cae, el siguiente sospechoso es que el número de prueba nunca
-  entregue mensajes reales y haya que completar el Paso 2 con un número
-  propio.
+- **Flujo nuevo de Meta, para la próxima:** la pantalla de WhatsApp tiene 3
+  pasos — Paso 1 Probar (✓), **Paso 2 Configuración de producción
+  (pendiente)**, **Paso 3 Verificación de la empresa (pendiente)**. Hoy
+  seguimos con el número de pruebas gratuito; el Paso 2 es el que hace falta
+  para usar un número propio de Esteripac.
 
 ---
 
-## Entradas
+## 2 · Los dos bugs que había DEBAJO del bloqueador de Meta
+
+Con Meta ya recibiendo, el cliente pidió pasar a automático. Ahí aparecieron
+dos fallas encadenadas que ninguna pantalla mostraba:
+
+**Bug 1 — el blueprint y el código no coinciden en el nombre de la clave.**
+`blueprint/60-bandeja.md` documenta `config/cerrador.yaml` con la clave de
+nivel superior `modo:`, pero `agente/config.py:47` lee `cfg.get("pasos")`.
+Escrito como dice la documentación, `modo_efectivo()` no encuentra nada y
+devuelve `borrador` **en silencio**. El archivo quedó escrito con `pasos:` y
+un comentario que explica por qué. Commit `365e6d7`.
+
+**Bug 2 — `modo` nunca llegaba al ciclo, y es el que costó caro.**
+`agente/servidor.py:_procesar()` armaba la entrada con
+`entrada_desde_config()` + `mensaje`, **sin insertar `modo`**. Como `modo` no
+está en `required` de `contratos/entrada.schema.json` y su `default` es
+`"borrador"`, la validación pasaba limpia y `paso_3_responder.py:31` leía
+siempre `borrador`. Mientras tanto **`/salud` reportaba `"modo":"automatico"`
+porque lo lee por otro camino** (`ajustes.modo` → `modo_efectivo()`).
+
+Dos caminos distintos para el mismo dato: la config estaba bien, la salud lo
+confirmaba, y el paso 3 no se enteraba. Sin excepción, sin log, sin nada.
+Arreglado con una línea (`entrada["modo"] = ajustes.modo`), commit `51ca541`.
+`blueprint/00-contrato.md` §9 ya decía que servidor.py debía hacer eso.
+
+**Esto es un bug del kit, no de Codex ni mío. Conviene reportarlo aguas
+arriba a `Hainrixz/whatsapp-closer-agentkit`.**
+
+---
+
+## 3 · Estado real al cerrar
+
+- **El agente contesta solo en WhatsApp.** Verificado de punta a punta con
+  mensajes reales.
+- `/salud`: `{"ok":true,"proveedor":"meta","base":"postgresql","modo":"automatico"}`.
+- Sitio en vivo: `esteripac-sitio-web-production.up.railway.app`.
+- Backend: `51ca541` en `origin/main`. Sitio: `b16c555` en `master`.
+- El panel sigue sirviendo para *ver* conversaciones, leads y borradores
+  viejos; ya no es un paso obligatorio de envío.
+
+## 4 · Lo que queda pendiente, por urgencia
+
+1. **`WHATSAPP_TOKEN` vence en ~24 h** (se regeneró hoy ~22:48). Cuando expire,
+   el bot recibe pero no puede responder, y **no va a dar error visible en
+   WhatsApp**: simplemente se queda mudo. Hay que migrar al token permanente
+   de usuario del sistema en Meta Business. **Es lo más urgente.**
+2. **`SLACK_WEBHOOK_URL` sigue sin cargar.** El paso 6 detecta la escalación y
+   no avisa a nadie. Con el bot contestando solo, este hueco pesa más que
+   cuando había un humano aprobando cada mensaje.
+3. **Nadie revisó todavía la calidad de las respuestas en volumen.** Se vieron
+   dos o tres y son correctas (trato de usted, sin precios, arranca por el
+   proceso), pero el playbook sigue sin aprobación formal de Esteripac.
+4. Paso 2 de Meta: número propio de Esteripac en vez del de pruebas.
+5. Cadencia humana y aprendizaje diario (lo de Menta) — se lo pasé a Codex.
+
+**Aviso para Codex: toqué `agente/servidor.py`, que es justo donde va el
+debounce de la cadencia. Hacé `git pull` antes de empezar o vas a chocar.**
+
+---
 
 ### 2026-09-06 · TRASPASO COMPLETO — sesión cortada por límite de tokens
 

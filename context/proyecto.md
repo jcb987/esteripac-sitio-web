@@ -457,11 +457,10 @@ cp salida.md ../whatsapp-closer-agentkit/knowledge/negocio/catalogo-esteripac.md
 **Vuelve a correrlo y confirma el cambio versionado cada vez que cambie algo
 en `src/data/products/`.** Así el sitio y el agente no divergen.
 
-El playbook comercial incluido es provisional y conservador: guía hacia una
-solicitud de cuenta institucional, recoge institución, NIT, responsable,
-proceso, referencia, cantidad, ciudad y urgencia, y escala reclamos, enojo o
-peticiones de una persona. Esteripac debe aprobar el trato y las respuestas a
-objeciones antes de activar el modo automático.
+El playbook comercial guía hacia una solicitud de cuenta institucional, recoge
+institución, NIT, responsable, proceso, referencia, cantidad, ciudad y urgencia,
+y escala reclamos, enojo o peticiones de una persona. El agente ya opera en modo
+automático sobre mensajes reales de Meta.
 
 ### Estado de la implementación
 
@@ -469,11 +468,9 @@ El backend ya está construido en `../whatsapp-closer-agentkit`: webhook
 firmado y deduplicado de Meta, conversación persistente en PostgreSQL,
 memoria reciente, búsqueda determinista del catálogo, Claude Haiku 4.5,
 bandeja protegida de conversaciones y leads, envío idempotente, opt-out,
-ventana de 24 horas y despliegue por Docker en Railway. El primer despliegue
-arranca deliberadamente en `borrador`, pero ése ya no es el comportamiento
-final: después de conectar y probar Meta se habilitan juntos los pasos 3, 4 y
-5 en automático. El panel permanece como observabilidad, no como cola de
-aprobación obligatoria.
+ventana de 24 horas y despliegue por Docker en Railway. El despliegue ya está
+conectado a Meta y los pasos 3, 4 y 5 operan en automático. El panel permanece
+como observabilidad, no como cola de aprobación obligatoria.
 
 La escalación interna usa **Slack**. `config/negocio.yaml` declara
 `canal_interno: slack`; sólo falta cargar `SLACK_WEBHOOK_URL` como secreto en
@@ -498,6 +495,15 @@ nullable: sólo se completa con algo que el contacto haya dicho o confirmado.
 `cantidad` y `frecuencia_estimada` conservan el texto y la unidad declarados;
 el paso 5 los persiste en columnas de `leads_locales` sin borrar con nulos un
 dato válido de un turno anterior.
+
+Cuando `institucion`, `nit` y `sku_confirmado` están presentes a la vez, el paso
+6 envía al canal interno un aviso positivo con motivo `lead_completo` y el CRM
+usa la etapa `listo_para_cerrar`. La guarda persistente
+`conversaciones.lead_completo_avisado_en` evita repetir el aviso en cada turno;
+es independiente de `escalado_en`, por lo que no silencia al agente ni bloquea
+una escalación posterior por queja, precio o pedido de atención humana. La
+guarda sólo se fija si el canal confirmó el envío, para que una credencial
+ausente no haga perder la oportunidad definitivamente.
 
 ### Dónde vive el contexto y la memoria
 
@@ -582,3 +588,74 @@ Pendientes externos para hacerlo real:
 4. Confirmar que los avisos llegan al canal de Slack de la oficina y aprobar
    el playbook del filtro.
 5. Sólo entonces crear `config/cerrador.yaml` y activar el modo automático.
+
+---
+
+## 14. Cuentas — cuáles ya son de Esteripac y cuáles hay que migrarles
+
+**Checklist vivo, no una entrada de fecha.** Actualizalo cuando cambie el
+estado real de una cuenta; no agregues una entrada nueva en la bitácora para
+esto, editá esta lista directamente.
+
+Regla general: **toda cuenta que factura, guarda datos de clientes reales, o
+controla algo que Esteripac necesita poder operar sin depender de Corbi,
+tiene que quedar a nombre de Esteripac.** Mientras el proyecto era una prueba
+tenía sentido usar cuentas personales para no frenar el avance; con el bot
+recibiendo mensajes reales de clientes reales, cada una de éstas es una
+dependencia real, no un detalle administrativo.
+
+### ✅ Ya está bien — a nombre de Esteripac
+
+- **Meta Business Manager / WhatsApp.** App "Esteripac" vive bajo el
+  portafolio empresarial **"Esteripac SAS"**, no en el Facebook personal de
+  nadie. Separación correcta desde el inicio. **Pendiente igual:** confirmar
+  que alguien de Esteripac tenga login de admin ahí, no solo vos — si hoy sos
+  el único admin del Business Manager, es un solo punto de falla.
+
+### ⚠️ Bajo cuenta personal de Jerónimo/Corbi — pendiente migrar
+
+- **Anthropic (`ANTHROPIC_API_KEY`).** Cuenta personal, decisión consciente
+  para la etapa de pruebas. Migrar: Esteripac crea su propia organización en
+  Anthropic con su propia tarjeta, genera una clave nueva, se reemplaza el
+  valor en Railway y se borra la vieja. No hay "transferencia" real, es
+  generar y reemplazar.
+- **Railway.** Backend y sitio corren en el Railway personal del humano,
+  facturado a su tarjeta (hoy en crédito de prueba, ver saldo en el
+  dashboard). Mismo criterio que Anthropic: cuenta nueva de Esteripac,
+  recrear los servicios o transferir el proyecto, actualizar DNS/dominios si
+  los hay.
+- **GitHub.** Los dos repos (`esteripac-whatsapp-agent`, privado, y
+  `esteripac-sitio-web`, público) viven bajo `github.com/jcb987` — usuario
+  personal, no una organización de Esteripac. Migrar: crear una organización
+  de GitHub de Esteripac (gratis para repos privados con pocos
+  colaboradores) y transferir los repos ahí, o al menos agregar a alguien de
+  Esteripac como colaborador con permisos de administrador mientras se
+  decide.
+- **Slack.** Workspace "Esteripac" creado hoy con el correo personal del
+  humano. **Decisión ya tomada con el cliente:** se transfiere después, a
+  propósito — se prefirió no frenar la prueba esperando un correo de
+  Esteripac. Migrar: agregar a alguien de Esteripac como miembro y después
+  como **Owner** (no solo miembro) desde la configuración del workspace.
+- **OpenAI**, si se activa la transcripción de audio (§13, pendiente de
+  notas de voz): misma cuenta personal probablemente, mismo criterio.
+
+### ❓ Sin confirmar — hay que revisarlo, no asumir
+
+- **Vercel (el segundo sitio, `Pagina web Esteripac` → `esteripac.vercel.app`).**
+  Lo desplegó Codex con `npx vercel deploy --prod`; no verifiqué bajo qué
+  cuenta de Vercel quedó. Antes de decidir qué hacer con el sitio duplicado
+  (ver bitácora), hay que confirmar esto — si es una cuenta personal, aplica
+  el mismo criterio; si además terminan usando Vercel en producción, revisar
+  primero si el plan Hobby sigue prohibiendo uso comercial en sus ToS (fue la
+  razón original para preferir Railway).
+
+### 🔜 Todavía no existen, van a aparecer
+
+- **Mercado Pago** (si se activa cobro real): tiene que ser la cuenta de
+  Mercado Pago de Esteripac desde el día uno, nunca la de Corbi — acá no hay
+  "migrar después", es un problema legal/fiscal si el dinero pasa por una
+  cuenta que no es la del comercio real.
+- **Facturación electrónica DIAN.** Depende de qué use Esteripac hoy (Siigo,
+  Alegra, o nada todavía) — sin confirmar.
+- **Dominio propio**, si algún día quieren `esteripac.com` en vez de los
+  subdominios de Railway/Vercel — no se ha hablado.

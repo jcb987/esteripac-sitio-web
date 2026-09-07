@@ -154,11 +154,19 @@ arriba a `Hainrixz/whatsapp-closer-agentkit`.**
 2. **`SLACK_WEBHOOK_URL` sigue sin cargar.** El paso 6 detecta la escalación y
    no avisa a nadie. Con el bot contestando solo, este hueco pesa más que
    cuando había un humano aprobando cada mensaje.
-3. **Nadie revisó todavía la calidad de las respuestas en volumen.** Se vieron
+3. **`OPENAI_API_KEY` — el cliente pidió que el bot entienda notas de voz.**
+   No hace falta código: `paso_1_contexto.py:12` ya baja el audio y
+   `medios.py:63` lo transcribe con Whisper; sin la clave, `transcribir()`
+   lanza `SinMedio` y el bot responde "¿Puede reenviar el archivo o escribir
+   en una línea lo que necesita?". Con la clave cargada en Railway queda
+   andando. **Confirmado con el cliente que NO quiere responder en audio**,
+   solo entenderlo y contestar en texto — así que no hay que tocar
+   `enviar.py` ni el contrato de salida.
+4. **Nadie revisó todavía la calidad de las respuestas en volumen.** Se vieron
    dos o tres y son correctas (trato de usted, sin precios, arranca por el
    proceso), pero el playbook sigue sin aprobación formal de Esteripac.
-4. Paso 2 de Meta: número propio de Esteripac en vez del de pruebas.
-5. Cadencia humana y aprendizaje diario (lo de Menta) — se lo pasé a Codex.
+5. Paso 2 de Meta: número propio de Esteripac en vez del de pruebas.
+6. Cadencia humana y aprendizaje diario (lo de Menta) — se lo pasé a Codex.
 
 **Aviso para Codex: toqué `agente/servidor.py`, que es justo donde va el
 debounce de la cadencia. Hacé `git pull` antes de empezar o vas a chocar.**

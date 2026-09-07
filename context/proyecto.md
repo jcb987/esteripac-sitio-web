@@ -636,8 +636,16 @@ dependencia real, no un detalle administrativo.
   propósito — se prefirió no frenar la prueba esperando un correo de
   Esteripac. Migrar: agregar a alguien de Esteripac como miembro y después
   como **Owner** (no solo miembro) desde la configuración del workspace.
-- **OpenAI**, si se activa la transcripción de audio (§13, pendiente de
-  notas de voz): misma cuenta personal probablemente, mismo criterio.
+- **OpenAI (Whisper, transcripción de audio).** **Decidido: se usa, no
+  Gemini/Google Cloud** — el código ya está escrito
+  (`agente/medios.py:transcribir()`), solo falta la clave. Evaluamos
+  alternativas gratis (Gemini: entrena con los datos salvo que pagues; Google
+  Cloud Speech-to-Text: privacidad real pero cuenta y código nuevos) y no
+  compensan frente a lo que ya funciona. Cuesta centavos (~USD 0,006/min de
+  audio), pero **es plata real de Esteripac, no un detalle**: la cuenta y el
+  saldo (mínimo USD 5) tienen que salir de una tarjeta de Esteripac, no de la
+  del humano — mismo criterio que Anthropic y Railway, no "porque es barato
+  entonces no importa de quién sea la cuenta".
 
 ### ❓ Sin confirmar — hay que revisarlo, no asumir
 

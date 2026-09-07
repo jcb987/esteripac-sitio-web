@@ -8,4 +8,8 @@ export default defineConfig({
   resolve: {
     alias: { '@': path.resolve(__dirname, './src') },
   },
+  preview: {
+    host: true,
+    allowedHosts: true,
+  },
 });

@@ -13,7 +13,90 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**Retomando el traspaso del 2026-09-06 (sección 3):** voy a crear el repo de
+GitHub del sitio, desplegarlo en Railway, y con la URL pública actualizar la
+política de privacidad en Meta y publicar la app. Codex tiene su propio carril
+activo en el backend (`agente/`) con el bloque `comercial` — no lo toco, repos
+distintos.
+
+**Avance:**
+- ✅ Repo creado y público: `github.com/jcb987/esteripac-sitio-web`.
+- ✅ Desplegado en Railway, mismo proyecto que el backend. Dos baches de build
+  reales, ninguno relacionado con mi código de negocio — los dos por
+  incompatibilidades de Tailwind v4 con el entorno Linux de Nixpacks:
+  1. `npm ci` no resolvía el binario nativo de `@tailwindcss/oxide` para Linux
+     (bug conocido `npm/cli#4828`). Lo forcé a `npm install` con
+     `nixpacks.toml` — no alcanzó solo.
+  2. La causa real: Nixpacks arrancaba con Node 18 y `@tailwindcss/oxide`
+     exige Node ≥20. Lo fijé con `"engines": {"node": ">=20"}` en
+     `package.json` (Nixpacks lo lee solo). **Con esto sí compiló.**
+  También agregué `vite.config.ts` → `preview.allowedHosts: true` (si no,
+  Vite bloquea el `Host` header del dominio de Railway) y el script `start`
+  (`vite preview --host 0.0.0.0 --port $PORT`).
+- ✅ Dominio generado: `esteripac-sitio-web-production.up.railway.app`.
+  Verificado con curl: raíz 200, `/politica-de-privacidad` 200.
+- ✅ URL de política de privacidad cargada en Meta y **app PUBLICADA**
+  (badge "Publicada" + alerta "Esteripac se cambió al modo activo").
+- ❌ **Publicar NO resolvió el problema.** Evidencia nueva, toda medida hoy:
+  - Mensajes reales al número de prueba a las 22:29, 22:41 → **cero
+    `POST /webhook/meta`** en los logs de Railway.
+  - Test sintético de Meta (botón "Test" del campo `messages` → "Enviar a
+    servidor") a las 22:43:28 → **`POST /webhook/meta 200 OK` a las 22:43:26**.
+    O sea: URL, TLS, firma HMAC y endpoint funcionan perfecto.
+  - `messages` confirmado **Suscrito** en la tabla de webhooks (v26.0).
+  - Se probó también el flujo documentado por Meta (la empresa manda la
+    plantilla `hello_world` primero, el usuario responde en ese hilo):
+    plantilla entregada 22:50, respuestas del humano 22:50 y **22:52 con el
+    contenedor ya arriba (22:51:04)** → **tampoco llegó nada.**
+- **El `WHATSAPP_TOKEN` sí había expirado** (Meta mostraba "Not generated
+  yet"), tal como advertía la sección 6. Se regeneró y se actualizó en Railway;
+  el despliegue `35968e7f` (22:50) ya corre con el token nuevo. **No era la
+  causa del webhook** — recibir no usa ese token — pero bloqueaba el envío.
+- ✅ **RESUELTO — la causa real era otra: la WABA no estaba suscrita a nuestra
+  app.** En Cloud API hay **dos** suscripciones y el panel solo muestra una:
+  1. el webhook a nivel de *app* (URL + campos como `messages`) — ésta estaba
+     bien desde el principio, y es la única que el panel deja ver;
+  2. la suscripción de la *cuenta de WhatsApp Business (WABA)* a esa app
+     (`POST /{WABA_ID}/subscribed_apps`) — **ésta faltaba, y no aparece en
+     ninguna pantalla del panel nuevo de Meta.**
+
+  El diagnóstico: `GET /4511421805762832/subscribed_apps` devolvía únicamente
+  `WA DevX Webhook Events 1P App` (id `2202427980234937`), una app interna de
+  Meta. La app Esteripac (`1433421498664621`) no figuraba. Por eso el botón
+  "Test" del panel sí llegaba (dispara a nivel de app) y los mensajes reales
+  no (se enrutan por la WABA, que se los entregaba a la app de Meta).
+
+  El arreglo, un solo comando:
+  ```powershell
+  curl.exe -s -X POST -H "Authorization: Bearer $TOKEN" `
+    "https://graph.facebook.com/v21.0/4511421805762832/subscribed_apps"
+  ```
+  Devolvió `{"success":true}` y el GET pasó a listar Esteripac.
+
+  **Verificado de punta a punta a las 23:00:** mensajes reales enviados desde
+  el WhatsApp del humano → `POST /webhook/meta 200 OK` a las 23:00:23 y
+  23:00:53 en los logs de Railway. **Primera vez en el proyecto que un mensaje
+  real de WhatsApp entra al agente.**
+
+  **Si esto se vuelve a romper, mirá `subscribed_apps` ANTES que nada.** Es
+  invisible en la interfaz y sobrevive a publicar la app, verificar el webhook
+  y suscribir campos — todo puede estar en verde y aun así no llegar nada.
+**Codex, para trabajar en paralelo sin chocar:** el bloqueador de Meta no
+necesita ni una línea de backend, así que ese carril es todo tuyo. Tenés ~29
+archivos sin commitear del bloque `comercial` — terminá eso, compuerta y censo
+al final sobre el árbol quieto, y pusheá. Después, `proximo_paso_fecha` sigue
+siendo `String(20)` y conviene pasarlo a fecha real. **No toques
+`config/cerrador.yaml` ni el modo automático** (va después de que WhatsApp
+reciba de verdad). **Dato nuevo: el repo del sitio ya tiene remoto
+(`jcb987/esteripac-sitio-web`) y está desplegado en Railway — cualquier push a
+`master` sale en vivo.**
+
+- **Ojo con el flujo nuevo de Meta:** la pantalla de WhatsApp tiene 3 pasos —
+  Paso 1 Probar (✓), **Paso 2 Configuración de producción (pendiente)**,
+  **Paso 3 Verificación de la empresa (pendiente)**. Si la hipótesis de la
+  WABA se cae, el siguiente sospechoso es que el número de prueba nunca
+  entregue mensajes reales y haya que completar el Paso 2 con un número
+  propio.
 
 ---
 

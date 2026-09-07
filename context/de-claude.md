@@ -19,6 +19,265 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-07 · TRASPASO COMPLETO — sesión larga, se corta por límite de tokens
+
+**Lee esta entrada entera antes de tocar nada.** Fue una tanda muy larga (arrancó
+el 6, sigue el 7) y pasaron muchas cosas. La resumo en el orden en que importan,
+no en el orden en que pasaron.
+
+---
+
+## 1 · El agente de WhatsApp funciona de punta a punta — VERIFICADO HOY
+
+Después de dos sesiones bloqueadas, hoy un mensaje real de WhatsApp llega,
+se procesa y el bot contesta solo, en modo `automatico`. Tres bugs distintos lo
+tapaban, cada uno silencioso (ningún error, ningún log), y se fueron pelando uno
+por uno con evidencia real, no hipótesis. En orden de aparición:
+
+**Bug 1 · la app de Meta necesitaba publicarse.** Resuelto hace rato (sitio con
+política de privacidad desplegado, ver §2), pero publicar la app **no fue
+suficiente** — solo era el primer candado.
+
+**Bug 2 · la WABA no estaba suscrita a nuestra app.** Este es el que costó más
+encontrar y **no se ve en ninguna pantalla del panel nuevo de Meta**. En Cloud
+API hay dos suscripciones de webhook, no una: el webhook a nivel de *app* (URL +
+campo `messages`, eso sí lo muestra el panel) y la suscripción de la *WABA* a
+esa app, que es aparte y no tiene UI. La nuestra estaba suscrita únicamente a
+`WA DevX Webhook Events 1P App` (una app interna de Meta), nunca a Esteripac.
+Por eso el botón "Test" del panel sí llegaba (dispara a nivel de app) y los
+mensajes reales no (se enrutan por la WABA). Diagnóstico:
+```
+GET /{WABA_ID}/subscribed_apps
+```
+Arreglo, un solo POST:
+```
+POST /{WABA_ID}/subscribed_apps
+```
+Con eso, `GET` empezó a listar a Esteripac junto a la app de Meta. **Si esto se
+rompe de nuevo, mirá acá antes que nada** — sobrevive a publicar la app, a
+verificar el webhook y a suscribir campos; todo puede estar en verde y aun así
+no llegar nada.
+
+**Bug 3 · `modo` nunca llegaba al ciclo.** Con `config/cerrador.yaml` creado
+(`pasos: {paso_3/4/5: automatico}`), `/salud` decía `"modo":"automatico"`
+porque lee `ajustes.modo` → `modo_efectivo()`. Pero `agente/servidor.py:_procesar()`
+armaba la entrada con `entrada_desde_config() + mensaje` y **nunca insertaba
+`modo`**. Como `modo` no está en `required` del esquema (default `"borrador"`),
+la validación pasaba sin quejarse y `paso_3_responder.py` siempre leía
+`"borrador"`. El propio `blueprint/00-contrato.md` §9 dice que `servidor.py`
+tiene que insertar `modo` en cada ciclo — no lo hacía. Arreglo de una línea:
+`entrada["modo"] = ajustes.modo` antes de armar `entrada["mensaje"]`.
+
+**Bug 4 (el de esta madrugada) · el `WHATSAPP_TOKEN` no dura 24h desde que se
+genera, vence a una hora fija del día.** El temporal expiró a las 22:00 PDT
+(medianoche acá) — lo generamos a las 22:48 y duró poco más de una hora, no un
+día. El fallo fue un 401 de Meta al intentar responder, y **no quedó ni una
+línea en los logs de Railway** (el webhook entrante seguía devolviendo 200; el
+401 pasaba adentro de una `BackgroundTask` y se perdía). Media hora perdida
+persiguiendo la baja, el modo y la cadencia hasta llegar al token real. Ya
+arreglé las dos cosas:
+
+- **Token permanente creado.** Business Settings → Usuarios del sistema →
+  usuario `agente-whatsapp-esteripac` (rol Admin) → activos asignados (app
+  Esteripac + WABA, control total) → token con **caducidad Nunca**, permisos
+  `whatsapp_business_messaging` + `whatsapp_business_management`. Ya está en
+  Railway. **Esto no debería volver a pasar solo por tiempo.**
+- **Los envíos rechazados ahora quedan en el log** (`agente/enviar.py`): tanto
+  el bloqueo por guarda (`revisar_baneo`) como el rechazo del proveedor
+  (`r.status_code >= 400`) loguean con `REGISTRO.warning`/`.error`. Si algo
+  vuelve a fallar, va a estar escrito.
+
+**Verificación de hoy, con capturas del cliente:** mensaje real → `POST
+/webhook/meta 200 OK` en Railway → el bot responde en el WhatsApp del cliente,
+sin pasar por el panel. Circuito cerrado.
+
+---
+
+## 2 · Otros tres arreglos de esta tanda, todos en `whatsapp-closer-agentkit`
+
+**La baja (`baja_en`) tenía un bug real, no relacionado con lo de arriba.**
+`pide_la_baja()` comparaba por subcadena con la palabra `"baja"` suelta, así
+que **"trabaja", "rebaja" o "¿me puede bajar el precio?" daban de baja al
+contacto de forma permanente y silenciosa.** Un hospital preguntando por precio
+habría quedado mudo para siempre sin que nadie se enterara. Arreglado con
+`PALABRAS_DE_BAJA` como frases explícitas y una regex de palabra completa
+(`_BAJA` en `agente/enviar.py`).
+
+**A pedido explícito del cliente: la baja dejó de ser para siempre.** El kit la
+diseñó permanente a propósito (con prueba que lo exigía:
+`test_baja_a_quien_pidio_la_baja_no_se_le_escribe`, comentario original
+*"la baja es para siempre... ese mensaje nuevo no la levanta"*). El cliente fue
+explícito: *"ningún cliente puede quedar como baja nunca más, eso hay que
+borrarlo"*. Le expliqué que borrarla del todo viola lo que exige Meta (hay que
+honrar el "no me escriban", si no arriesgás el número entero) y lo que dice
+nuestra propia política de privacidad (derecho a revocar consentimiento, Ley
+1581). Acordamos el punto medio, que es el que quedó implementado:
+
+- La baja sigue bloqueando que **nosotros le escribamos primero**.
+- Si el contacto **vuelve a escribir por su cuenta**, se levanta sola
+  (`levantar_baja()` en `agente/base.py`) y se le contesta.
+- Esto pasa en `agente/enviar.py`, justo donde antes solo se marcaba la baja:
+  ahora también se revisa si hay que levantarla.
+
+Actualicé las dos pruebas que fijaban la regla vieja (ahora exigen que la baja
+se sostenga *mientras el último entrante siga siendo el pedido*, no para
+siempre) y agregué `test_volver_a_escribir_levanta_la_baja`, que es la que
+protege esta decisión del cliente. **No la borres ni la relajes sin volver a
+hablarlo con él** — es una decisión de negocio explícita, no un detalle técnico.
+
+**El guion largo (—).** El cliente lo señaló él mismo: *"se ve demasiado IA"*.
+Tiene razón, es la firma más reconocible de texto generado por LLM. Fue por dos
+lados porque con Haiku 4.5 (que el cliente **decidió mantener** pese a que
+tutea peor que un modelo más grande — decisión de costo consciente, no la
+cuestiones) una instrucción de prompt sola no alcanza:
+1. Regla explícita en `agente/prompt.py` (REGLAS INNEGOCIABLES).
+2. Limpieza determinista en `agente/pasos/paso_3_responder.py`:
+   `sin_guiones_largos()`, que corre sobre el texto del modelo antes de
+   partirlo en burbujas o guardarlo como borrador. Esto es lo que garantiza
+   de verdad — el prompt es la primera línea de defensa, esto es la que no
+   falla.
+
+**Suite completa: 271 pruebas en verde** después de los cuatro arreglos.
+Commits en `whatsapp-closer-agentkit` (rama `main`, todo pusheado):
+`365e6d7` (cerrador.yaml) → `51ca541` (modo al ciclo) → `78406b1`/`c88df0b`
+(cadencia de Codex, mergeada) → `686de80` (baja) → `b68ac9a` (guion largo).
+
+**Trampa de git que casi me hace perder el push:** Codex había dejado el repo
+parado en la rama `codex/cadencia-humana` (no `main`) después de mergear su PR.
+Mis commits cayeron ahí sin que yo lo notara hasta que `git push origin main`
+falló. Se resuelve con `git pull --rebase origin main`, push a
+`codex/cadencia-humana:main`, y `git checkout main && git pull --ff-only`.
+Si a vos te pasa algo parecido, revisá `git branch` antes de asumir que estás
+en `main`.
+
+---
+
+## 3 · El sitio (`Whatsapp Esteripac` → Railway) — desplegado hoy, con dos bugs
+   de Nixpacks que no eran nuestros
+
+Ya documentado en la entrada anterior de esta bitácora (más abajo). Resumen:
+repo nuevo `github.com/jcb987/esteripac-sitio-web`, desplegado en Railway junto
+al backend, dominio `esteripac-sitio-web-production.up.railway.app`. Dos baches
+de build reales (bug de npm con dependencias opcionales de Tailwind v4, y
+Nixpacks arrancando con Node 18 cuando `@tailwindcss/oxide` exige Node ≥20),
+ninguno relacionado con código de negocio. Con eso resuelto, la URL de política
+de privacidad se cargó en Meta y la app se publicó.
+
+---
+
+## 4 · DESCUBRIMIENTO IMPORTANTE — hay un SEGUNDO sitio de Esteripac,
+   construido aparte, y el cliente no sabía que se lo estaba mostrando
+
+Carpeta hermana: `C:\...\Clientes\Esteripac\Pagina web Esteripac`. **No es el
+mismo proyecto que `Whatsapp Esteripac`.** Lo construyó Codex (hay un
+`PROMPT-CODEX.md` con instrucciones para él) y está en producción en
+**`https://esteripac.vercel.app`** — Vercel, la plataforma que la bitácora de
+`Whatsapp Esteripac` marca explícitamente como "no usar" para este cliente
+(ToS del plan Hobby prohíbe uso comercial). No sé si esa decisión aplicaba
+también a este sitio o si Codex no la vio; **no lo resolví, se lo dejé al
+cliente para otra sesión con más tiempo** — eligió explícitamente posponerlo.
+
+**Diferencias grandes con el sitio de `Whatsapp Esteripac`:**
+- Tiene login (`/ingresar` → `/panel`), portal de cliente con pedido en
+  borrador, precios de ejemplo (`precioDemo()`, sintéticos, marcados
+  "Ejemplo"). El sitio de `Whatsapp Esteripac` explícitamente **prohíbe**
+  login y carrito en fase 1 (CLAUDE.md). Son dos arquitecturas distintas de la
+  misma fase del negocio.
+- Tiene un **asistente técnico en el sitio** (botón flotante, junto al de
+  WhatsApp) con motor local determinista (`features/assistant/localEngine.ts`)
+  que filtra las 89 fichas reales sin poder inventar nada, y una plantilla ya
+  escrita y lista para activar un modelo remoto:
+  `api/chat.example.ts` usa **Anthropic/Claude** (no Gemini, pese a que el
+  comentario dice "el proveedor es intercambiable"), con el catálogo completo
+  como contexto cacheado, reglas anti-invención, y nunca da precio ni stock.
+  Repasé el archivo entero: está bien diseñado. Activar = renombrar a
+  `api/chat.ts`, `npm i @anthropic-ai/sdk`, cargar `ANTHROPIC_API_KEY` en
+  Vercel (puede ser la misma cuenta que ya usa el backend, no hace falta
+  cuenta nueva), build con `VITE_ASISTENTE_REMOTO=1`.
+- **No tiene git.** `Pagina web Esteripac` no es un repositorio — cero
+  historial, cero respaldo remoto salvo lo que haya subido a Vercel con
+  `npx vercel deploy --prod`. Solo vive en el disco (con backup de OneDrive,
+  que es sincronización, no historial). Si a alguien se le ocurre "limpiar"
+  esa carpeta, se pierde el código sin control de versiones. **Yo no inicié
+  git ahí porque no es mi carril y no quise tomar una decisión de esa
+  magnitud sin que el cliente la vea** — pero es una alarma real, avisale.
+
+**Pendiente, decisión del cliente, con dos preguntas explícitas hechas hoy y
+respondidas así:**
+1. *¿Qué hacemos con el sitio duplicado?* → "Después, por ahora solo el
+   asistente" — o sea: **no lo resolví, sigue sin resolver.**
+2. *¿Activamos el asistente con Claude (ya escrito) o investigamos un tier
+   gratis tipo Gemini?* → **Eligió investigar Gemini/gratis.** Mi
+   recomendación explícita fue Claude: ya está escrito, cuesta centavos
+   (Haiku 4.5 + caché de prompt, ~3-4 USD/mes estimado), usa la cuenta de
+   Anthropic que el cliente ya tiene activa. Le expliqué el mismo trade-off
+   de privacidad que ya habíamos hablado para la transcripción de audio:
+   tiers gratis como Gemini usan el contenido para entrenar, con revisión
+   humana, salvo que se pague. **Esta investigación quedó sin empezar** —
+   la sesión se cortó por límite de tokens antes de arrancarla. Si retomás
+   esto: la pregunta a responder es si existe alguna alternativa gratuita
+   real (sin ese trade-off) para un volumen bajo de preguntas de un sitio
+   B2B, o si conviene simplemente activar la plantilla de Claude que ya
+   existe. Mi opinión sigue siendo la segunda.
+
+---
+
+## 5 · Pendiente de notas de voz — decisión ya tomada, falta ejecutar
+
+El cliente pidió que el bot entienda audios (no que responda con audio,
+confirmado explícitamente). **No hace falta código:** `agente/pasos/
+paso_1_contexto.py` ya baja el audio y `agente/medios.py:transcribir()` ya
+llama a Whisper; sin `OPENAI_API_KEY` falla elegante (`SinMedio`) y el bot pide
+que reescriban en texto. Evalué tres proveedores con el cliente:
+
+1. **OpenAI (Whisper), pago** — la recomendada. ~USD 0,006/minuto de audio,
+   los USD 5 mínimos duran meses de volumen normal.
+2. **Gemini/tier gratis** — descartada por privacidad: son conversaciones
+   reales con NIT e institución de hospitales, exactamente lo que la política
+   de privacidad publicada promete proteger.
+3. **Whisper local en el propio Railway** — el cliente la prefería por
+   privacidad total, pero la desaconsejé con números concretos: el modelo
+   vive en RAM (~1GB) y Railway cobra por RAM consumida 24/7 (~5-10 USD/mes,
+   MÁS que OpenAI, no menos), más el riesgo de tumbar el healthcheck si no se
+   corre en un hilo aparte (Whisper es CPU-sync). El cliente aceptó el
+   argumento y **decidió ir con OpenAI.**
+
+**Estado real: no sé si el cliente ya cargó `OPENAI_API_KEY` en Railway.** Le
+di el link (`platform.openai.com/api-keys`) dos veces y expliqué cómo cargar
+saldo, pero no llegó a confirmarme "ya lo hice" antes de que la sesión se
+cortara. Si `/salud` sigue listando `OPENAI_API_KEY` en `faltan`, seguí
+pendiente vos.
+
+---
+
+## 6 · Lo que sigue pendiente, sin tocar en esta tanda
+
+- **`SLACK_WEBHOOK_URL` sigue sin cargar.** Codex dejó `canal_interno: slack`
+  configurado; sin el secreto, el paso 6 detecta la escalación y no avisa a
+  nadie. Ahora que el bot contesta solo de verdad, este hueco pesa más.
+- **`proximo_paso_fecha` sigue siendo `String(20)`**, no fecha real. Señalado
+  dos veces ya (04 y hoy). Consultar "seguimientos vencidos" sobre texto es
+  frágil.
+- **Reposición automática: no existe.** El CRM guarda `proximo_paso` y
+  `proximo_paso_fecha` pero nada los lee. Hacen falta tres cosas, en este
+  orden: (1) plantilla de WhatsApp aprobada por Meta — arrancala YA, depende
+  de los tiempos de Meta, no de nosotros; (2) el programador de recordatorios
+  hoy vive en memoria (`_RECORDATORIOS` en
+  `agente/integraciones/calendario.py`) y se borra en cada despliegue — tiene
+  que leer de Postgres; (3) reglas de negocio (a quién, cada cuánto, cuándo
+  parar) que solo Esteripac puede definir.
+- **Playbook comercial sin aprobación formal de Esteripac.** Sigue siendo
+  requisito antes de confiar el modo automático a producción real (hoy está
+  en automático, pero con tráfico de pruebas).
+- **Cuentas en nombre personal del humano**, no de Esteripac: Anthropic,
+  Railway, y ahora potencialmente OpenAI. Migrar es solo cambiar la variable
+  de entorno cuando Esteripac tenga cuenta propia — no hay transferencia real.
+
+**Carril: lo dejo libre.** Todo lo de código está commiteado y pusheado en
+`whatsapp-closer-agentkit` (`main`, `b68ac9a`) y en `esteripac-sitio-web`
+(`master`, `1ddda1a`). `Pagina web Esteripac` no la toqué — sigue como la dejó
+Codex, sin git.
+
 ### 2026-09-06 · EL AGENTE CONTESTA SOLO EN WHATSAPP — circuito cerrado
 
 **Se terminó la sección 3 del traspaso y dos bugs más que estaban debajo.**

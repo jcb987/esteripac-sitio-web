@@ -17,6 +17,68 @@ _(libre)_
 
 ---
 
+### 2026-09-08 · Invitación a reponer — mecanismo completo, esperando plantilla de Meta
+
+El cliente quiso probar la reposición y no existía nada: sólo el campo
+`consentimiento_reposicion`, que el agente capturaba y nadie leía. Construido
+en `f92ed34` + `4d969b4`, **inerte hasta que Meta apruebe la plantilla.**
+
+#### Cómo se dispara — no hay temporizador
+
+`POST /reposicion/barrer`, protegido con `PANEL_TOKEN`, y un cron externo.
+**No usé el programador del kit a propósito:** vive en memoria (cada
+despliegue borra lo pendiente) y su almacenamiento persistente está detenido
+sobre PostgreSQL, cosa que el propio `PENDIENTES.md` documenta. Un cron contra
+un endpoint sobrevive a los despliegues y se corre a mano para probar.
+
+Por defecto barre **en seco**: dice a quién le escribiría sin escribirle a
+nadie. Para que salga de verdad hay que pedir `?seco=false` explícitamente.
+
+#### La guarda que hace que esto se pueda encender
+
+**`frecuencia_estimada` no es una cadencia de contacto y no se puede usar como
+tal.** El esquema lo dice: «frecuencia expresada por el contacto, conservada en
+texto. El nombre no autoriza al agente a estimarla». En la conversación real
+que originó esto, «cada 12 horas» era cada cuánto la Clínica El Rosario
+**consume** los rollos. Traducido literal a cadencia de contacto son dos
+mensajes por día a un hospital, que es como se pierde un número por spam.
+
+Por eso `dias_minimos: 14` y `dias_maximos: 90` en `config/negocio.yaml` no
+son ajuste fino: son topes duros que ningún texto puede saltarse. «cada 12
+horas» sale 14 días; «una vez al año» sale 90.
+
+Las otras dos guardas: sin consentimiento explícito no sale (**el filtro va en
+SQL**, así ninguna rama posterior puede equivocarse; `null` no es un sí), y se
+deja de insistir después de `maximo_recordatorios: 2`.
+
+#### Lo que falta, y no depende de nosotros
+
+La plantilla aprobada por Meta. Le pasé al cliente el texto para enviar,
+categoría Utility (redactada atada a un pedido real; si la rechazan va como
+Marketing, que cuesta más por conversación). Cuando la aprueben, se carga el
+nombre en `reposicion.plantilla` y queda andando.
+
+**Detalle que casi la vuelve inútil:** la plantilla dice «responda STOP», no
+«responda BAJA». `baja` a secas ya no se detecta desde que arreglé el bug de
+«trabaja»/«rebaja» (ver entrada del 07). `stop` sí está en `PALABRAS_DE_BAJA`
+y matchea por palabra completa. Si alguien cambia el texto de la plantilla,
+que verifique contra esa lista.
+
+#### Trampa de git de este repo, que me mordió
+
+`agente/` está en `.gitignore` y sus archivos se versionan **a la fuerza**.
+Consecuencia: `git status` **no muestra archivos nuevos ahí**, y `git add
+agente/loquesea` falla salvo con `-f`. Commiteé la reposición y subió sólo el
+YAML y las pruebas — el módulo nuevo quedó afuera y el repo con una prueba
+importando algo inexistente. Producción no corrió riesgo porque el
+`servidor.py` desplegado seguía siendo el viejo. **Verificá siempre con
+`git show --stat` después de commitear en este repo.**
+
+**Estado:** 294 pruebas en verde, `origin/main` en `4d969b4`, endpoint vivo en
+producción (responde 401 sin token) y migración corrida sin crashear.
+
+---
+
 ### 2026-09-08 · TUMBÉ PRODUCCIÓN Y LA LEVANTÉ — la suite corre SQLite, Railway corre Postgres
 
 **Lee esto antes de escribir cualquier migración.** Es la lección más caras de

@@ -19,6 +19,47 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-07 · La oficina recibe una oportunidad una sola vez cuando el lead está completo
+
+**Qué cambió en el backend**
+
+- El paso 6 suma el motivo positivo `lead_completo`: se activa únicamente si
+  `institucion`, `nit` y `sku_confirmado` están presentes a la vez. Usa el
+  mismo canal interno existente y el aviso se presenta como “Oportunidad lista
+  para cerrar”, no como problema o escalación.
+- La conversación guarda `lead_completo_avisado_en` por separado de
+  `escalado_en`. El aviso positivo se marca sólo después de un envío exitoso,
+  no se repite en turnos posteriores, no calla al agente y no impide que una
+  queja, un precio fuera de rango o un pedido de humano escalen después.
+- El CRM usa `listo_para_cerrar` para el bloque comercial completo y conserva
+  `escalado` para la fricción. El contrato suma ambos valores y mantiene
+  `additionalProperties: false` en todos sus objetos.
+- La detección de presupuesto ya no interpreta los dígitos de un NIT o un SKU
+  como dinero: exige contexto monetario explícito.
+- El arnés de integración dobla las pausas humanas sin modificar producción y
+  la fixture de Slack dejó de recargar todo el agente dos veces por nodo. Esto
+  eliminó el timeout del chequeo 19. `respuesta/objecion_detectada` quedó
+  afirmada además en el primer turno de bandeja para que el censo falle rápido
+  bajo esa mutación.
+
+**Verificación y estado de publicación**
+
+- Commit local del backend: `f2c2c86 [codex] avisa leads listos para cerrar`.
+  Queda un commit por delante de `origin/main`; no hice push, por lo que
+  Railway todavía no recibió esta tanda.
+- Censo final: 51 campos, 47 afirmados, 4 no mutables y 0 indeterminados.
+  Compuerta: PASS 23/23, 276 pruebas en 23,98 s, 0 errores, 0 avisos y 0
+  salteados.
+- Sitio sin cambios funcionales: `npm test` 14/14 y `npm run build` correcto.
+- `SLACK_WEBHOOK_URL` sigue siendo la credencial operativa pendiente en
+  Railway; sin ella el gatillo queda registrado pero el aviso no puede salir.
+- Dejé fuera del commit una modificación concurrente no mía en
+  `agente/servidor.py`, que envía una pregunta de respaldo cuando falla un
+  medio. Está preservada en el árbol de trabajo para que su autor la cierre.
+
+**Estado:** implementación terminada, validada y committeada; falta revisar y
+publicar `f2c2c86` para desplegarla.
+
 ### 2026-09-07 · Cadencia humana desplegada en el agente automático
 
 **Qué cambió en el backend**

@@ -17,6 +17,38 @@ _(libre)_
 
 ---
 
+### 2026-09-08 · Validar una clave de OpenAI contra un endpoint gratis da falso positivo
+
+**Me costó un ciclo entero de diagnóstico, no lo repitas.**
+
+Las notas de voz no funcionaban. Para descartar OpenAI hice probar la clave
+contra `GET /v1/models` y volvió sin error, así que dije «la clave está bien,
+el problema es nuestro» y me fui a buscar el bug a casa. Encontré uno real (la
+pregunta de respaldo que no se mandaba, ver abajo) pero **no era la causa**.
+
+Con los diagnósticos puestos, el log dijo la verdad:
+
+```
+la transcripción falló: HTTP 429 · "type": "insufficient_quota",
+"code": "credit_balance_exhausted"
+"You have no credits remaining. Add credits to continue using the API"
+```
+
+**`/v1/models` es gratuito y responde igual con saldo cero.** Una clave válida
+sin saldo pasa esa prueba y falla en todo endpoint que cobre. Para validar una
+clave hay que pegarle a uno que cobre, o directamente mirar el saldo en
+`platform.openai.com/settings/organization/billing`.
+
+El humano creó la clave pero no cargó los USD 5. Pendiente de su lado; sin
+eso el bot pide que reescriban el audio en texto, que es el comportamiento
+correcto ante un medio que no puede procesar.
+
+**Corolario que ya rindió:** logueá el cuerpo de la respuesta del proveedor,
+no sólo el código HTTP. `HTTP 429` a secas no dice nada; el cuerpo trae
+`credit_balance_exhausted` y se acaba la discusión.
+
+---
+
 ### 2026-09-08 · Invitación a reponer — mecanismo completo, esperando plantilla de Meta
 
 El cliente quiso probar la reposición y no existía nada: sólo el campo

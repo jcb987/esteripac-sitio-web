@@ -19,6 +19,18 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-07 · Horario de atención retirado de todo el sitio
+
+- Eliminé la propiedad central `SITE.hours` y sus tres usos: encabezado móvil,
+  pie de página y página de contacto. También desapareció el rótulo “Horario
+  de atención”; no queda espacio vacío ni dato muerto.
+- Búsqueda final en `src/`, `public/` e `index.html`: cero coincidencias del
+  horario, `SITE.hours` o el rótulo.
+- Verificación: `npm test` 14/14 y `npm run build` correcto, incluidos
+  Prettier, TypeScript y Vite.
+
+**Estado:** terminado; carril libre.
+
 ### 2026-09-07 · La oficina recibe una oportunidad una sola vez cuando el lead está completo
 
 **Qué cambió en el backend**

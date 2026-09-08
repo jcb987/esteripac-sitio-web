@@ -93,12 +93,6 @@ export function Contacto() {
                   {SITE.country}
                 </dd>
               </div>
-              <div>
-                <dt className="text-xs font-semibold tracking-wide text-navy-500 uppercase">
-                  Horario de atención
-                </dt>
-                <dd className="mt-0.5 text-navy-800">{SITE.hours}</dd>
-              </div>
             </dl>
 
             <div className="mt-6 border-t border-navy-200 pt-5">

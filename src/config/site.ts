@@ -19,7 +19,6 @@ export const SITE = {
   email: 'esteripac@esteripac.co',
   /** Se muestra en el sitio; hoy apunta al número de pruebas, no al conmutador real. */
   phoneDisplay: '+57 300 000 0000', // TODO cliente
-  hours: 'Lunes a viernes, 8:00 a. m. – 5:00 p. m.',
   agency: { name: 'Corbi', url: 'https://corbi.com.co' },
 } as const;
 

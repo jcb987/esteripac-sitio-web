@@ -130,9 +130,7 @@ export function Header() {
             <WhatsAppIcon />
             Consultar con el asistente
           </ExternalButton>
-          <p className="mt-4 px-2 text-xs text-navy-500">
-            {SITE.city} · {SITE.hours}
-          </p>
+          <p className="mt-4 px-2 text-xs text-navy-500">{SITE.city}</p>
         </Container>
       </div>
     </header>

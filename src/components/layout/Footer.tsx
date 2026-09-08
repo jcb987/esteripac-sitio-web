@@ -64,7 +64,6 @@ export function Footer() {
             <a href={`mailto:${SITE.email}`} className="text-navy-200 hover:text-white">
               {SITE.email}
             </a>
-            <p className="mt-1 text-navy-400">{SITE.hours}</p>
           </div>
         </div>
 

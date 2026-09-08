@@ -17,6 +17,104 @@ _(libre)_
 
 ---
 
+### 2026-09-08 · TUMBÉ PRODUCCIÓN Y LA LEVANTÉ — la suite corre SQLite, Railway corre Postgres
+
+**Lee esto antes de escribir cualquier migración.** Es la lección más caras de
+esta tanda y te va a pasar a vos también si no la tenés presente.
+
+#### Qué pasó
+
+Tu commit `f2c2c86` (el gatillo de lead completo) estaba **solo en local, sin
+pushear**, y tu carril ya decía libre. Corrí la suite completa —276 en verde—,
+lo pusheé para que quedara respaldado, y **el despliegue quedó CRASHED**. El
+humano se enteró por el correo de Railway antes que yo. Estuvo abajo unos 5
+minutos.
+
+#### La causa, que es una trampa estructural del proyecto
+
+`_migrar_guarda_lead_completo` hacía:
+
+```sql
+ALTER TABLE conversaciones ADD COLUMN lead_completo_avisado_en DATETIME
+```
+
+**`DATETIME` es un tipo de SQLite. Postgres no lo tiene** — tira
+`type "datetime" does not exist`. Y como `migrar()` corre dentro del lifespan
+de FastAPI, el contenedor entero no levanta.
+
+**Por qué la suite no lo vio: las pruebas corren sobre `sqlite+aiosqlite://`
+y producción corre Postgres.** Cualquier migración con un tipo no portable
+pasa las 282 pruebas y tumba producción. Las columnas comerciales de tu commit
+anterior se salvaron **de casualidad**: `VARCHAR`, `TEXT` y `BOOLEAN` se
+escriben igual en los dos motores; `DATETIME` fue el primero que no.
+
+Arreglado en `8aaf8c0`: el tipo lo compila el dialecto, no se escribe a mano.
+
+```python
+tipo = DateTime(timezone=True).compile(dialect=conn.dialect)
+conn.execute(text(f"ALTER TABLE ... ADD COLUMN ... {tipo}"))
+```
+Da `TIMESTAMP WITH TIME ZONE` en Postgres y `DATETIME` en SQLite. **Usá este
+patrón para toda migración nueva; no escribas el tipo a mano.**
+
+#### Lo que aprendí y te sirve
+
+1. **La compuerta verde no dice nada sobre Postgres.** Si tocás migraciones,
+   compilá contra los dos dialectos antes de pushear — son tres líneas de
+   Python, no hace falta levantar un Postgres.
+2. **Pushear el trabajo de otro es desplegarlo.** Yo pusheé tu commit sin
+   revisar la migración línea por línea, confiando en la suite. Mi error, no
+   tuyo — el código era tuyo pero el despliegue lo disparé yo. Si vas a
+   pushear algo mío, revisá lo que toca infraestructura.
+3. **Commiteá Y pusheá.** Tu commit quedó una noche entera solo en disco.
+   Si esa carpeta se hubiera perdido, se perdía el trabajo.
+
+---
+
+### 2026-09-08 · Tres arreglos más, todos con prueba
+
+**1. Las notas de voz no respondían NADA — y no era OpenAI.** El cliente cargó
+`OPENAI_API_KEY` y seguía sin respuesta. Verifiqué la clave contra la API de
+OpenAI directo: funcionaba. El bug estaba en casa: cuando el paso 1 no puede
+procesar un medio, deja `estado: detenido` y una pregunta de respaldo en
+`salida["pregunta"]` para que el contacto reformule, pero **`_procesar()`
+descartaba el valor de retorno de `correr_ciclo()`**. La pregunta se calculaba
+y se tiraba: silencio absoluto, sin error en los logs, sin borrador en la
+bandeja.
+
+El arreglo va en `agente/servidor.py`, no en el ciclo: `correr_ciclo()` no
+manda nada **a propósito** y hay una prueba que lo exige
+(`test_medio_sin_la_clave_de_whisper_no_se_inventa_una_transcripcion` afirma
+`envios == []`). Quien manda es el servidor. Commit `8e5d233`.
+
+**2. El aviso a la oficina ahora viaja con contexto** (`b0c758d`), que era mi
+addendum que no llegaste a levantar. Ojo con esto porque **en el addendum yo
+te dije algo mal**: escribí que el paso 5 corre antes del 6 y deja `t.crm`
+armado. **Es al revés** — `ciclo.py:202-203`, el paso 6 corre primero y
+`t.crm` todavía no existe. Lo saqué de `t.comercial` y `t.wire["resumen"]`,
+que sí están disponibles. Si en algún momento leíste eso y te cuadró raro,
+era mi error.
+
+El contexto sale **solo por Slack**. La plantilla de WhatsApp interno tiene
+tres variables aprobadas por Meta y no admite una cuarta.
+
+**3. Trampa del entorno de Windows que te va a morder en las pruebas.** Mi
+primer intento de prueba importaba `agente.servidor` a nivel de módulo y
+**rompió `test_modelo.py`**, que no tiene nada que ver: falla con
+`PydanticSchemaGenerationError: Unable to generate pydantic-core schema for
+<class 'datetime.datetime'>`. Causa: importar el servidor arrastra
+`apscheduler`, cuya extensión compilada en este `.venv` tiene un ABI de
+`datetime` incompatible (son los avisos `datetime.datetime size changed` que
+la suite arrastra desde siempre). A nivel de módulo eso se carga en la fase de
+**colección** de pytest, antes de que corra cualquier prueba, y contamina todo
+lo que sigue. **Importá `agente.servidor` dentro de la función**, como ya hace
+`test_cadencia.py`. En Linux (la CI) no pasa.
+
+**Estado:** 282 pruebas en verde, `origin/main` en `b0c758d`, producción
+arriba y verificada (`/salud` → `ok`, Postgres, `modo: automatico`).
+
+---
+
 ### 2026-09-07 · Addenda a tu tarea en curso — Slack ya probado en vivo, falta contexto
 
 **Codex, esto es para vos, mientras seguís en `paso_6_handoff.py` con el

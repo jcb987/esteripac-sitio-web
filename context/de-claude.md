@@ -17,6 +17,66 @@ _(libre)_
 
 ---
 
+### 2026-09-09 · Las notas de voz funcionan · y una escalación es un silencio PERMANENTE
+
+**Verificado en vivo con el cliente:** nota de voz → Whisper transcribe → el
+agente entiende y responde en texto. Cerrado.
+
+Costó tres diagnósticos falsos y cada uno enseñó algo:
+
+1. **El saldo de OpenAI estaba en cero** (ver entrada de abajo). Ya cargado.
+2. **La pregunta de respaldo no se mandaba nunca.** Arreglado en `servidor.py`.
+3. **Y el que faltaba: la conversación estaba escalada.**
+
+#### Una escalación silencia al bot para siempre, y es a propósito
+
+`agente/ciclo.py:149`. Si `conversaciones.escalado_en` no es nulo, el ciclo
+corta antes del paso 3: no responde, no manda nada, **y no loguea nada**
+porque no falló, decidió callarse. La intención es correcta —que el bot no le
+hable por encima al humano de Esteripac que tomó la conversación—.
+
+**El problema es que es irreversible y no hay forma de deshacerlo desde el
+producto.** Cuando la oficina termina de atender a ese cliente, el bot nunca
+más lo puede atender. Un hospital que se quejó una vez queda fuera del bot
+para siempre, en silencio y sin que nadie se entere.
+
+**Es el mismo problema que la baja permanente que el cliente hizo arreglar el
+07**, en otra guarda. Y acá la solución de ese día NO aplica: no se puede
+reactivar cuando el contacto escribe, porque si el humano está a mitad de
+atender, el bot le pisa la conversación. Lo correcto es que la oficina pueda
+**devolver** la conversación al bot cuando termina: un botón en el panel o un
+endpoint. **Se lo propuse al cliente y quedó sin decidir.**
+
+Mientras tanto, para desescalar a mano desde la consola del backend:
+
+```python
+UPDATE conversaciones SET escalado_en=NULL, escalado_motivo=NULL,
+  escalado_disparador=NULL WHERE numero='<numero>'
+```
+
+#### Dos cosas más que quedaron sin arreglar
+
+- **La transcripción no se persiste en ningún lado.** `registrar_entrante()`
+  guarda el texto del mensaje **antes** de que el paso 1 transcriba, y un
+  audio llega sin campo de texto: `conversaciones.ultimo_entrante` queda en
+  `None` para siempre. Consecuencia práctica: **el panel y el CRM muestran
+  vacío el mensaje de un cliente que mandó nota de voz.** También me hizo
+  perder un diagnóstico, porque miré ese campo esperando ver la transcripción.
+- **El silencio del segundo audio seguido** es la guarda de texto repetido:
+  la pregunta de respaldo es siempre la misma cadena, así que el segundo
+  intento se bloquea. No lo toqué: la guarda hace lo correcto y el síntoma
+  desaparece cuando la transcripción funciona.
+
+#### Cómo se depura esto ahora
+
+`medio de tipo` en el buscador de logs de Railway dice si falló bajar el medio
+o transcribir, con el cuerpo de la respuesta del proveedor. Un envío exitoso
+**no escribe nada**, así que «no hay error» no prueba que haya respondido: eso
+se confirma comparando `ultimo_saliente_en` contra `last_inbound_at` en la
+base.
+
+---
+
 ### 2026-09-08 · Validar una clave de OpenAI contra un endpoint gratis da falso positivo
 
 **Me costó un ciclo entero de diagnóstico, no lo repitas.**

@@ -17,6 +17,56 @@ _(libre)_
 
 ---
 
+### 2026-09-09 · Los dos silencios, arreglados · `4b5b776`, en producción
+
+Cerrados los dos huecos que dejé abiertos en la entrada de abajo. **301
+pruebas en verde, 7 nuevas**, endpoint verificado en vivo.
+
+#### 1 · Devolver una conversación al bot
+
+`POST /api/conversaciones/{contacto_id}/devolver-al-bot` en el panel, detrás
+del `PANEL_TOKEN`. Limpia `escalado_en`, `escalado_motivo` y
+`escalado_disparador`, y devuelve cuántas conversaciones liberó (404 si no
+había ninguna escalada, para no informar un éxito falso).
+
+Va por **`contacto_id`, no por `conversacion_id`**, igual que el GET del
+panel: es lo que tiene a mano quien mira la bandeja, y un contacto puede
+tener más de una conversación.
+
+**Es explícito a propósito, y acá la solución de la baja no aplica:** no se
+reactiva cuando el contacto escribe, porque si el humano está a mitad de
+atender, el bot le pisa la conversación. Tiene que ser la oficina la que la
+devuelve cuando cerró el tema.
+
+#### 2 · La transcripción se guarda — y era peor de lo que dije
+
+`agente/base.py:anotar_transcripcion()`, llamada desde `ciclo.py` justo
+después del paso 1.
+
+Lo describí como «el panel se ve vacío». **Es más grave: rompía la memoria de
+la conversación.** `historial_reciente()` filtra `Mensaje.texto.is_not(None)`,
+así que la fila del audio quedaba fuera del historial que ve el modelo. El
+comprador decía por voz «necesito tres cajas de BT225 para la Clínica El
+Rosario», el agente contestaba bien **ese** turno, y en el siguiente no tenía
+registro de nada: volvía a preguntar lo que ya le habían dicho.
+
+Dos decisiones de implementación que conviene no deshacer:
+
+- **Se actualiza la última entrante sin texto, no se busca por `evento_id`.**
+  `correr_ciclo()` no le pasa `evento_id` a `registrar_entrante()`, así que en
+  producción llega nulo y no sirve como clave.
+- **No pisa `ultimo_entrante` si ya entró un mensaje más nuevo.** El audio se
+  procesa en segundo plano y puede llegar un texto en el medio; sin esa
+  guarda, el panel mostraría como último mensaje uno anterior.
+
+**Por qué no muevo `registrar_entrante()` después del paso 1**, que sería el
+arreglo «limpio»: si la transcripción falla, el ciclo corta antes y el
+entrante no quedaría registrado. Eso deja `last_inbound_at` sin actualizar, la
+ventana de 24 h sin abrir, y rompe la pregunta de respaldo que arreglé ayer
+(`enviar()` cortaría con «sin entrante de este contacto»).
+
+---
+
 ### 2026-09-09 · Las notas de voz funcionan · y una escalación es un silencio PERMANENTE
 
 **Verificado en vivo con el cliente:** nota de voz → Whisper transcribe → el

@@ -13,7 +13,36 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**OCUPADO · Claude · 2026-09-11 tarde · fichas técnicas del fabricante**
+
+Estoy en `whatsapp-closer-agentkit/agente/catalogo.py` y en un archivo nuevo
+`knowledge/negocio/fichas-tecnicas-fabricante.md`. Codex: `agente/catalogo.py`
+es mío hasta que libere; el resto del repo sigue disponible (incluida la
+tarea de `direccion` + `correo` en el contrato).
+
+Qué estoy haciendo y por qué (el cliente reportó que el bot mezcla procesos
+de esterilización y tiempos de lectura; quiere alimentarlo con las fichas
+técnicas de https://esteripac.co/documentos/ y pidió «ten cuidado, eso es
+supremamente delicado»):
+
+1. Bajé las 140 PDF de la biblioteca de medios de WordPress
+   (`wp-json/wp/v2/media?mime_type=application/pdf`; el portal WPFD tiene
+   las categorías vacías). 52 son fichas «Product Description»; **33 coinciden
+   con SKU del catálogo** y sólo ésas se procesan. Las 22 restantes son
+   líneas viejas u otras verticales: **no se ingieren**.
+2. Los PDF de Terragene tienen la trampa de siempre (§5: columnas y tablas
+   que el texto extraído revuelve). Por eso los leen agentes **viendo el PDF
+   como imagen**, y un segundo agente independiente intenta **refutar cada
+   dato numérico** antes de que entre. Sólo entra lo confirmado por los dos.
+3. Lo confirmado va a un archivo **separado** del catálogo generado
+   (`catalogo-esteripac.md` lo escribe `scripts/export_catalog_markdown.ts`
+   del sitio y está en `.gitignore` del backend: no se toca), fusionado por
+   SKU en `catalogo.py` al cargar.
+4. Las discrepancias entre PDF y ficha actual NO se resuelven solas: van al
+   cliente en una lista.
+
+Estado: workflow `wf_22860500-dd9` corriendo (66 agentes). Cuando termine:
+escribir el archivo, fusionar, pruebas, commit con `git add -f`.
 
 ---
 

@@ -17,6 +17,60 @@ _(libre)_
 
 ---
 
+### 2026-09-11 · Tono cálido y lista de pedido · y una tarea para Codex
+
+**Cambios de hoy en `whatsapp-closer-agentkit`**, todos en `main` y en
+producción, con 320 pruebas en verde:
+
+- `9809423` **Candado por conversación.** Dos turnos del mismo contacto corrían
+  en paralelo y contestaban al revés (visto en vivo: la respuesta a «CD28»
+  llegó antes que la de «Perdón»). Ahora se serializan por conversación, el
+  candado se toma *después* del debounce, y contactos distintos siguen en
+  paralelo. La prueba falla sin el candado y pasa con él.
+- `851446a` **Antesalas.** «Aquí está el portafolio completo:» salía como
+  burbuja propia. Se une al contenido que anunciaba.
+- `4e2d8dc` **Enlace pulsable en el celular, catálogo en el saludo, sin punto
+  al cierre.** Los tres eran el mismo problema encadenado: el punto pegado a
+  la URL rompía la detección de WhatsApp.
+- `9965157` **Tono cálido con emojis medidos, y la lista completa de datos
+  al momento del pedido.** Detalle abajo.
+
+#### Los dos momentos de la conversación
+
+El prompt ahora distingue: mientras el contacto **explora**, una sola
+pregunta por mensaje, nunca como formulario (la regla vieja sigue ahí). Cuando
+dice que **quiere ordenar**, la lista completa de datos de una vez, omitiendo
+lo que ya dijo. El playbook cambió en el mismo sentido y admite emojis con
+medida (uno por mensaje, nunca en un dato técnico). El «ni emojis» original
+era un default marcado como provisional, no una decisión de Esteripac.
+
+#### Codex: extender el contrato con `direccion` y `correo`
+
+**El cliente quiere que el bot pida también dirección y correo electrónico
+al cerrar el pedido.** Hoy no existen en el contrato de salida: si el bot los
+pidiera, se perderían en `resumen` como texto libre, que es justo el hueco
+que se cerró con el bloque `comercial`. Por eso la lista de pedido de `9965157`
+**no los pide todavía** — se agregan a la lista cuando el contrato los tenga.
+
+Es tu patrón exacto de `341f117`, con dos campos nuevos en el bloque
+`comercial`: `direccion` (texto, nullable) y `correo` (texto, nullable). Los
+29 archivos de ese commit son la lista de chequeo; los que más cuidado piden
+son los dos `wire_schema.golden.json`, `plantillas/contratos/wire_schema.py`
+y `plantillas/MANIFIESTO.json`, que van acoplados por hash. Reglas iguales a
+las de los siete campos: sólo lo que el contacto escribió, `null` si falta,
+no se pisa un valor guardado con un nulo posterior. `lead_completo()` **no
+cambia**: sigue siendo institución + NIT + SKU; dirección y correo no
+condicionan el aviso a la oficina.
+
+Cuando aterrice, avisame y sumo los dos campos a la lista de pedido del
+prompt (dos renglones en `agente/prompt.py`, sección «Cuando el contacto dice
+que quiere ordenar»).
+
+**Sin tocar:** `agente/servidor.py`, `agente/pasos/paso_3_responder.py`,
+`agente/reposicion.py`, `agente/catalogo.py`, que son los que moví hoy.
+
+---
+
 ### 2026-09-09 · Los dos silencios, arreglados · `4b5b776`, en producción
 
 Cerrados los dos huecos que dejé abiertos en la entrada de abajo. **301

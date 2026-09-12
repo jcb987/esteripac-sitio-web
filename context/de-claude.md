@@ -13,36 +13,89 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**OCUPADO · Claude · 2026-09-11 tarde · fichas técnicas del fabricante**
+_(libre)_
 
-Estoy en `whatsapp-closer-agentkit/agente/catalogo.py` y en un archivo nuevo
-`knowledge/negocio/fichas-tecnicas-fabricante.md`. Codex: `agente/catalogo.py`
-es mío hasta que libere; el resto del repo sigue disponible (incluida la
-tarea de `direccion` + `correo` en el contrato).
+---
 
-Qué estoy haciendo y por qué (el cliente reportó que el bot mezcla procesos
-de esterilización y tiempos de lectura; quiere alimentarlo con las fichas
-técnicas de https://esteripac.co/documentos/ y pidió «ten cuidado, eso es
-supremamente delicado»):
+### 2026-09-12 · Las 33 fichas técnicas de Terragene, verificadas, dentro del bot
 
-1. Bajé las 140 PDF de la biblioteca de medios de WordPress
-   (`wp-json/wp/v2/media?mime_type=application/pdf`; el portal WPFD tiene
-   las categorías vacías). 52 son fichas «Product Description»; **33 coinciden
-   con SKU del catálogo** y sólo ésas se procesan. Las 22 restantes son
-   líneas viejas u otras verticales: **no se ingieren**.
-2. Los PDF de Terragene tienen la trampa de siempre (§5: columnas y tablas
-   que el texto extraído revuelve). Por eso los leen agentes **viendo el PDF
-   como imagen**, y un segundo agente independiente intenta **refutar cada
-   dato numérico** antes de que entre. Sólo entra lo confirmado por los dos.
-3. Lo confirmado va a un archivo **separado** del catálogo generado
-   (`catalogo-esteripac.md` lo escribe `scripts/export_catalog_markdown.ts`
-   del sitio y está en `.gitignore` del backend: no se toca), fusionado por
-   SKU en `catalogo.py` al cargar.
-4. Las discrepancias entre PDF y ficha actual NO se resuelven solas: van al
-   cliente en una lista.
+El cliente reportó que el bot mezclaba procesos y tiempos de lectura entre
+indicadores, y pidió alimentarlo con las fichas técnicas de
+https://esteripac.co/documentos/ («ten cuidado, es supremamente delicado»).
+Dos commits en `whatsapp-closer-agentkit`, 328 pruebas en verde.
 
-Estado: workflow `wf_22860500-dd9` corriendo (66 agentes). Cuando termine:
-escribir el archivo, fusionar, pruebas, commit con `git add -f`.
+#### Qué hay ahora
+
+- `knowledge/negocio/fichas-tecnicas-fabricante.md` (force-tracked como el
+  catálogo): una sección `## SKU` por referencia, 33 SKU, 294 renglones de
+  datos técnicos: proceso, tipo ISO 11140, condiciones de ciclo, tiempo y
+  temperatura de lectura/incubación, organismo y esporas, viraje e
+  interpretación, compatibilidad, presentación, normas, almacenamiento,
+  advertencias. `agente/catalogo.py` lo fusiona por SKU al cargar el índice,
+  como sub-renglones de un ítem que nombra el SKU dentro de SU ficha. Si el
+  archivo no existe, el catálogo se usa tal cual.
+- `knowledge/negocio/fichas-tecnicas-informe.md`: lo que NO entró y por qué.
+  Es lo que hay que mostrarle a Esteripac.
+- `scripts/consolidar_fichas_fabricante.py`: el consolidador que produce
+  los dos archivos desde el journal del workflow. No se edita el `.md` a
+  mano; se regenera.
+- `catalogo.py`: el techo de contexto ya no corta la última ficha por la
+  mitad (suelta fichas enteras, de la menos relevante a la más) y sube a
+  24.000 caracteres para que quepan las 8 con sus datos.
+- `prompt.py`: regla nueva, «cada dato pertenece a la ficha donde está
+  escrito»: tiempos, condiciones, organismos y presentaciones no se
+  trasladan entre referencias ni procesos.
+- Prueba nueva que falla si el archivo del fabricante nombra un SKU que no
+  está en el catálogo (Terragene lista BT221, BT223 y BT95 como compatibles
+  con MiniBio; Esteripac no los vende; el consolidador los filtra).
+
+#### Cómo se leyó (para que nadie lo «mejore» con un parser)
+
+Regla 5 del proyecto: el texto extraído de los PDF de Terragene sale
+revuelto. Cada PDF lo leyó un agente **como imagen** (render con PyMuPDF),
+con página y cita por dato, y un segundo agente independiente intentó
+refutar cada dato contra el mismo PDF. 1.034 hechos confirmados, 3
+refutados, 59 discrepancias con la ficha del catálogo. Sólo entra lo
+confirmado por los dos, y si una categoría tiene discrepancia real con la
+ficha (números distintos), esa categoría queda afuera para ese SKU hasta
+que Esteripac decida. Una ausencia (el PDF no menciona FDA) no bloquea.
+
+De las 52 fichas «Product Description» que hay en la biblioteca de medios
+de WordPress, 33 coinciden con SKU del catálogo. Las otras 19 son líneas
+viejas u otras verticales y **no se ingirieron**. El PDF publicado como
+CDWAH es en realidad el de CDWAH-U (el propio extractor lo detectó): se
+escribió bajo `## CDWAH-U`; CDWAH (termo-desinfectora) no tiene ficha.
+
+#### Lo que tiene que decidir Esteripac (resumen; detalle en el informe)
+
+Discrepancias con números, que dejan la categoría afuera hasta resolver:
+CD29 condiciones (ficha «121 a 135 °C», PDF «121 °C/15 min y 134 °C/3,5
+min»), CT22 y CT50 ancho del rollo (18 vs 19 mm), KPRO2-E69 presentación
+(18 vs 50 unidades) y tiempo de lectura («1 minuto» no está en el PDF),
+IT27-5YS (bolsa vs caja), IT26-C (100 o 250; sin versión EXTENDER en el
+PDF), IT26-1YS (200 o 500), CD29 presentación, CG3 (sin rodillo incluido
+según el PDF; compatible también con CD83), KBD8948X y BD125X/1 (el PDF no
+declara EN 285 / ANSI ST79 ni los 7 kg / 4 kg), MiniPro/MiniBio (el PDF
+no nombra Bionova Cloud ni Q). Y una de texto: CD13 y CD23 dicen
+«etiquetadora automática CG3», el PDF y la propia ficha de CG3 dicen
+«manual».
+
+Las ediciones de norma (ISO 11138:2006 vs 2017) y las menciones a FDA
+difieren porque los PDF son revisiones 2017-2020, anteriores al catálogo
+general. No se «corrigen».
+
+#### Pendiente que sigue en pie
+
+- Filtro por proceso en `catalogo_relevante()` (la otra mitad del arreglo
+  contra la mezcla): hoy una consulta por vapor puede traer fichas de otros
+  procesos por coincidencia léxica. Propuesto, no hecho.
+- Saludo a contactos que vuelven («hola Jerónimo, qué gusto tenerte de
+  vuelta»); el nombre no se persiste estructuralmente todavía.
+- Conseguir el mensaje erróneo real que vieron los clientes: con lo que hay
+  en el catálogo la respuesta del pantallazo era correcta.
+- Codex: `direccion` + `correo` en el contrato (entrada de abajo).
+
+**Carril: libre.** `agente/catalogo.py` vuelve a estar disponible.
 
 ---
 

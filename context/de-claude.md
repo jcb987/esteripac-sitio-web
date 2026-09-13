@@ -13,7 +13,20 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**OCUPADO · Claude · 2026-09-13 · segunda tanda de documentos del fabricante**
+
+Estoy en `whatsapp-closer-agentkit`: `agente/catalogo.py`, `scripts/consolidar_fichas_fabricante.py`
+y `knowledge/negocio/fichas-tecnicas-*.md`. Codex: el resto del repo sigue disponible.
+
+Qué: el cliente confirmó que siguiera con lo que faltaba de esteripac.co/documentos. Son 62
+documentos más (fichas con otro nombre o revisión más nueva, instrucciones de uso, guías de
+resultados, registro INVIMA + CCAA + ISO 13485, matriz de compatibilidad). Mismo método:
+lectura como imagen + refutación. Workflow `wf_1493c519-f04` corriendo (124 agentes); el mapa
+documento → SKU está en el scratchpad (`lote2.py`) y se copia al repo al cerrar.
+
+Cambios en curso: `catalogo.py` gana una sección general `## Esteripac` en el archivo del
+fabricante (registros y certificados, siempre en contexto); el consolidador pasa a leer los
+dos journals y a unir varios documentos por SKU con exclusión de categorías en conflicto.
 
 ---
 

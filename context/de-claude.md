@@ -13,20 +13,117 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**OCUPADO · Claude · 2026-09-13 · segunda tanda de documentos del fabricante**
+_(libre)_
 
-Estoy en `whatsapp-closer-agentkit`: `agente/catalogo.py`, `scripts/consolidar_fichas_fabricante.py`
-y `knowledge/negocio/fichas-tecnicas-*.md`. Codex: el resto del repo sigue disponible.
+---
 
-Qué: el cliente confirmó que siguiera con lo que faltaba de esteripac.co/documentos. Son 62
-documentos más (fichas con otro nombre o revisión más nueva, instrucciones de uso, guías de
-resultados, registro INVIMA + CCAA + ISO 13485, matriz de compatibilidad). Mismo método:
-lectura como imagen + refutación. Workflow `wf_1493c519-f04` corriendo (124 agentes); el mapa
-documento → SKU está en el scratchpad (`lote2.py`) y se copia al repo al cerrar.
+### 2026-09-13 · Segunda tanda de fichas, reglas por los pantallazos del cliente, y memoria
 
-Cambios en curso: `catalogo.py` gana una sección general `## Esteripac` en el archivo del
-fabricante (registros y certificados, siempre en contexto); el consolidador pasa a leer los
-dos journals y a unir varios documentos por SKU con exclusión de categorías en conflicto.
+Tres commits en `whatsapp-closer-agentkit`, en `main` y en producción, **339
+pruebas en verde**: `bac480e` (prompt), `0db639e` (fichas), `65e7839` (memoria).
+
+#### 1 · Las 62 fichas restantes de esteripac.co/documentos
+
+Ya no eran sólo «Product Description»: fichas con otro nombre o revisión más
+nueva, instrucciones de uso (`IU-…`), guías de resultados, la matriz de
+compatibilidad de incubadoras, el registro INVIMA, el CCAA y el ISO 13485 del
+fabricante. Mismo método que la tanda anterior (lectura como imagen +
+refutación independiente, 124 agentes, cero fallos al final). Muestreé a mano
+tres documentos y la matriz contra el PDF (unas 25 cifras): cero errores.
+
+- **46 referencias con datos** (antes 33). Entran BT224, BT225, BT98, Photon
+  (BPH), Hyper (BHY), IC10/20, IC10/20FR, IC10/20FRLCD, PRO1 MICRO,
+  KH2X15-3.5Y/P, CDWA3, CDWU-Z y CDWU-H.
+- **Sección `## Esteripac`**, siempre en el contexto (junto a la política):
+  registro INVIMA 2020DM-0022614 (importar y vender, marcas, clase I, 10 años
+  desde el 14-dic-2020, referencias del catálogo amparadas), CCAA 0738
+  (vigente hasta 25-nov-2026) e ISO 13485 de Terragene. Cuidado: **el ISO
+  13485 publicado en el sitio venció el 20-jul-2023**; el bloque lo dice y
+  manda a consultar. Y la lista del INVIMA es de 2020: BT225, BT98, IT28, kits
+  y equipos no están; el bloque dice «puede estar amparada por una ampliación,
+  consultar, nunca negar».
+- **Enlaces por SKU** `Ficha técnica (PDF)` e `Instrucciones de uso (PDF)`
+  (URLs reales de esteripac.co). El prompt los tiene en la lista de enlaces
+  copiables. Es lo que el cliente pidió: «que el cliente decida si va a la
+  página o descarga la ficha».
+- **Matriz de compatibilidad** repartida por SKU en las dos direcciones
+  («se lee en: IC10/20FR, IC10/20FRLCD, MINIBIO» / «incuba/lee: BT102, …»).
+- El consolidador (`scripts/consolidar_fichas_fabricante.py`) ahora lee los
+  dos journals, une varios documentos por SKU, deduplica por parecido, excluye
+  la categoría entera cuando dos fuentes (o la ficha del catálogo) se
+  contradicen con números, y recorta a 2.600 caracteres por referencia. El
+  mapa documento → SKU y lo que se dejó afuera a propósito (revisiones más
+  viejas, productos que no vende Esteripac, manuales, COA, marketing) está en
+  `scripts/fichas_fabricante_lote2.py`.
+- Dos documentos rechazados por identidad, correctamente: `IT26-IT26-AD` no
+  es el IT26-C, y `Guia-de-Resultados-CT22` imprime CT20.
+
+**Para Esteripac, en `fichas-tecnicas-informe.md`** (nada de esto entró al
+bot): CT22 y CT50 son de **19 mm** en la ficha y 18 en el catálogo; el **PRO1
+MICRO** lee en 10 min (MiniPro) / 15 min (IC10/20FR) según sus fichas de 2018
+y 4 / 7 según el catálogo nuevo (lo confirma también la ficha de la IC10/20FR:
+«Protein Pen: 15 min»); el **KPRO2-E69** trae 50 tubos + 50 hisopos + 4
+humectantes, no 18; la **IC10/20** tiene 34 posiciones, no 26; **CD29**
+declara 121 °C 15 min y 134 °C 3,5 min; **CDWA3** es 35-40 kHz, no ≥ 35;
+**CG3** no incluye rodillo y etiqueta seis referencias (CD83); BT20 y BT91
+declaran 10⁵ o 10⁶ esporas.
+
+#### 2 · Los pantallazos del cliente (`Errores Whatsapp/` en el proyecto)
+
+Cinco capturas y seis notas. **Ninguna era error de datos**: el catálogo
+tenía el dato correcto y Haiku lo deformó. Confirmado contra catálogo y ficha:
+
+- «BT96 funciona en MiniBio o IC10/20» → el catálogo, la ficha y la matriz
+  dicen IC10/20FR, IC10/20FRLCD y MiniBio. Le recortó el «FR» a un SKU.
+- «permite liberar instrumental el mismo día» → beneficio inferido.
+- «los químicos no miden si la esterilización fue efectiva» → teoría general,
+  falsa para Tipo 5 y 6.
+- Respuestas largas y «clase de indicadores» en vez de referencias.
+
+Reglas nuevas en `agente/prompt.py`, cada una citando su captura, con
+`pruebas/test_respuestas_puntuales.py` para que nadie las borre: SKU letra por
+letra; no dé clase ni generalice sobre una categoría; no infiera beneficios;
+flujo de orientación (proceso → referencias con tipo y una línea → ofrecer
+ficha PDF o página); uno o dos bloques, tres sólo comparando.
+
+Nota para el cliente: dice que el BT96 «es solamente con la MiniBio»; la ficha
+de Terragene y la matriz incluyen también IC10/20FR y FRLCD. El bot sigue la
+ficha.
+
+#### 3 · Memoria del contacto («un bot sin memoria es TERRIBLE»)
+
+Diagnóstico: había memoria muda. Una sola conversación por contacto para
+siempre y los últimos 12 mensajes al modelo, pero sin nombre, sin «hace 4
+días», y el CRM (institución, NIT, ciudad, SKU, resumen) nunca se le pasaba.
+El nombre de perfil que Meta manda en `contacts[].profile.name` se tiraba.
+
+Ahora: `agente/memoria.py` arma un bloque `<contacto>` por turno (nombre de
+perfil, mensajes previos, «su último mensaje fue hace 4 días», VUELVE o sigue
+la charla, datos del lead local, resumen, próximo paso). Umbral para «volver»:
+12 horas. El prompt tiene la sección MEMORIA DEL CONTACTO: saludar por nombre a
+quien vuelve, retomar lo pendiente, no pedir lo que ya dio. Columna
+`contactos.nombre` con migración (tipo compilado por el dialecto, como las
+otras). El nombre viaja por `deps.nombre_contacto` desde el servidor, **no por
+`entrada.mensaje`**: el contrato de entrada es cerrado y no se tocó.
+
+Límite conocido: el nombre es el de perfil de WhatsApp (puede ser «Clínica X»
+o un apodo); el prompt lo cubre. Un nombre dicho en el chat no se guarda
+estructurado: eso sería un campo `nombre` en el contrato (Codex, si lo hacés
+con `direccion` y `correo`, sumalo).
+
+#### Codex
+
+- Sigue pendiente tu tarea de `direccion` + `correo` en el contrato (entrada de
+  abajo). Si agregás `nombre_contacto` en la misma pasada, `memoria.py` lo
+  toma con dos líneas.
+- No toqué el contrato ni `plantillas/`.
+
+#### Pendiente
+
+- Que Esteripac resuelva la lista del informe (19 mm, PRO1 MICRO, KPRO2-E69,
+  IC10/20). Cuando decidan, se corrige el catálogo del sitio y se regenera.
+- Probar en vivo las tres cosas con el número de prueba: saludo al volver,
+  flujo proceso → referencias → enlace, y el enlace a la ficha PDF.
 
 ---
 

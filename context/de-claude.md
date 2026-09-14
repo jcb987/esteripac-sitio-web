@@ -17,6 +17,46 @@ _(libre)_
 
 ---
 
+### 2026-09-14 · Ensayo contra el modelo real, Haiku vs Sonnet, y lo que salió de ahí
+
+Con la `ANTHROPIC_API_KEY` en el `.env` local corrí las cinco situaciones del cliente
+contra Haiku 4.5 y Sonnet 5 (`ensayo_vivo.py`: base en memoria, transporte falso,
+mismo ciclo y prompt de producción). Commit `82612ff` en `main` y producción, 349
+pruebas en verde. Codex cerró el panel (`15d275f`: nombre de perfil, «hace X»,
+botón devolver al bot, dirección y correo en leads).
+
+**Lo que falló y era mío (recuperación):** «indicadores químicos → vapor» traía
+biológicos y la Photon dos veces. Causa: «químicos» no coincidía con «químico»
+y el puntaje no sabía de proceso ni categoría. `agente/catalogo.py`: raíz de
+plurales, +12 por proceso y por categoría, dedupe por SKU, y un índice de todas
+las referencias del proceso mencionado (una línea cada una) para poder listar
+aunque sólo quepan cinco fichas con detalle.
+
+**Lo que fallaba en los dos modelos:** «el BT225 está amparado por el INVIMA»
+(falso) aunque la nota decía que no. Lección: una nota al final no gana contra
+un marco positivo («marcas Bionova…, lista de referencias»). La lista de
+referencias amparadas ya no va al bot (está en el informe) y la regla es
+uniforme y va primero: por referencia individual, siempre «lo confirmo con la
+oficina». Verificado con los dos modelos después del cambio.
+
+**Lo que fallaba sólo en Haiku, pese a reglas explícitas:** tutea («tu correo»),
+inventa beneficios reformulados («la mayoría de servicios ya usa», «no requiere
+equipo adicional») y escribe `**negritas**` de Markdown. Lo tercero se corrige
+en código (`negritas_de_whatsapp` en el paso 3); lo demás se reforzó en el
+prompt, pero Sonnet 5 lo hizo bien sin refuerzo. **Recomendación dada a
+Jerónimo: pasar a Sonnet 5** (variable `MODELO=claude-sonnet-5` en Railway,
+sin cambio de código). Tokens reales medidos con `count_tokens` en un turno
+típico: Haiku 15.1k de entrada (6.6k cacheables), Sonnet 19.0k (7.9k
+cacheables; su tokenizador cuenta ~25 % más). Costo por mensaje del cliente:
+Haiku ≈ 1,1-1,7 ¢, Sonnet ≈ 2,8-4,3 ¢.
+
+**Hueco nuevo cerrado:** video, documento, sticker, ubicación y contacto
+llegaban sin texto y el modelo contestaba a la nada; ahora pregunta de respaldo
+sin llamar al modelo (`paso_1_contexto.py`). Una reacción (👍) se ignora en
+`meta.py`. Pruebas en `test_medios_no_legibles.py`.
+
+---
+
 ### 2026-09-13 (noche) · Carpeta «Errores Whatsapp» cerrada, adjunto de ficha, auditoría del árbol
 
 Jerónimo pidió que la carpeta `Errores Whatsapp/` del proyecto (cinco capturas y seis

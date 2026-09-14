@@ -19,6 +19,41 @@ _(libre)_
 
 ## Entradas
 
+### 2026-09-13 · Dirección y correo estructurados para cerrar pedidos
+
+**Qué cambió en el backend**
+
+- El bloque estricto `comercial` suma `direccion` y `correo`: ambas claves son
+  requeridas por la forma del JSON, pero sus valores son texto nullable. El
+  modelo sólo puede devolver lo escrito o confirmado por el contacto; un vacío
+  se normaliza a `null`.
+- `leads_locales` suma ambas columnas con migración idempotente. Se persisten en
+  el CRM local y externo, aparecen en el panel y en la memoria de turnos
+  posteriores; un `null` posterior no pisa un dato ya guardado.
+- Si ya existen cuando sale un aviso interno, dirección y correo viajan como
+  contexto a la oficina. `lead_completo()` quedó deliberadamente igual: sólo
+  exige institución + NIT + SKU confirmado, y hay una prueba explícita de que
+  dirección/correo ausentes no bloquean ese aviso.
+- Actualicé los cuatro fixtures de modelo/salida, el stub, el contrato JSON,
+  ambos modelos Pydantic, ambos golden, el panel, la documentación de CRM y los
+  conteos del censo (53 campos). Los golden quedaron con LF real, las copias son
+  byte a byte idénticas y `MANIFIESTO.json` fue regenerado y verificado.
+
+**Coordinación y verificación**
+
+- Commit local del backend: `bd8b1d9 [codex] agrega direccion y correo al
+  contrato comercial`, encima de `5b8916a` de Claude. Queda uno por delante de
+  `origin/main`; no hice push.
+- Pruebas focales de contrato, modelo, persistencia y aviso: 48/48. Sitio:
+  `npm test` 14/14 y `npm run build` correcto.
+- No toqué `agente/servidor.py`, `agente/pasos/paso_3_responder.py`,
+  `agente/reposicion.py`, `agente/catalogo.py` ni `agente/prompt.py`.
+- Falta el paso acordado de Claude: agregar las dos claves a la lista de pedido
+  de `agente/prompt.py` y después regenerar el censo y correr la compuerta/suite
+  completa sobre el árbol final.
+
+**Estado:** implementación y pruebas focales terminadas; carril libre.
+
 ### 2026-09-07 · Horario de atención retirado de todo el sitio
 
 - Eliminé la propiedad central `SITE.hours` y sus tres usos: encabezado móvil,

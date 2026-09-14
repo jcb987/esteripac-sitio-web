@@ -489,12 +489,12 @@ El golden del wire schema y su manifiesto usan LF canónico para que sus hashes
 sean idénticos en Windows y Linux.
 
 El contrato de salida incorpora un bloque `comercial` estructurado con
-institución, NIT, SKU confirmado, cantidad, ciudad, frecuencia estimada y
-consentimiento de reposición. El bloque siempre está presente y cada valor es
-nullable: sólo se completa con algo que el contacto haya dicho o confirmado.
-`cantidad` y `frecuencia_estimada` conservan el texto y la unidad declarados;
-el paso 5 los persiste en columnas de `leads_locales` sin borrar con nulos un
-dato válido de un turno anterior.
+institución, NIT, SKU confirmado, cantidad, ciudad, dirección de entrega,
+correo, frecuencia estimada y consentimiento de reposición. El bloque siempre
+está presente y cada valor es nullable: sólo se completa con algo que el
+contacto haya dicho o confirmado. `cantidad` y `frecuencia_estimada` conservan
+el texto y la unidad declarados; el paso 5 los persiste en columnas de
+`leads_locales` sin borrar con nulos un dato válido de un turno anterior.
 
 Cuando `institucion`, `nit` y `sku_confirmado` están presentes a la vez, el paso
 6 envía al canal interno un aviso positivo con motivo `lead_completo` y el CRM
@@ -521,7 +521,8 @@ No existe un único archivo llamado «contexto del bot». Hay tres capas:
    ese SQLite local no es la base de producción.
 3. **Memoria comercial:** `leads_locales` conserva etapa, score, temperatura,
    resumen, próximo paso y fecha, más institución, NIT, SKU confirmado,
-   cantidad, ciudad, frecuencia estimada y consentimiento de reposición.
+   cantidad, ciudad, dirección de entrega, correo, frecuencia estimada y
+   consentimiento de reposición.
    Opcionalmente se puede reflejar en una tabla `leads` de Supabase, pero esa
    integración no está configurada y una tabla de Supabase no equivale por sí
    sola a un CRM comercial completo.

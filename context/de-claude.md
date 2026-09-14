@@ -19,6 +19,19 @@ _(libre)_
 
 ### 2026-09-14 · Ensayo contra el modelo real, Haiku vs Sonnet, y lo que salió de ahí
 
+**Cierre del día (mediodía).** Jerónimo puso `MODELO=claude-sonnet-5` en Railway;
+`/salud` de producción reporta `modelo: claude-sonnet-5`, `version: 5d7b3f9`.
+Contexto recortado para compensar el costo (`5d7b3f9`): 5 fichas con detalle,
+bloque del fabricante de 1.900 caracteres, almacenamiento es lo último que se
+recorta, una referencia nombrada en el mensaje actual pesa 80 puntos. Medido:
+~9.000 tokens variables por turno, ≈ 2,5 ¢ por mensaje con caché.
+
+**Pendiente, decidido por Jerónimo que espera hasta terminar las pruebas:** el
+crédito de prueba de Railway marcaba «23 days or $4.30 left» el 14/09. Cuando
+se agote, el servicio se apaga. Pasar a plan Hobby ($5/mes) con tarjeta de
+Esteripac antes de esa fecha.
+
+
 Con la `ANTHROPIC_API_KEY` en el `.env` local corrí las cinco situaciones del cliente
 contra Haiku 4.5 y Sonnet 5 (`ensayo_vivo.py`: base en memoria, transporte falso,
 mismo ciclo y prompt de producción). Commit `82612ff` en `main` y producción, 349

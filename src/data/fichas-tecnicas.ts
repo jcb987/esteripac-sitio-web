@@ -5,7 +5,7 @@
 export const FICHAS_TECNICAS_PDF: Readonly<Record<string, string>> = {
   CD16: 'https://esteripac.co/wp-content/uploads/2023/03/Product-Description-CD16-rev.3_compressed.pdf',
   KBD8948X:
-    'https://esteripac.co/wp-content/uploads/2023/03/Product-Description-BD8948X-rev.9_compressed.pdf',
+    'https://esteripac.co/wp-content/uploads/2023/03/Product-Description-KBD8948X-rev.10_compressed.pdf',
   'CDWAH-U':
     'https://esteripac.co/wp-content/uploads/2023/03/Product-Description-CDWAH-U-Indicator-Holder-rev.1_compressed.pdf',
   CG3: 'https://esteripac.co/wp-content/uploads/2023/03/Product-Description-CG3-rev.9_compressed.pdf',

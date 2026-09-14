@@ -168,6 +168,14 @@ siempre la misma posición relativa**: comparar dos referencias nunca debe
 obligar a cambiar de estructura mental. `SpecRow` es el único componente que
 dibuja una fila — no crees otro.
 
+La acción de cada ficha enlaza también la ficha técnica del fabricante cuando
+la fuente la declara. `src/data/fichas-tecnicas.ts` es un artefacto generado
+desde `../whatsapp-closer-agentkit/knowledge/negocio/fichas-tecnicas-fabricante.md`
+mediante `npm run generate:fichas`; no se mantiene a mano. La fuente actual
+declara 44 enlaces para sus 46 referencias: `CDWU-H` sólo tiene instrucciones
+de uso e `IC10/20FRLCD` sólo consta en la matriz de compatibilidad, por lo que
+esas dos páginas no inventan un enlace.
+
 ---
 
 ## 5. Pipeline de datos — LEE ESTO ANTES DE TOCAR EL CATÁLOGO
@@ -183,6 +191,7 @@ resuelve con un glob, no lo referencies por nombre literal.
 |---|---|---|
 | Datos técnicos (SKU, condiciones, normas, compatibilidad) | **Escritos a mano** tras leer el catálogo | `src/data/products/*.ts` |
 | Fotos y virajes de color | **Generados** por script | `src/data/extracted.json` + `public/img/` |
+| Fichas técnicas públicas del fabricante | **Generadas** desde la base de conocimiento del agente | `src/data/fichas-tecnicas.ts` |
 
 **No intentes auto-parsear las especificaciones del PDF.** El folleto está
 maquetado a 2-3 columnas y el orden del texto en el PDF no coincide con el
@@ -306,7 +315,8 @@ No bloquean la demo, pero condicionan el lanzamiento:
       usar imagen de producto del proveedor es práctica estándar, pero está sin
       confirmar por escrito.
 - [ ] PDFs de IFU, certificados y COA para poblar `documents[]` (hoy `[]` en
-      todas las fichas; la interfaz ya los contempla).
+      todas las fichas; las fichas técnicas públicas viven por separado en el
+      mapa generado y la interfaz ya contempla los demás documentos).
 - [ ] Registros INVIMA por producto.
 - [ ] Agenda real de capacitaciones (la de `/formacion` está marcada en
       pantalla como ejemplo).
@@ -470,7 +480,11 @@ memoria reciente, búsqueda determinista del catálogo, Claude Haiku 4.5,
 bandeja protegida de conversaciones y leads, envío idempotente, opt-out,
 ventana de 24 horas y despliegue por Docker en Railway. El despliegue ya está
 conectado a Meta y los pasos 3, 4 y 5 operan en automático. El panel permanece
-como observabilidad, no como cola de aprobación obligatoria.
+como observabilidad, no como cola de aprobación obligatoria. La lista y el
+detalle identifican al contacto por su nombre de perfil y número, muestran la
+antigüedad del último mensaje entrante y permiten devolver al bot una
+conversación escalada desde la propia interfaz. La tabla de leads expone
+también dirección y correo cuando fueron declarados.
 
 La escalación interna usa **Slack**. `config/negocio.yaml` declara
 `canal_interno: slack`; sólo falta cargar `SLACK_WEBHOOK_URL` como secreto en

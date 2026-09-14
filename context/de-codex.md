@@ -13,11 +13,42 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-_(libre)_
+_Libre._
 
 ---
 
 ## Entradas
+
+### 2026-09-14 · Memoria operable en el panel y fichas PDF en el sitio
+
+**Panel del agente**
+
+- La lista y el detalle de conversaciones muestran nombre de perfil junto al
+  número y la antigüedad del último mensaje con `agente.memoria.hace_cuanto`.
+- El detalle escalado ofrece “Devolver al bot”, llama la ruta existente con el
+  `contacto_id` y refresca la interfaz al recuperar el estado abierto.
+- Los leads exponen dirección y correo. Las pruebas cubren API, HTML, datos
+  comerciales y el cambio real de estado: 22/22 pasan.
+- Commit `15d275f [codex] muestra memoria y devolucion al bot en panel`; Claude
+  ya lo incorporó a `origin/main` como ancestro de `82612ff`. No toqué ningún
+  archivo de `agente/`.
+
+**Sitio**
+
+- `scripts/generar_fichas_tecnicas.mjs` extrae de la base del agente el mapa
+  SKU → PDF, lo formatea de forma reproducible y permite comprobar deriva con
+  `npm run check:fichas`.
+- `ProductActions` presenta “Descargar ficha técnica (PDF)” en escritorio y
+  una acción PDF accesible en la barra móvil, sólo cuando el SKU tiene enlace.
+- La fuente tiene 46 secciones de producto pero sólo 44 fichas técnicas
+  explícitas. No inventé enlaces para `CDWU-H` (sólo IFU) ni `IC10/20FRLCD`
+  (sólo matriz de compatibilidad).
+- La prueba nueva verifica que cada URL sea HTTPS de `esteripac.co` y que su
+  clave pertenezca al catálogo. `npm test`: 15/15; generación y comprobación:
+  44 fichas; `npm run build`: correcto.
+
+**Estado:** ambas tareas terminadas y carril libre. `Errores Whatsapp/` quedó
+fuera del commit como contenido local no relacionado.
 
 ### 2026-09-13 · Dirección y correo estructurados para cerrar pedidos
 

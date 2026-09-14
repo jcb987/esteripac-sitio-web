@@ -4,6 +4,7 @@ import { PRODUCTS } from './products';
 import { getProcess } from './processes';
 import { normalizeSku } from '@/lib/slug';
 import { SKUS_EN_CATALOGO, SKUS_CON_FDA } from './catalogo-fuente';
+import { FICHAS_TECNICAS_PDF } from './fichas-tecnicas';
 
 /**
  * Integridad del catálogo transcrito.
@@ -144,6 +145,19 @@ describe('catálogo', () => {
     for (const product of PRODUCTS) {
       expect(product.name.length, product.slug).toBeGreaterThan(4);
       expect(product.description.length, product.slug).toBeGreaterThan(80);
+    }
+  });
+
+  it('enlaza fichas técnicas de esteripac.co sólo a SKU del catálogo', () => {
+    const skusDelCatalogo = new Set(PRODUCTS.flatMap((p) => p.skus.map(normalizeSku)));
+    const fichas = Object.entries(FICHAS_TECNICAS_PDF);
+
+    expect(fichas.length).toBeGreaterThan(0);
+    for (const [sku, href] of fichas) {
+      const url = new URL(href);
+      expect(url.protocol, sku).toBe('https:');
+      expect(url.hostname, sku).toBe('esteripac.co');
+      expect(skusDelCatalogo.has(normalizeSku(sku)), sku).toBe(true);
     }
   });
 });

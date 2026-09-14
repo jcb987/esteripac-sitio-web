@@ -17,6 +17,71 @@ _(libre)_
 
 ---
 
+### 2026-09-13 (noche) · Carpeta «Errores Whatsapp» cerrada, adjunto de ficha, auditoría del árbol
+
+Jerónimo pidió que la carpeta `Errores Whatsapp/` del proyecto (cinco capturas y seis
+notas del cliente) quedara corregida entera y desplegada, y después «que revisaras
+absolutamente todo el código a fondo». Tres commits más en `main` y en producción
+(`5b8916a`, `cd80980` y el `bd8b1d9` de Codex), **344 pruebas en verde**, `/salud`
+en producción reporta `version: cd80980`.
+
+#### Mapa queja → corrección (todo en producción)
+
+- BT96 «en la IC10/20» → regla SKU letra por letra (`bac480e`).
+- «Permite liberar el mismo día» → regla no inferir beneficios.
+- «Los químicos no miden efectividad» → regla no dar clase.
+- «Indicadores químicos para vapor» contestado con las dos líneas → flujo
+  proceso → referencias con tipo y una línea → ofrecer ficha o página.
+- Respuestas extensas → uno o dos bloques, tres sólo comparando.
+- Enlazar página y ficha técnica → `Ficha en el sitio` + `Ficha técnica (PDF)`.
+- Memoria → bloque `<contacto>` (`65e7839`).
+- **«Que el mismo bot mande la ficha ahí mismo» → `agente/adjuntos.py`
+  (`5b8916a`)**: si el enlace que escribió el modelo es uno de los PDF del
+  archivo del fabricante (nunca otro), el paso 3 lo manda además como
+  documento de WhatsApp (`type: document`, `link` + `filename`). Sin tocar el
+  contrato. Verificado que esteripac.co sirve los PDF como `application/pdf`
+  a cualquier cliente, que es lo que Meta necesita.
+
+#### Hueco encontrado auditando, que la prueba con doble no veía
+
+El prompt pide poner la URL del PDF sola en su bloque. Esa burbuja sale como
+texto y deja el hash de la URL como último saliente; el adjunto se registraba
+con el mismo cuerpo y el guardia «es el mismo texto que ya se mandó» lo
+bloqueaba: **el PDF no habría salido nunca.** Arreglado en `enviar()`: el
+adjunto se anota como «[archivo adjunto] Ficha técnica BT96.pdf» (distinto
+hash, y el modelo ve en el turno siguiente que el archivo ya fue). Prueba por
+el camino real en `test_adjuntos.py` que falla con el hueco y pasa sin él.
+Lección para las dos bitácoras: **una prueba que dobla `enviar` no prueba
+el envío.**
+
+#### Lo demás de la auditoría
+
+- Debounce: `dataclasses.replace` conserva `nombre` → el nombre de perfil
+  sobrevive al agrupado. Nombre guardado desde el primer mensaje. CRM local
+  escrito en cada turno antes del corte por modo → `<contacto>` tiene datos.
+- Codex cerró `direccion` + `correo` (`bd8b1d9`); yo los sumé a la lista de
+  pedido del prompt y a las etiquetas de `memoria.py` (Codex los había puesto
+  en `CAMPOS_DE_MEMORIA` de `base.py`, pero `memoria.py` tiene su propia
+  lista de etiquetas: quedaban leídos y no mostrados).
+- Compuerta: las rutas `devolver-al-bot` y `reposicion/barrer` faltaban en
+  la tabla de `blueprint/00-contrato.md` § 3 (12 rutas, 13 métodos ahora).
+  Censo de campos corrido sobre el árbol final.
+- `/salud` reporta `version` (SHA de Railway): sin eso no se distingue un
+  despliegue nuevo de uno que falló y dejó el anterior.
+- Sin `.dockerignore` y con `COPY . .`: la imagen lleva `knowledge/` y los
+  módulos nuevos.
+
+#### Lo que NO pude hacer desde acá
+
+Correr las cinco situaciones del cliente contra el modelo real: la
+`ANTHROPIC_API_KEY` local está vacía (la real vive en Railway). El script
+está listo en el scratchpad de la sesión (`ensayo_vivo.py`: base en memoria,
+transporte falso, mismo ciclo y prompt de producción); con la llave en el
+`.env` local corre en un minuto y muestra burbuja por burbuja y archivo por
+archivo. Es la única verificación que falta antes de que el cliente pruebe.
+
+---
+
 ### 2026-09-13 · Segunda tanda de fichas, reglas por los pantallazos del cliente, y memoria
 
 Tres commits en `whatsapp-closer-agentkit`, en `main` y en producción, **339

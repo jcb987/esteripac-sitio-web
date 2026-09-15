@@ -438,9 +438,14 @@ cortes de sesión igual que este proyecto sobrevive con `context/`.
 - **Proveedor:** Meta Cloud API directa. Railway aloja el backend; no es un
   proveedor de WhatsApp. Se descartó agregar una pasarela mientras Meta cubra
   el caso de uso, para evitar otro costo y otro punto de falla.
-- **Modelo:** Claude Haiku 4.5, elegido por calidad conversacional y costo. El
-  contexto del catálogo se selecciona localmente por consulta para no enviar
-  sus 91 fichas completas en cada turno.
+- **Modelo:** GPT-5 de OpenAI desde el 2026-09-15, elegido con el ensayo de
+  `scripts/ensayo_vivo.py` (cinco situaciones reales del cliente): misma calidad que
+  Claude Sonnet 5 a un 40 % menos por mensaje (~1,5 ¢), y muy por encima de Haiku 4.5
+  en obediencia (usted, sin beneficios inventados, INVIMA sin afirmar por referencia).
+  Se elige con la variable `MODELO`: `gpt-…` va por Chat Completions de OpenAI con
+  función forzada (`agente/modelo.py:ModeloOpenAI`, por el cliente HTTP único, requiere
+  `OPENAI_API_KEY`); `claude-…` va por el SDK de Anthropic. El pin de `PINES.md` sigue
+  siendo el de Anthropic: es el default reproducible del kit y el respaldo si OpenAI falla.
 - **Número de pruebas:** un WhatsApp Business (app) que el cliente ya tiene.
   Antes de automatizar hay que confirmar en Meta si puede usar **Coexistence**;
   no se inicia una migración destructiva del número sin esa comprobación.

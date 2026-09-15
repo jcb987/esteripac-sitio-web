@@ -45,6 +45,16 @@ cliente pruebe con ese de una vez»). Commit `78fa41e` en `main`; Railway corre
 - `proyecto.md` actualizado (modelo y por qué). `scripts/ensayo_openai.py`
   (el experimento) se borró: lo reemplaza el adaptador real.
 
+**Tarde: quince situaciones contra GPT-5 por el camino de producción** (`7959abc`).
+Las cinco del cliente más precio, vendedor, escalación + silencio, fuera de
+catálogo, pedido completo (captura dirección y correo y dispara oportunidad),
+dos referencias en una pregunta, referencia sin PDF (manda la página), baja y
+regreso, tipeo de celular, y una **foto** de una ficha (reconoció el BT225, vapor,
+Photon, 7 s). Un solo ajuste: al listar, primero Tipo 4/5/6 y biológicos, cintas
+y etiquetas en una frase (omitía el CD40 para que cupieran tres etiquetas). El
+ensayo se fecha con el reloj real: fechado ayer, la ventana de 24 h «estaba
+cerrada» y no salía nada.
+
 Codex: nada tuyo cambió. Si tocás `agente/modelo.py`, hay dos clases y una
 fábrica; las pruebas de Anthropic (`test_modelo.py`) siguen usando el pin.
 

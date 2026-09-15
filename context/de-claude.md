@@ -17,6 +17,39 @@ _(libre)_
 
 ---
 
+### 2026-09-15 · Migración a GPT-5, en producción
+
+Jerónimo decidió migrar a GPT-5 («40 % más barato, y estamos en pruebas: que el
+cliente pruebe con ese de una vez»). Commit `78fa41e` en `main`; Railway corre
+`modelo: gpt-5` (`/salud` lo confirma). 355 pruebas, compuerta 23/23 con censo.
+
+- `agente/modelo.py`: `ModeloOpenAI`, Chat Completions con la función
+  `emitir_respuesta` forzada (mismo esquema del contrato), prompt de sistema
+  primero, imágenes como data URL, `reasoning_effort: low`,
+  `max_completion_tokens: 4000` (el razonamiento cuenta en la salida). Va por el
+  cliente HTTP único (`CLIENTE`), así que el transporte falso de las pruebas lo
+  captura. Rechazo (`content_filter`) o respuesta sin función levantan error.
+  La fábrica elige por prefijo de `MODELO`: `gpt-…` OpenAI, `claude-…` Anthropic.
+  **El pin de `PINES.md` sigue en Anthropic**: es el default reproducible del
+  kit y el camino de vuelta si OpenAI falla (cambiar la variable y listo).
+- `scripts/ensayo_vivo.py` deja pasar `api.openai.com` a la red y captura el
+  resto; con `MODELO=gpt-5` ensaya el adaptador de producción.
+- Regla nueva en el prompt: no repetir una referencia ya explicada cuando piden
+  «el otro». Verificado con GPT-5: ante «¿y el otro cuál es?» después de BT98 y
+  BT96, ofrece el BT91 (antes repetía el BT96). Las otras cuatro situaciones,
+  correctas.
+- `pruebas/test_modelo_openai.py` (6), exigido por la compuerta. Trampa que me
+  comió media hora: el fixture tiene que tomar `agente.http` fresco adentro,
+  porque otras pruebas recargan `agente.*` y parchear el módulo viejo deja al
+  adaptador hablando con la red.
+- `proyecto.md` actualizado (modelo y por qué). `scripts/ensayo_openai.py`
+  (el experimento) se borró: lo reemplaza el adaptador real.
+
+Codex: nada tuyo cambió. Si tocás `agente/modelo.py`, hay dos clases y una
+fábrica; las pruebas de Anthropic (`test_modelo.py`) siguen usando el pin.
+
+---
+
 ### 2026-09-14 · Ensayo contra el modelo real, Haiku vs Sonnet, y lo que salió de ahí
 
 **Cierre del día (mediodía).** Jerónimo puso `MODELO=claude-sonnet-5` en Railway;

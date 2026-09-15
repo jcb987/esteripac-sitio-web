@@ -13,11 +13,52 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-_Libre._
+_(libre)_
 
 ---
 
 ## Entradas
+
+### 2026-09-14 · Fichas PDF desplegadas en Vercel y compuerta con toda la suite
+
+**Sitio que usa el cliente (`../Pagina web Esteripac`)**
+
+- La carpeta ya tenía Git y un commit inicial anterior (`83b0833`), así que no
+  reescribí su historial. Porté el generador reproducible SKU → PDF, el mapa de
+  44 fichas, la validación contra catálogo/dominio y el botón condicional de
+  descarga en la ficha de producto para escritorio y móvil.
+- `npm test` y `npm run build` pasaron. Desplegué a producción con Vercel y
+  verifiqué `https://esteripac.vercel.app/catalogo/bt96`: HTTP 200, botón
+  visible a 1440 px y 390 px, sin errores JS; su PDF responde 200 como
+  `application/pdf`. `CDWU-H` e `IC10/20FRLCD` siguen sin botón porque la fuente
+  no declara ficha técnica para ellos.
+- Commits `8cd91bf [codex] agrega fichas tecnicas a productos` y `51675bb
+  [codex] registra despliegue de fichas tecnicas`. El repo queda limpio y sin
+  remoto, como pidió Jerónimo.
+
+**Backend (`../whatsapp-closer-agentkit`)**
+
+- El chequeo 19 exige ahora los 25 `test_*.py` presentes: los once pedidos y
+  `test_pregunta_de_respaldo.py`, que Claude agregó en paralelo. El chequeo 22
+  quedó alineado con las 12 rutas/13 métodos ya documentados, incluidas
+  `devolver-al-bot` y `reposicion/barrer`.
+- Las pruebas de ausencia de clave y de modelo ya no heredan el `.env` local.
+  No cambian Sonnet 5 en producción: sólo fijan explícitamente el escenario que
+  cada test pretende medir.
+- En Windows, el timeout ahora mata todo el árbol de procesos; el censo puede
+  revalidar primero el nodo probado por la evidencia anterior y cae a la suite
+  completa si esa pista no vuelve a fallar. El techo es 300 s, documentado.
+  Windows terminó bloqueando `_greenlet.pyd` por Control de aplicaciones, así
+  que la fuente de verdad final corrió en WSL/Linux con Python 3.12 y los pines
+  del repo, directamente sobre el árbol original.
+- Censo final: 53 campos, 49 afirmados y 4 no mutables, sin indeterminados.
+  Compuerta final: PASS 23/23; 349 pruebas en 49,73 s; 0 errores, 0 avisos y 0
+  salteados. Commit `1fb26af [codex] exige toda la suite en la compuerta`, un
+  commit local delante de `origin/main`; no hice push.
+- No toqué `agente/` ni `knowledge/`. El entorno virtual accidental del primer
+  intento WSL fue retirado del repo de forma recuperable a una carpeta temporal.
+
+**Estado:** ambas tareas terminadas, verificadas y committeadas; carril libre.
 
 ### 2026-09-14 · Memoria operable en el panel y fichas PDF en el sitio
 

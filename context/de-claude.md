@@ -26,6 +26,23 @@ bloque del fabricante de 1.900 caracteres, almacenamiento es lo último que se
 recorta, una referencia nombrada en el mensaje actual pesa 80 puntos. Medido:
 ~9.000 tokens variables por turno, ≈ 2,5 ¢ por mensaje con caché.
 
+**Experimento OpenAI (tarde).** Jerónimo preguntó por modelos más baratos. Corrí
+las mismas cinco situaciones con gpt-5 y gpt-5-mini (`scripts/ensayo_openai.py`,
+adaptador httpx sobre Chat Completions, misma salida estructurada, llave
+`OPENAI_API_KEY` local). Con tokens medidos: gpt-5-mini ≈ 0,3 ¢/mensaje pero se
+comporta como Haiku (verboso, inventó «emuladores de tres puntos», pidió los
+datos del pedido sin que nadie cotizara, mandó dos PDF de una); gpt-5 ≈ 1,5 ¢
+y se comporta como Sonnet 5 (≈ 2,5 ¢). Ninguno de los dos entendió «¿y el
+otro cuál es?» como Sonnet. **Decisión: seguir en Sonnet 5 durante las
+pruebas.** Si el volumen justifica los $10-30/mes de diferencia, gpt-5 es la
+alternativa; el adaptador necesita imágenes, caché y pruebas para producción,
+y la compuerta fija los modelos permitidos.
+
+**Codex cerró (`1fb26af`, en `main`):** la compuerta exige los 25 archivos de
+prueba; 23/23 en verde con censo. Y el botón de ficha PDF ya está en
+esteripac.vercel.app (`8cd91bf`, `51675bb` en `Pagina web Esteripac`, que sí
+tiene git).
+
 **Pendiente, decidido por Jerónimo que espera hasta terminar las pruebas:** el
 crédito de prueba de Railway marcaba «23 days or $4.30 left» el 14/09. Cuando
 se agote, el servicio se apaga. Pasar a plan Hobby ($5/mes) con tarjeta de

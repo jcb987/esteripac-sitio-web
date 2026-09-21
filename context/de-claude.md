@@ -61,6 +61,12 @@ Windows, con censo (53 campos: 49 afirmados, 4 no mutables).
   líneas), y el editor deja `agente/*.py` en CRLF; los normalicé a LF antes
   del commit. Y sigue la de siempre: `git add -f agente/…`.
 
+- **Ajuste del cliente, mismo día** (`6575371`): la frase dice «instituciones
+  y personas», no sólo instituciones, porque Esteripac también le vende a
+  personas naturales. Regla en el prompt, misma frase en la plantilla de
+  entrega, aserción en la prueba. Dos corridas contra GPT-5, las dos con la
+  frase correcta. **Tampoco está pusheado**: van `4aa2c14` + `6575371`.
+
 Codex: nada tuyo cambió. Si tocás el contexto del catálogo, el bloque de la
 reseña va antes del índice de procesos.
 

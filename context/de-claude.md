@@ -17,6 +17,51 @@ _(libre)_
 
 ---
 
+### 2026-09-21 (tarde) · Los dos barridos que faltaban, desplegados
+
+Luz verde de Jerónimo para las dos plantillas restantes con los días propuestos
+(3 y 5, un solo aviso). Commit `5aac10b` en el repo del bot, **pusheado**
+(Railway despliega solo; antes `/salud` ya mostraba `6575371`, la capa A de la
+reseña). 391 pruebas; compuerta 23/23 PASS con censo.
+
+- `agente/seguimientos.py`: `barrer_pendientes` y `barrer_entregas`, calcados
+  del mecanismo de `reposicion.py` (cron externo, seco por defecto, sin
+  plantilla no manda y lo dice en `omitidos`). Un `_barrer` común recibe la
+  selección, la guarda, las variables y la marca de cada uno.
+- **Guardas.** Pendiente: etapa `calificado`, institución o SKU, sin aviso
+  previo, entre `dias_sin_escribir: 3` y `dias_maximos: 30` de silencio. El
+  techo es la guarda del primer día del cron: sin él se le escribiría a todo
+  el historial. Entrega: `entregado_en` puesto por la oficina, sin
+  `resena_avisada_en`, 5 días. **Una sola reseña por contacto en toda su
+  vida**: una segunda entrega mueve la fecha pero no la vuelve a pedir. Las
+  dos: ni escalados ni bajas, cruzados contra `conversaciones` porque el lead
+  no sabe de eso (`_estado_de_conversaciones`, toma el último entrante de
+  todas las conversaciones del contacto).
+- **La plantilla de entrega lleva UNA variable** (cantidad + SKU), sin
+  institución: la persona natural que compra sin institución también la
+  recibe. Sin SKU no se arma (hueco). La de pendiente usa una frase fija
+  («indicadores para su proceso») cuando no hubo referencia.
+- `agente/base.py`: tres columnas nuevas con migración por dialecto (el
+  `DATETIME` a mano ya tumbó producción una vez). Helpers de selección en
+  SQL y marcas por fecha.
+- Rutas: `POST /pendiente/barrer`, `POST /entrega/barrer` (token) y
+  `POST /api/conversaciones/{id}/entregado` (404 sin lead). Botón «Marcar
+  pedido entregado» en el detalle del panel; una vez marcado muestra la fecha
+  y el botón desaparece. La ruta devuelve la fecha **como quedó guardada**
+  (UTC sin zona), no el reloj: el detalle la muestra igual.
+- Registradas en `blueprint/00-contrato.md` § 3 (15 rutas, 16 métodos),
+  `RUTAS_DEL_CONTRATO` del auditor y `RUTAS_CON_TOKEN` de `test_panel.py`.
+- `PLANTILLAS-META.md`: las tres con estado «listo, espera el nombre», y las
+  tres rutas del cron para cuando existan.
+
+**Lo que sigue depende de Meta, no del código:** número de producción y
+verificación del negocio → someter las tres plantillas juntas → cargar los
+nombres en `negocio.yaml` → probar cada barrido en seco → programar el cron.
+
+Codex: `panel/panel.py` ganó una ruta y un botón; `agente/base.py` ganó
+columnas en `Lead` y helpers al final del bloque de reposición. Nada tuyo se
+movió.
+
 ### 2026-09-21 · Reseña en Google al recibir el pedido; plantillas de Meta redactadas
 
 Jerónimo preguntó dos cosas: si el bot les escribió a los testers días

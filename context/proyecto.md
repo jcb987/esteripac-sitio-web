@@ -563,11 +563,17 @@ cuando exista el número de producción.
 
 ### CRM y recordatorios de reposición — pendiente explícito
 
-Hoy ya se capturan de forma estructurada los datos mínimos del comprador y se
-pueden guardar «próximo paso» y «próxima fecha», pero **todavía no existe un
-flujo de reposición que despierte solo y vuelva a contactar al cliente**. El
-recordatorio de citas existente no debe confundirse con reposiciones; además,
-su scheduler persistente está detenido sobre PostgreSQL en el blueprint actual.
+Hoy ya se capturan de forma estructurada los datos mínimos del comprador y
+existen **tres barridos construidos e inertes**: reposición
+(`agente/reposicion.py`), pedido pendiente y entrega + reseña
+(`agente/seguimientos.py`). Los tres se disparan desde afuera con el token del
+panel (`POST /reposicion/barrer`, `/pendiente/barrer`, `/entrega/barrer`), en
+seco por defecto, y **no mandan nada hasta que `negocio.yaml` tenga el nombre
+de una plantilla aprobada por Meta**. Las plantillas están redactadas en
+`PLANTILLAS-META.md` del repo del bot y se someten juntas cuando exista el
+número de producción. No hay temporizador en proceso: el scheduler del kit
+vive en memoria y su almacenamiento persistente está detenido sobre PostgreSQL;
+el cron es externo.
 
 La solución profesional debe usar como fuente de verdad el CRM que Esteripac
 ya tenga. Si no tiene uno, hay que decidir entre ampliar el panel como CRM

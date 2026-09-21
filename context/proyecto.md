@@ -546,6 +546,21 @@ No existe un único archivo llamado «contexto del bot». Hay tres capas:
    integración no está configurada y una tabla de Supabase no equivale por sí
    sola a un CRM comercial completo.
 
+### Reseña en Google después de la entrega
+
+El agente no sabe cuándo se concluye una venta: cotización, factura y entrega
+pasan por fuera del chat. Lo que sí ve es al cliente volviendo a escribir para
+decir que le llegó el pedido. Ahí agradece y deja en esa misma respuesta el
+enlace al formulario de reseña de Google (`config/negocio.yaml` →
+`resena_google`, formulario directo por Place ID; regla «POSVENTA» en
+`agente/prompt.py`). Una sola vez por conversación, a todo el que recibió (sin
+filtrar por satisfacción: Google lo prohíbe), nunca ante un reclamo ni antes de
+que el pedido haya llegado. Funciona dentro de la ventana de 24 horas y no
+depende de Meta. La versión programada para quien no escribe (marca «entregado»
+en el panel + plantilla) está redactada en `PLANTILLAS-META.md` del repo del
+bot, junto con la de reposición y la de pedido pendiente, para someterlas juntas
+cuando exista el número de producción.
+
 ### CRM y recordatorios de reposición — pendiente explícito
 
 Hoy ya se capturan de forma estructurada los datos mínimos del comprador y se

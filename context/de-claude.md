@@ -17,6 +17,53 @@ _(libre)_
 
 ---
 
+### 2026-09-21 · Reseña en Google al recibir el pedido; plantillas de Meta redactadas
+
+Jerónimo preguntó dos cosas: si el bot les escribió a los testers días
+después (no: `reposicion.plantilla: null` y sin cron, por diseño, ver 08), y
+que al concluir una venta salga un enlace para reseña en Google. Commit
+`4aa2c14` en el repo del bot, **sin push** (el modo automático lo bloqueó;
+queda para que lo suba Jerónimo). 359 pruebas; compuerta **23/23 PASS** en
+Windows, con censo (53 campos: 49 afirmados, 4 no mutables).
+
+- **El bot no sabe cuándo se concluye una venta**: cotización, factura y
+  entrega pasan por fuera. Lo que sí ve es al cliente volviendo a escribir
+  para decir que le llegó. Ese es el disparador («POSVENTA» en
+  `agente/prompt.py`): agradece y deja el enlace en esa misma respuesta,
+  dentro de la ventana de 24 h, sin plantilla. Una vez por conversación;
+  ante faltante o daño manda el reclamo (escala), no la reseña; nunca
+  mientras explora ni mientras se toman los datos del pedido.
+- `config/negocio.yaml` → `resena_google`. **El enlace que pasó Jerónimo
+  (`share.google/eHofRjVvN7wxj9VRj`) apunta a UNA reseña ya publicada, no al
+  formulario.** Saqué el Place ID de la ficha de Google Search
+  (`ChIJGZTIpLSXRo4RD7XK-kOPb4A`, Esteripac, Cra 9C #17-86, La Ceja) y el
+  enlace `search.google.com/local/writereview?placeid=…` abre directo las
+  cinco estrellas; comprobado en el navegador. Si cambian de sede en Google,
+  cambia el ID.
+- `agente/catalogo.py:enlace_de_resena()` y bloque «## Reseña en Google» en
+  el contexto, al lado de «Catálogo en línea». Mismo patrón que `sitio`: el
+  prompt sólo copia enlaces etiquetados, así que sin el bloque no ofrece
+  nada, y la etiqueta entró a la lista de enlaces copiables.
+- `pruebas/test_resena_google.py` (4), en `ARCHIVOS_DE_PRUEBA` de la compuerta.
+- **Ensayo contra GPT-5 real** (guion en scratch, no en el repo): enlace sólo
+  al «ya nos llegó, todo completo»; no al segundo «gracias»; no ante «faltó
+  una caja» (escaló); no a quien explora y agradece. 7 de 7.
+- `PLANTILLAS-META.md` (raíz del repo del bot): las tres plantillas listas
+  para someter **juntas** cuando exista el número de producción —
+  `reposicion_esteripac` (ya construida), `pedido_pendiente_esteripac`
+  (recuperar al que abandonó: es el que de verdad sirve para «qué no le
+  gustó») y `entrega_resena_esteripac` (botón de URL estática al
+  formulario). Las dos últimas necesitan código: otro criterio de selección
+  en el barrido y, para la de entrega, una marca «entregado» desde el panel.
+- **Trampas de esta sesión:** el heredoc de Bash des-escapa las barras
+  invertidas dentro de scripts Python (una aguja con barra-n literal se
+  convierte en salto de línea y no matchea nunca: usar el editor para esas
+  líneas), y el editor deja `agente/*.py` en CRLF; los normalicé a LF antes
+  del commit. Y sigue la de siempre: `git add -f agente/…`.
+
+Codex: nada tuyo cambió. Si tocás el contexto del catálogo, el bloque de la
+reseña va antes del índice de procesos.
+
 ### 2026-09-15 · Migración a GPT-5, en producción
 
 Jerónimo decidió migrar a GPT-5 («40 % más barato, y estamos en pruebas: que el

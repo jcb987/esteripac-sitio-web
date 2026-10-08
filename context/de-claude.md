@@ -13,7 +13,101 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**2026-10-08 · Claude · «No me llega el aviso de oportunidad» — instrumentar el paso 6**
+
+Jerónimo prueba desde WhatsApp y no le llega el aviso de compra/oportunidad.
+
+**Descartado: la lógica funciona.** Ensayo contra GPT-5 real (guion en scratch)
+con los datos repartidos en tres turnos y también todo en uno: el modelo
+reemite institución/NIT/SKU cada turno, `lead_completo` da verdadero y el aviso
+sale con contexto completo. Producción corre `5aac10b` y `SLACK_WEBHOOK_URL`
+está cargado (no figura en `faltan` de `/salud`).
+
+**El defecto real es que un fallo del aviso es invisible.** `avisar_interno`
+devuelve `Resultado(False, motivo)` —p. ej. `slack 404: no_service` si el
+webhook fue revocado— y nadie lo mira: `paso 6` queda «fallado» en la salida
+del webhook, el 200 sale igual y `REGISTRO` sólo tiene un `.exception` para
+excepciones. Ni logs, ni panel, ni `/salud`.
+
+Quedan dos candidatos y hay que poder distinguirlos desde afuera:
+(a) el webhook de Slack está cargado pero muerto o apunta a otro canal;
+(b) la guarda `conversaciones.lead_completo_avisado_en` ya se consumió en una
+prueba anterior (se avisa UNA vez por conversación, y nunca más).
+
+Plan:
+1. Log de nivel WARNING cuando el paso 6 no logra avisar, con el motivo.
+2. `POST /interno/probar` (token del panel): manda un aviso de prueba por el
+   mismo camino (`avisar_interno`) y devuelve `enviado` + `motivo`. Responde
+   en un comando si (a) es el problema, sin tocar a ningún cliente.
+3. El panel muestra `lead_completo_avisado_en` en el detalle → responde (b).
+4. Pruebas, compuerta, tabla de rutas del contrato.
+
+**RESUELTO y ampliado tras las capturas de Jerónimo (demo fallida con Álvaro).**
+Lo que mostraron: Slack recibió avisos el 11 y el 15/09 desde 573128348555, y hoy
+un pedido completo (San Miguel, NIT 800 207 914, BT225 x4, dirección, correo) no
+generó NADA. Causa principal: la guarda del 15/09 quemada para siempre.
+
+Hecho en esta tanda (todo sin commit todavía):
+1. **Guarda con huella.** `conversaciones.lead_completo_huella` + migración;
+   `salida.huella_de_oportunidad()` = nit|institucion|sku normalizados (la cantidad
+   NO entra: el modelo la reescribe y avisaría dos veces lo mismo). El paso 6
+   saltea sólo si la huella coincide. Otro SKU = pedido nuevo = avisa.
+2. **Escalación ampliada de 3 a 45 entradas**, todas FRASES (una palabra suelta
+   como «comercial» marca a quien dice «trabajo en el área comercial»; «teléfono»
+   a quien pide el de Esteripac). Validado: 11/11 de las formas de pedir una
+   persona escalan, 0/20 falsos positivos sobre mensajes normales de compras.
+3. **`texto_de_traspaso()`**: la frase fija «Gracias por contarnos lo ocurrido»
+   era para una queja y ahora saldría a quien sólo pide un asesor. Tres casos:
+   pide persona / reclama la espera / queja. Nombra el SKU ya tomado para que el
+   cliente no crea que tiene que repetir todo.
+4. **Tono.** Reglas nuevas contra el acta de datos, el plural corporativo
+   («dejamos registrada», «procedemos»), la barra, las promesas de plazos
+   ajenos, y bloques de una o dos frases.
+5. Logs ERROR en paso 6, `POST /interno/probar`, «Oportunidad avisada» en el panel.
+
+**CORRECCIÓN IMPORTANTE para el próximo que lea esto:** el `.env` local tiene
+`MODELO=claude-sonnet-5` y producción corre `gpt-5`. Todo ensayo que no fije
+`MODELO=gpt-5` está probando el modelo equivocado. Lo de arriba se verificó con
+`MODELO=gpt-5 .venv/Scripts/python.exe scripts/...`. GPT-5 obedece las reglas de
+calidez en las palabras y las rompe en la forma: ahí está el «responde seco».
+
+**Barrido de 65 agentes sobre el subsistema de avisos** (workflow
+`oportunidades-perdidas`): 60 hallazgos, 18 sobrevivieron refutación adversarial.
+El peor, y la CUARTA causa del fallo, que yo no había visto:
+
+**`lead_completo` se medía contra `t.comercial`, que es sólo lo que el modelo
+repitió en ESE turno.** El prompt le prohíbe completar datos que no estén en la
+conversación actual, así que el comprador que dio institución y NIT hace diez
+mensajes y confirma la referencia al final sale del turno con `institucion:
+null` y la oportunidad no se detecta nunca. Mi propio ensayo lo mostraba
+(«CD23 → paso 6 salteado · no hay motivo») y no lo leí. Arreglado con
+`salida.acumular_comercial()` + `Turno.comercial_acumulado` + `paso_6.ficha(t)`:
+el turno manda, el CRM tapa los huecos. NO toca `t.comercial` ni el contrato.
+Verificado con MODELO=gpt-5: el segundo pedido ahora genera su propio aviso.
+
+También arreglados del barrido:
+- `_avisar_por_slack` sin `try/except`: un corte de red subía como excepción y
+  se llevaba el turno entero; el cliente quedaba sin respuesta por un aviso
+  interno que no le importa.
+- `marcar_escalado` corría aunque el aviso hubiera fallado: el bot se callaba Y
+  la oficina no se enteraba, así que nadie iba a pulsar «Devolver al bot». El
+  contacto quedaba mudo para siempre por un webhook caído. Ahora sólo se escala
+  si el aviso salió; si no, el agente sigue y reintenta al mensaje siguiente.
+
+**CONFIRMADOS DEL BARRIDO QUE NO TOQUÉ** (cambian comportamiento, esperan a
+Jerónimo; informe completo en `scratchpad/confirmados.md` de esa sesión):
+1. `cancelar` y `descuento` (entradas VIEJAS de `escalacion`) silencian al bot
+   ante «¿cómo cancelo?» y «¿hacen descuento por volumen?».
+2. La rama `ya_escalado` de `ciclo.py:184` corre el paso 5 con un wire fijo:
+   cada mensaje de un escalado pisa resumen, próximo paso, score y temperatura
+   del lead con constantes. Al devolverlo al bot, el modelo lee «Próximo paso:
+   Atención humana» como memoria y vuelve a derivar. El arreglo propuesto es
+   saltear el paso 5 en esa rama (la etapa ya la escribió el turno que escaló).
+3. El panel no lista oportunidades no avisadas ni permite reenviar un aviso.
+4. `_WEBHOOKS_SALIENTES` es una lista en memoria que no dispara nada.
+
+**Pendiente:** confirmar con el `PANEL_TOKEN` de producción (no lo tengo; el
+local está vacío) cuál de las cuatro causas mató el aviso de la demo.
 
 ---
 

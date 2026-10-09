@@ -8,3 +8,7 @@ dist-ssr
 # Python del script de extracción de assets
 __pycache__/
 *.pyc
+
+# Preferencias personales de Claude Code en esta maquina (reglas de permisos).
+# `.claude/settings.json` si se versionaria; este no: es de quien opera la maquina.
+.claude/settings.local.json

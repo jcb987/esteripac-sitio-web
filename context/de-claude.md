@@ -2416,3 +2416,49 @@ confirmación con Terragene sobre el uso de las fotografías del catálogo.
   Funciona bien y no toca el Chrome del usuario.
 - Los heredocs de bash se truncan alrededor de las ~150 líneas en este entorno.
   Para archivos largos, escribe con la herramienta de escritura de archivos.
+
+---
+
+## Carril: propiedad de la WABA tras la coexistencia (investigación en docs de Meta)
+
+Pregunta: si un Solution Partner / Tech Provider hace el onboarding de
+coexistencia del 315 248 8282, ¿Esteripac conserva el agente que ya habla
+DIRECTO con la Cloud API, o el número queda atado al partner?
+
+**Respuesta verificada: el negocio es el dueño. No queda atado al partner.**
+
+Frase textual de Meta, en Embedded Signup → Overview:
+"Business customers onboarded via Embedded Signup own all of their WhatsApp
+assets, which they can use with other Meta solutions."
+https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/overview/
+
+Y específicamente para coexistencia, en "Onboard WhatsApp Business app users":
+- "Both accounts remain associated with the client's Meta business portfolio."
+- "Embedded Signup does not create a partner-specific Messaging account for
+  coexistence." Meta convierte la cuenta existente de WhatsApp Business en una
+  Messaging account retrocompatible y **conserva el ID de cuenta existente**
+  (devuelto en `waba_id`).
+- Lo que hace Meta con el partner es **compartirle** los dos activos (la
+  WhatsApp account del número y la Messaging account convertida), no
+  transferírselos.
+https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users/
+
+Consecuencia para este proyecto: **el `meta.py` que ya existe en
+whatsapp-closer-agentkit se conserva.** No hay que reescribir la capa de
+mensajería para hablarle a un intermediario. El partner es un trámite de
+alta, no un peaje permanente.
+
+**Lo que NO está documentado (no asumir):** que dos apps puedan estar
+suscritas a los webhooks de la misma cuenta a la vez. El endpoint
+`subscribed_apps` devuelve un arreglo paginado y Meta permite compartir la
+WhatsApp account con hasta 5 Solution Partners y la Messaging account con
+hasta 2 partners, lo que lo sugiere — pero no hay una frase que lo afirme.
+Hay que probarlo, o quedarse con la app propia como única suscrita.
+
+**Trampa operativa:** un número en coexistencia **no se puede dar de baja con
+la Deregister API**. La desconexión se hace desde la app de WhatsApp Business
+del celular: Ajustes → Cuenta → Plataforma Business → Desconectar cuenta.
+Dispara un webhook `account_update` con evento `PARTNER_REMOVED`.
+
+**Fecha dura:** Embedded Signup v2 y v3 se deprecan el **15 de octubre de 2026**.
+Quien haga el onboarding tiene que ir con v4.

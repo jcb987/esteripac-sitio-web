@@ -13,70 +13,60 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-08 (tarde) · Claude · El filtro inteligente de traspaso**
-
-Jerónimo: «con 3 frases vamos a quedar con miles de chats sin escalar». Tiene
-razón: ninguna lista cubre el español real. Construido y probado, SIN COMMIT
-todavía (suite 455 verde; compuerta corriendo).
-
-**Qué se hizo.** El modelo ahora puede pedir el traspaso él mismo, con tres
-campos nuevos en el contrato (`traspaso_necesario`, `traspaso_urgente`,
-`traspaso_motivo`). La lista de 45 frases queda como PISO determinista —no
-puede regresar— y el criterio del modelo es el techo. **Dos niveles, elegidos
-por Jerónimo:** `traspaso` avisa y el agente SIGUE atendiendo (así nadie queda
-esperando si la oficina tarda); `traspaso_urgente` sí lo calla, y es sólo para
-reclamo, riesgo clínico, despacho, garantía o pedido explícito de persona.
-
-**El prompt NO enumera casos: da una regla que generaliza** («¿quién puede
-contestar bien esto? si la respuesta depende de plata, inventario, papeles,
-logística, un compromiso o un criterio que no está en el catálogo, avisá») más
-diez familias de ejemplo. Enumerar 80 reglas habría inflado el prompt y
-degradado la obediencia sin cubrir lo que nadie anticipó.
-
-**La exhaustividad se prueba, no se enumera:** `scripts/bateria_traspaso.py`,
-49 escenarios contra el modelo real, ninguno escrito en la lista de frases.
-Primera corrida 44/49. Corregidos a partir de ahí: precio (preguntar cuánto
-vale es señal de compra y no avisaba), producto fuera de catálogo (decía «no
-manejamos» y el catálogo NO es todo lo que Esteripac vende), y el que insiste
-con una pregunta ya hecha. Dos «divergencias» resultaron correctas y se
-corrigió la expectativa con su motivo escrito: vida útil y la norma de la
-Bowie-Dick las responde el catálogo entero.
-
-**Evidencia para Álvaro:** «si compro 20 cajas me hacen descuento» SILENCIA al
-bot hoy, por la palabra vieja `descuento`. Es el mejor cliente posible y el
-agente se calla. Jerónimo lo iba a confirmar con él; `cancelar` igual
-(«¿cómo cancelo un pedido?»).
-
-**Archivos:** `plantillas/contratos/wire_schema.py` (+ copia en `agente/`,
-goldens y MANIFIESTO regenerados), `agente/salida.py` (las constantes de los
-dos niveles viven acá para que `enviar.py` las use sin ciclo de imports),
-`paso_6_handoff.py`, `ciclo.py`, `prompt.py`, `enviar.py` (ROTULOS: Oportunidad
-/ Para la oficina / URGENTE), `panel/panel.py` (motivo y disparador visibles).
-Fixtures: los tres campos son obligatorios, así que hubo que actualizar el stub
-canónico y los JSON que llevan una salida del modelo (OJO: `caso-01.salida-
-esperada.json` es la salida del CONTRATO, no del modelo; ahí NO van).
-
-**De la reunión con Álvaro (Fathom 191008131, 2026-10-08):**
-1. **PDF de pre-orden para trazabilidad INVIMA** — requisito regulatorio.
-   Álvaro: «qué cliente fue, qué pidió y la fecha». Sin precios. Marta lo
-   archiva en el sistema de gestión de calidad. PENDIENTE DE CONSTRUIR.
-2. La mayoría de las órdenes llegan por WhatsApp, no por correo (lo confirmó
-   Marta). Un canal de Slack para las del correo quedó como idea.
-3. Catálogo pendiente de datos de Álvaro: `papel sellado`, `MW SOIL`,
-   `LUPALET` (chinos, sin código de fabricante, la lupa sin foto) y el
-   `KPCD-110` mal clasificado (es biológico, no químico). NO están en el repo.
-4. Meta bloqueado: el 315-248-8282 ya está en otra cuenta Business. Migración
-   con las credenciales de Álvaro, reunión 2026-10-09 a las 2:30 PM.
-
-**Aprender de Marta — verificado, y hay un bloqueo:** `agente/proveedores/
-meta.py` sólo lee `valor["messages"]`, que son los ENTRANTES. Lo que Marta
-escribe desde el WhatsApp de la oficina no llega a la base: hoy no hay de dónde
-aprender. Caminos: (1) destilar sus chats pasados a un fragmento de estilo
-—estático, entra en el prefijo cacheado, costo por mensaje sin cambios—;
-(2) suscribir `message_echoes` en Meta (pedirlo mañana en la migración);
-(3) un destilador semanal. Esperando que Jerónimo consiga los chats.
+_(libre)_
 
 ---
+
+### 2026-10-08 (noche) · Pre-orden en PDF, catálogo desde el sitio, y el plan de Meta
+
+Tanda larga. Todo desplegado; producción corre `76c6e30`.
+
+**Pre-orden en PDF para trazabilidad INVIMA** (`c739b9e`). Álvaro: «qué cliente
+fue, qué pidió y la fecha». Sin precios. Se genera en Python puro —
+`requirements.txt` está hasheado contra la plantilla del kit, así que una
+dependencia nueva rompía el chequeo 02—. Se guarda el DATO en `preordenes`, no
+el archivo: el disco de Railway es efímero. Guardar dos veces no pisa lo
+archivado. El enlace va firmado con HMAC del `PANEL_TOKEN` porque un Incoming
+Webhook de Slack no puede subir archivos y a Marta no se le puede pedir que
+pegue un token. **Rotar `PANEL_TOKEN` invalida los enlaces viejos de Slack.**
+Verificado abriéndolo en Chrome: renderiza con acentos y eñes.
+**Falta configurar `PUBLIC_BASE_URL` en Railway** si `RAILWAY_PUBLIC_DOMAIN` no
+viene solo; sin eso el aviso sale sin el enlace y queda una advertencia.
+
+**El catálogo del agente ahora sale del sitio** (`76c6e30` + `c30d8ce` en
+`esteripac-web`). Venía del folleto de Terragene y ofrecía referencias que
+Esteripac no importa; Álvaro lo vio en la demo. 95 referencias; entran BT23/6,
+KPCD110, PH1870-100mL, PAPEL-SELLADO, LUPA-LED y MW-SOIL, sale IRCG3.
+**Las 89 descripciones redactadas se conservaron intactas** y las 6 nuevas se
+escribieron en la misma voz: Jerónimo fue explícito en que el tono importa
+(«estamos tratando con personas»). Viven en `scripts/descripciones-bot.json`
+del repo del sitio.
+
+**DOS TRAMPAS QUE ENCONTRÉ Y VALEN PARA EL PRÓXIMO:**
+1. Los encabezados del catálogo NO son libres: `agente/catalogo.py` busca
+   «### Proceso: X» y los cruza con `PROCESOS_POR_PALABRA`. Escribirlos
+   distinto **deshabilita la búsqueda por proceso en silencio**. Lo delató un
+   ensayo contra GPT-5, no la suite: preguntaron por líquidos y el bot dijo
+   «lo confirmo con la oficina» teniendo el BT23/6.
+2. La regla del 15/09 mandaba los dispositivos de desafío al final junto con
+   cintas y etiquetas, y por eso el KPCD110 no aparecía. Un kit trae el
+   indicador adentro: va en el primer grupo. Corregido, más la regla de
+   ofrecer todo lo del proceso sin favoritos.
+
+**Corregí dos cosas que yo mismo había dicho mal:** que al bot le faltaban 16
+productos (eran 6; mi grep usó los nombres de los PDF y el catálogo los escribe
+distinto), y que conectarse al número no traería el historial de Marta (con
+coexistencia sí trae 180 días).
+
+**META — decidido y escrito en `COEXISTENCE.md` del repo del bot.** Regla 0 en
+`proyecto.md`: Marta no pierde WhatsApp en el celular, y la migración clásica
+queda prohibida. Sólo coexistencia, que **únicamente se activa por el flujo de
+un socio** («You must already be a Solution Partner or Tech Provider», textual).
+Lo bueno, verificado contra páginas de Meta de jun/ago 2026: el socio es una
+puerta y no un peaje — la cuenta queda de Esteripac, que después crea su app,
+su token y su webhook, y el agente le sigue hablando directo a Meta sin cuota.
+Reunión de migración el 09/10 a las 2:30 PM: prioridad es la verificación de
+empresa de Esteripac, y **no se toca «desconéctalo de esa cuenta»**.
 
 ### 2026-10-08 · El pedido que no llegó a Slack: cuatro causas, no una
 

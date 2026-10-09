@@ -13,7 +13,68 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**2026-10-08 (tarde) · Claude · El filtro inteligente de traspaso**
+
+Jerónimo: «con 3 frases vamos a quedar con miles de chats sin escalar». Tiene
+razón: ninguna lista cubre el español real. Construido y probado, SIN COMMIT
+todavía (suite 455 verde; compuerta corriendo).
+
+**Qué se hizo.** El modelo ahora puede pedir el traspaso él mismo, con tres
+campos nuevos en el contrato (`traspaso_necesario`, `traspaso_urgente`,
+`traspaso_motivo`). La lista de 45 frases queda como PISO determinista —no
+puede regresar— y el criterio del modelo es el techo. **Dos niveles, elegidos
+por Jerónimo:** `traspaso` avisa y el agente SIGUE atendiendo (así nadie queda
+esperando si la oficina tarda); `traspaso_urgente` sí lo calla, y es sólo para
+reclamo, riesgo clínico, despacho, garantía o pedido explícito de persona.
+
+**El prompt NO enumera casos: da una regla que generaliza** («¿quién puede
+contestar bien esto? si la respuesta depende de plata, inventario, papeles,
+logística, un compromiso o un criterio que no está en el catálogo, avisá») más
+diez familias de ejemplo. Enumerar 80 reglas habría inflado el prompt y
+degradado la obediencia sin cubrir lo que nadie anticipó.
+
+**La exhaustividad se prueba, no se enumera:** `scripts/bateria_traspaso.py`,
+49 escenarios contra el modelo real, ninguno escrito en la lista de frases.
+Primera corrida 44/49. Corregidos a partir de ahí: precio (preguntar cuánto
+vale es señal de compra y no avisaba), producto fuera de catálogo (decía «no
+manejamos» y el catálogo NO es todo lo que Esteripac vende), y el que insiste
+con una pregunta ya hecha. Dos «divergencias» resultaron correctas y se
+corrigió la expectativa con su motivo escrito: vida útil y la norma de la
+Bowie-Dick las responde el catálogo entero.
+
+**Evidencia para Álvaro:** «si compro 20 cajas me hacen descuento» SILENCIA al
+bot hoy, por la palabra vieja `descuento`. Es el mejor cliente posible y el
+agente se calla. Jerónimo lo iba a confirmar con él; `cancelar` igual
+(«¿cómo cancelo un pedido?»).
+
+**Archivos:** `plantillas/contratos/wire_schema.py` (+ copia en `agente/`,
+goldens y MANIFIESTO regenerados), `agente/salida.py` (las constantes de los
+dos niveles viven acá para que `enviar.py` las use sin ciclo de imports),
+`paso_6_handoff.py`, `ciclo.py`, `prompt.py`, `enviar.py` (ROTULOS: Oportunidad
+/ Para la oficina / URGENTE), `panel/panel.py` (motivo y disparador visibles).
+Fixtures: los tres campos son obligatorios, así que hubo que actualizar el stub
+canónico y los JSON que llevan una salida del modelo (OJO: `caso-01.salida-
+esperada.json` es la salida del CONTRATO, no del modelo; ahí NO van).
+
+**De la reunión con Álvaro (Fathom 191008131, 2026-10-08):**
+1. **PDF de pre-orden para trazabilidad INVIMA** — requisito regulatorio.
+   Álvaro: «qué cliente fue, qué pidió y la fecha». Sin precios. Marta lo
+   archiva en el sistema de gestión de calidad. PENDIENTE DE CONSTRUIR.
+2. La mayoría de las órdenes llegan por WhatsApp, no por correo (lo confirmó
+   Marta). Un canal de Slack para las del correo quedó como idea.
+3. Catálogo pendiente de datos de Álvaro: `papel sellado`, `MW SOIL`,
+   `LUPALET` (chinos, sin código de fabricante, la lupa sin foto) y el
+   `KPCD-110` mal clasificado (es biológico, no químico). NO están en el repo.
+4. Meta bloqueado: el 315-248-8282 ya está en otra cuenta Business. Migración
+   con las credenciales de Álvaro, reunión 2026-10-09 a las 2:30 PM.
+
+**Aprender de Marta — verificado, y hay un bloqueo:** `agente/proveedores/
+meta.py` sólo lee `valor["messages"]`, que son los ENTRANTES. Lo que Marta
+escribe desde el WhatsApp de la oficina no llega a la base: hoy no hay de dónde
+aprender. Caminos: (1) destilar sus chats pasados a un fragmento de estilo
+—estático, entra en el prefijo cacheado, costo por mensaje sin cambios—;
+(2) suscribir `message_echoes` en Meta (pedirlo mañana en la migración);
+(3) un destilador semanal. Esperando que Jerónimo consiga los chats.
 
 ---
 

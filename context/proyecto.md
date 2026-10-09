@@ -43,6 +43,21 @@ como refactor.** Ver §7.
 
 ## 2. Reglas duras — no negociables
 
+> **0. Marta no pierde WhatsApp en su celular. Nunca.** Decisión de Jerónimo el 2026-10-08,
+> textual: «NO PODEMOS PERDER EL NÚMERO DE WHATSAPP DE CELULAR». El 315 248 8282 es el canal por
+> donde entran los pedidos de Esteripac y Marta lo contesta todo el día desde la app de WhatsApp
+> Business del teléfono de la oficina.
+>
+> Consecuencia operativa: **la migración clásica del número al Cloud API queda prohibida**. Ese
+> camino saca el número de la app y Marta deja de poder contestar desde el celular; además tiene
+> un punto de no retorno. El único camino admitido sobre el número actual es **Coexistence**, y
+> si no estuviera disponible, un **número nuevo para el bot** con el de Marta intacto.
+>
+> En el panel de Meta, **no se pulsa nada que diga eliminar o desvincular el número** de la
+> cuenta de WhatsApp Business existente, aunque Meta lo ofrezca como salida al error «el número
+> ya está en uso en otra cuenta». Esa es exactamente la acción que rompe esta regla.
+
+
 1. **No inventar datos.** Productos, SKU, precios, especificaciones,
    condiciones o normas que no estén en el catálogo real del fabricante no
    existen. Si un dato falta, el campo va `null` y la interfaz muestra

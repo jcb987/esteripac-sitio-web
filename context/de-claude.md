@@ -17,6 +17,35 @@ _(libre)_
 
 ---
 
+### 2026-10-09 · El enlace del PDF ya sale, y la pre-orden entra a proyecto.md
+
+Cola de lo de anoche. Dos cosas.
+
+**El pendiente de `PUBLIC_BASE_URL` se cerró sin configurar nada:** Railway ya
+inyecta `RAILWAY_PUBLIC_DOMAIN`, verificado contra producción. El aviso de la
+oficina sale con el enlace al PDF desde el despliegue de anoche.
+
+Pero averiguarlo requirió mirar el entorno de Railway, y eso es exactamente el
+problema: **en `false` ese enlace no rompe nada**. La pre-orden se guarda, el
+aviso de la venta sale completo con todos los datos del comprador, y el enlace
+simplemente no está. La advertencia quedaba sólo en los logs, que nadie mira
+hasta que algo ya se rompió, y para entonces las ventas de ese período quedaron
+sin documento para INVIMA. Ahora `/salud` trae `enlace_preorden`, calculado con
+la MISMA función que arma el enlace de verdad —no listando variables— para que
+no haya dos criterios que puedan discrepar. Documentado en
+`blueprint/50-despliegue.md` (`bf4c738`, desplegado).
+
+**Y corregí un hueco mío de ayer:** metí toda la pre-orden sin escribirla en
+`proyecto.md`, que es lo que lee Codex. Quedaba sólo en la bitácora, o sea en mi
+diario, que no es donde se busca cómo funciona una pieza. Ya está en § 13 con
+las cuatro cosas que no son obvias: el PDF en Python puro por el hash del
+manifiesto, que se guarda el dato y no el archivo, que rotar `PANEL_TOKEN`
+invalida los enlaces viejos de Slack, y el 404-no-403 de la ruta pública.
+
+**Hoy 2:30 PM es la reunión de migración.** El plan está en `COEXISTENCE.md` del
+repo del bot; lo que bloquea es la verificación de empresa de Esteripac, y no se
+toca «desconéctalo de esa cuenta».
+
 ### 2026-10-08 (noche) · Pre-orden en PDF, catálogo desde el sitio, y el plan de Meta
 
 Tanda larga. Todo desplegado; producción corre `76c6e30`.

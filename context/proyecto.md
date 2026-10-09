@@ -576,6 +576,39 @@ en el panel + plantilla) está redactada en `PLANTILLAS-META.md` del repo del
 bot, junto con la de reposición y la de pedido pendiente, para someterlas juntas
 cuando exista el número de producción.
 
+### Pre-orden en PDF — trazabilidad para INVIMA
+
+Álvaro la pidió en la reunión del 08/10: de cada venta avisada necesita «qué
+cliente fue, qué pidió y la fecha», porque la auditoría de INVIMA se lo exige.
+Cuando el agente detecta la oportunidad, el aviso a la oficina llega con un
+enlace a un PDF de una página con esos datos. **Sin precios**, como todo lo
+demás de la fase 1: es un documento de trazabilidad, no una cotización.
+
+Lo que hay que saber antes de tocarlo:
+
+- **El PDF se arma en Python puro** (`agente/preorden.py`), sin librería de
+  terceros. No es purismo: `requirements.txt` está hasheado en
+  `plantillas/MANIFIESTO.json` y agregar una dependencia rompe el chequeo 02 de
+  la compuerta. Si hace falta cambiar el documento, se edita ese módulo.
+- **Se guarda el dato, no el archivo.** La tabla `preordenes` tiene la
+  instantánea del pedido; el PDF se vuelve a generar en cada visita. El disco
+  de Railway es efímero. Guardar dos veces el mismo pedido **no pisa** el
+  número ya archivado.
+- **El número es `EP-AAAAMMDD-xxxx`**, derivado de la huella del pedido, así
+  que el mismo pedido del mismo día siempre da el mismo número.
+- **El enlace va firmado con HMAC del `PANEL_TOKEN`** (`GET /preorden/{numero}`,
+  pública pero inútil sin firma; 404 y no 403 ante firma inválida, para no
+  confirmar que el documento existe). Es así porque un Incoming Webhook de
+  Slack no puede subir archivos y a Marta no se le puede pedir que pegue un
+  token en el celular. **Consecuencia: rotar `PANEL_TOKEN` invalida los enlaces
+  viejos que quedaron en el historial de Slack.** El documento no se pierde.
+- **El dominio lo pone Railway** (`RAILWAY_PUBLIC_DOMAIN`); verificado en
+  producción el 09/10. Con dominio propio hay que cargar `PUBLIC_BASE_URL` a
+  mano. `/salud` lo dice en `enlace_preorden`, calculado con la misma función
+  que arma el enlace de verdad. **En `false` no se cae nada** —la pre-orden se
+  guarda, el aviso de la venta sale completo— y el enlace simplemente no está,
+  que desde afuera se ve igual que un despliegue sano. Por eso el campo existe.
+
 ### CRM y recordatorios de reposición — pendiente explícito
 
 Hoy ya se capturan de forma estructurada los datos mínimos del comprador y

@@ -101,6 +101,9 @@ Falta / no verificado:
 - El texto del botón «Solicitar asesoría» del sitio sigue diciendo «hablar con un asesor»
   (regla 4). Decisión de Jerónimo; el bot ya lo tolera.
 - `horas_para_retomar` ya está en 12 h (`e90ad5b`).
+- Emojis en los menús (`3e7c9a8`): «Seguir mi pedido» y «Primera compra» se acortaron para
+  entrar en los 20 de Meta con el emoji. `validar()` cuenta en UTF-16, como Meta. Probado en
+  WhatsApp real por Jerónimo: los botones de Meta salen bien.
 
 **Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
 en producción, `69e1c99`):

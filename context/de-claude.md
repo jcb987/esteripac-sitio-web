@@ -13,7 +13,48 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-_(libre)_
+**2026-10-12 · Botones al empezar el chat (idea de Jerónimo, sacada del WhatsApp de Siigo)**
+
+Jerónimo entró a la web de Siigo, tocó su botón de WhatsApp y quedó clasificado en
+tres toques. Quiere lo mismo para Esteripac, pero con destino distinto: Siigo te pasa
+a un humano; acá los botones clasifican y **el bot sigue la venta**. Marta sólo
+cotiza y cierra.
+
+Decidido con él: **tres preguntas**, sólo para contactos nuevos.
+1. ¿En qué le ayudo? → [Cotizar o comprar] [Duda técnica] [Estado de un pedido]
+2. ¿Para qué proceso? → lista de 7 (los mismos `### Proceso:` del catálogo)
+3. ¿Ya es cliente? → [Sí, ya soy cliente] [Es mi primera compra]
+
+Reglas que fijé yo:
+- **Atajo, nunca pared.** Si escribe texto libre en vez de tocar, se corta el
+  cuestionario y sigue el modelo. Un comprador que ya sabe lo que quiere no toca
+  tres botones.
+- **Determinista, no lo elige el modelo.** Cada paso del menú sale sin llamar al
+  modelo: más predecible y no gasta tokens. El wire schema NO cambia.
+- Si llegó desde una ficha de producto de la web, no se pregunta el proceso.
+- El formulario «Confirmar datos» de Siigo es un WhatsApp Flow: queda para
+  después de conectar el número real.
+
+Verificado en Meta: en coexistencia los mensajes de la API se reflejan en el celular
+de Marta y la lista de lo que se apaga no incluye los interactivos (tampoco los
+confirma por nombre: hay que probarlo). La fila «Quick replies: Not supported» son
+los atajos guardados de la APP, no los botones del bot, y Marta los conserva.
+
+**Hallazgo de paso:** hoy el parser de Meta pierde el texto de cualquier respuesta
+interactiva (sólo lee `text.body`). Primera pieza a tocar.
+
+Estado: arrancando.
+
+**Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
+en producción, `69e1c99`):
+- El bot retoma solo un chat traspasado si Esteripac no contesta
+  (`traspaso.horas_para_retomar`). **⚠ Está en 0.05 h = 3 min, valor de PRUEBA.
+  Volver a 12 antes de conectar el número real.**
+- Arreglado el bucle: al retomar se volvía a escalar en el mismo turno.
+- Ventana de agrupación de 2,5 a 10 s (`conversacion.segundos_para_agrupar`):
+  el bot contestaba dos veces a mensajes seguidos.
+- La cantidad de un pedido viejo se colaba en una pre-orden nueva.
+- Las rayas largas salían como «?» en el PDF.
 
 ---
 

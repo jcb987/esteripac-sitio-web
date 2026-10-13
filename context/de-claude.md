@@ -100,13 +100,12 @@ Falta / no verificado:
   ni van en el aviso de Slack.
 - El texto del botón «Solicitar asesoría» del sitio sigue diciendo «hablar con un asesor»
   (regla 4). Decisión de Jerónimo; el bot ya lo tolera.
-- Recordatorio que sigue en pie: `horas_para_retomar` está en 0.05 (prueba). Volver a 12.
+- `horas_para_retomar` ya está en 12 h (`e90ad5b`).
 
 **Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
 en producción, `69e1c99`):
 - El bot retoma solo un chat traspasado si Esteripac no contesta
-  (`traspaso.horas_para_retomar`). **⚠ Está en 0.05 h = 3 min, valor de PRUEBA.
-  Volver a 12 antes de conectar el número real.**
+  (`traspaso.horas_para_retomar`). En 12 h desde el 2026-10-13 (`e90ad5b`).
 - Arreglado el bucle: al retomar se volvía a escalar en el mismo turno.
 - Ventana de agrupación de 2,5 a 10 s (`conversacion.segundos_para_agrupar`):
   el bot contestaba dos veces a mensajes seguidos.

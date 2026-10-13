@@ -72,7 +72,18 @@ y SILENCIA al bot en el primer mensaje. Verificado. Se arregla del lado del bot:
 dos textos exactos del sitio no escalan. El texto del sitio viola además la regla 4
 de CLAUDE.md; cambiarlo es decisión de Jerónimo (otro repo).
 
-Estado: escribiendo `bienvenida.py`.
+Estado: **desplegado** (`dd08a28`, 566 passed, gate 22/23). El botón de asesoría de la
+web ya no silencia al bot.
+
+Falta / no verificado:
+- **No probado con un toque real en WhatsApp.** La suite corre con el proveedor `demo`,
+  que manda las opciones escritas; el sobre de Meta está probado por forma, no contra Meta.
+  Para probar hace falta un número que NUNCA le haya escrito al bot (sólo contactos nuevos).
+- Las respuestas quedan en `conversaciones.bienvenida`, pero el panel todavía no las muestra
+  ni van en el aviso de Slack.
+- El texto del botón «Solicitar asesoría» del sitio sigue diciendo «hablar con un asesor»
+  (regla 4). Decisión de Jerónimo; el bot ya lo tolera.
+- Recordatorio que sigue en pie: `horas_para_retomar` está en 0.05 (prueba). Volver a 12.
 
 **Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
 en producción, `69e1c99`):

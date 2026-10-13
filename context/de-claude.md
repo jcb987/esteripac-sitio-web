@@ -13,7 +13,7 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-13 · Escalación por contexto, texto de la web, reloj a 12 min** (en curso)
+**2026-10-13 · Escalación por contexto, texto de la web, reloj a 12 min** (desplegado)
 
 Jerónimo: «asesor» sola escala demasiado fácil; que el bot lea el contexto. Decisión:
 la lista se parte en dos. `escalacion` (reclamo, abogado, estafa, «nadie me ha
@@ -22,6 +22,11 @@ me llamen…) ya NO escala sola: si aparece, al modelo le llega un bloque
 `<posible_pedido_de_persona>` y decide él con `traspaso_urgente` (el prompt ya dice
 «pide hablar con una persona → urgente»). Va leída del YAML directo: el contrato de
 entrada es cerrado. **Sin ensayo contra GPT-5: la clave local no tiene crédito.**
+Estado: **desplegado** (`8e39613`, 580 passed, gate 22/23). La web publicada NO se tocó:
+tiene carril activo (rama `rediseno`, 24 archivos sin commitear) y se despliega desde el
+árbol de trabajo. El bot ya reconoce los textos nuevos: «Hola, quisiera asesoría para
+elegir los indicadores de mi proceso.» (encabezado y portada) y «Hola, escribo desde la
+página de Esteripac. Tengo una consulta.» (portada). Que los cambie el carril del sitio.
 Además: textos «hablar con un asesor» de la web publicada → «asesoría», y
 `horas_para_retomar` 0.05 → 0.2 (12 min, sigue siendo valor de prueba).
 

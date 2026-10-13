@@ -107,8 +107,8 @@ Falta / no verificado:
 - `agente/turnos.py` (`c70c89a`): si llegó un mensaje más nuevo de la misma persona, el turno
   en curso se calla antes del modelo o antes de mandar. Agrupador en 15 s.
 - Oportunidad = NIT o cédula + SKU (`6f69a6a`); la institución es opcional. Una persona natural
-  no generaba oportunidad ni PDF. Abierto: un mismo chat mandó 4 avisos «Para la oficina» en
-  10 min (el modelo marca `traspaso_necesario` turno a turno y no hay guarda); no tocado.
+  no generaba oportunidad ni PDF. Avisos «Para la oficina»: uno por
+  conversación cada 12 h (`dfa2f68`); oportunidad y urgente no se frenan.
 
 **Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
 en producción, `69e1c99`):

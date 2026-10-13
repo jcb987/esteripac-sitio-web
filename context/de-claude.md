@@ -13,6 +13,18 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-13 · Escalación por contexto, texto de la web, reloj a 12 min** (en curso)
+
+Jerónimo: «asesor» sola escala demasiado fácil; que el bot lea el contexto. Decisión:
+la lista se parte en dos. `escalacion` (reclamo, abogado, estafa, «nadie me ha
+contactado»…) sigue siendo piso determinista. `pide_persona` (asesor, pásame con, que
+me llamen…) ya NO escala sola: si aparece, al modelo le llega un bloque
+`<posible_pedido_de_persona>` y decide él con `traspaso_urgente` (el prompt ya dice
+«pide hablar con una persona → urgente»). Va leída del YAML directo: el contrato de
+entrada es cerrado. **Sin ensayo contra GPT-5: la clave local no tiene crédito.**
+Además: textos «hablar con un asesor» de la web publicada → «asesoría», y
+`horas_para_retomar` 0.05 → 0.2 (12 min, sigue siendo valor de prueba).
+
 **2026-10-12 · Botones al empezar el chat (idea de Jerónimo, sacada del WhatsApp de Siigo)**
 
 Jerónimo entró a la web de Siigo, tocó su botón de WhatsApp y quedó clasificado en

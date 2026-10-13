@@ -43,7 +43,36 @@ los atajos guardados de la APP, no los botones del bot, y Marta los conserva.
 **Hallazgo de paso:** hoy el parser de Meta pierde el texto de cualquier respuesta
 interactiva (sólo lee `text.body`). Primera pieza a tocar.
 
-Estado: arrancando.
+**Diseño (decidido al leer el código):**
+- `agente/bienvenida.py`: lógica pura. `decidir(estado, nuevo, texto, respuesta_id)` →
+  `Preguntar` (se manda el botón y se corta el turno SIN llamar al modelo) · `Seguir`
+  (cuestionario terminado o abandonado: corre el modelo con un bloque
+  `<perfil_inicial>`) · `None` (no aplica).
+- Estado en `conversaciones.bienvenida` (JSON, columna nueva con su migración).
+- **El contrato de entrada NO se toca** (`tipo` es enum texto/audio/imagen y
+  `additionalProperties: false`). El parser marca la respuesta de botón como
+  `tipo="boton"` sólo en el transporte: así salta el debounce de 10 s (si no, cada
+  toque tardaría 10 s en contestar) y al ciclo le llega como `texto`. El id del botón
+  viaja por `deps.respuesta_id`, como ya viaja `nombre_contacto`.
+- Envío: `enviar(..., interactivo=...)` → `proveedor.sobre_interactivo()`. Si el
+  proveedor no lo soporta (zernio), cae a texto con las opciones listadas.
+- Límites verificados en Meta: botones ≤3 y título ≤20; lista ≤10 filas y título
+  ≤24. «Es mi primera compra» = 20 justo. La lista lleva los 9 procesos del catálogo.
+- Sólo en modo automático; en borrador no hay cuestionario.
+
+**Clasificación de los textos que manda el sitio publicado** (`Pagina web Esteripac`):
+genérico → 3 preguntas (pie, lanzador, y los dos «hablar con un asesor»); consulta
+técnica (contacto) → proceso + cliente; ficha de producto («información sobre BT225
+— …») → sólo cliente; con contenido propio → directo al modelo (borrador de pedido,
+certificado de lote, acceso al portal, abrir cuenta).
+
+**⚠ BUG ENCONTRADO:** «Hola, quisiera hablar con un asesor de Esteripac.» (botón
+«Solicitar asesoría» del header y de la portada) dispara `palabra_clave: un asesor`
+y SILENCIA al bot en el primer mensaje. Verificado. Se arregla del lado del bot: los
+dos textos exactos del sitio no escalan. El texto del sitio viola además la regla 4
+de CLAUDE.md; cambiarlo es decisión de Jerónimo (otro repo).
+
+Estado: escribiendo `bienvenida.py`.
 
 **Lo que NO está en ninguna bitácora todavía y SÍ está desplegado** (2026-10-09, todo
 en producción, `69e1c99`):

@@ -13,6 +13,28 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-14 · Auditoría completa del bot (5 revisores) y arreglos** (en curso)
+
+Hotfix ya desplegado (`d4a449d`): desde el 2026-09-14 cada **negrita** del bot se mandaba como
+carácter 0x01 (un heredoc se comió ``). Prueba nueva busca caracteres de control en el código.
+
+Tandas planeadas, cada una con pruebas + gate + despliegue:
+1. Escalación: el piso de `escalacion` y las raíces de enojo callan compras normales
+   («demanda», «reclamo el pedido», «mejorar el precio», «estafilococo»); una oportunidad ya
+   avisada tapa para siempre los traspasos; la huella cambia al agregar institución y no vuelve
+   a avisar un pedido repetido; `cambio_de_pedido` sin normalizar; número de pre-orden que puede
+   chocar entre clientes (abre el PDF de otro); hora del PDF en UTC rotulada «Colombia».
+2. Turno: en Postgres la 3.ª burbuja se bloquea (comparación de fecha con/sin zona); el turno
+   que se calla por mensaje nuevo igual escala → cliente mudo 12 h; callarse pierde imágenes,
+   el bloque de retomada y el perfil; un PDF/sticker nuevo calla la respuesta real.
+3. Transporte: pies de foto perdidos; botón de plantilla «button» no leído; `pide_la_baja` por
+   subcadena («spam», «dar de baja un lote»).
+4. Prompt/playbook: la cédula no tiene dónde ir (va en `nit`), el playbook dice que sólo se
+   vende a instituciones; «Seguir mi pedido» manda a urgente y se traga la pregunta del NIT.
+Anotados y NO atacados en esta pasada (diseño más grande): mensajes perdidos si Railway reinicia
+en medio de la ventana; sin respuesta de respaldo si el modelo falla; promesa «le paso con una
+persona» enviada aunque el aviso falle; olvidar_contacto no borra conversaciones `interno:*`.
+
 **2026-10-13 · Escalación por contexto, texto de la web, reloj a 12 min** (desplegado)
 
 Jerónimo: «asesor» sola escala demasiado fácil; que el bot lea el contexto. Decisión:

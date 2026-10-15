@@ -20,6 +20,21 @@
 3. Baja: se borra en cuanto el contacto vuelve a escribir, y los barridos le vuelven a escribir.
 4. Seguimientos que se bloquean entre sí: MAX_SEGUIDOS cuenta plantillas y el hash de plantilla
    es sólo de sus variables («BT225» = «BT225»).
+Decisiones: (1) regex por SKU con separadores opcionales y bordes; (2) `t.cambio_de_pedido` →
+paso 5 guarda `cantidad=""`, memoria ata la cantidad a su SKU; (3) la baja ya no se levanta al
+escribir: se contesta si escribió DESPUÉS y no vuelve a pedir la baja; plantillas nunca; sólo un
+`consentimiento_reposicion=True` la levanta; (4) plantillas saltan hash/MAX_SEGUIDOS, su
+previsualización lleva el nombre, y con ventana abierta salen igual (antes «texto vacío»).
+→ **Desplegado `a871f29`** (669 passed, gate 0/0). Pruebas: `test_referencia_cantidad_baja.py`.
+Agregado por Jerónimo a mitad de tanda (2026-10-15 15:50): **los PDF no cargan en Slack
+(urgente)**; los avisos de Slack no se distinguen entre sí → separador y formato claro y
+conciso.
+→ Hallazgos: los 2 enlaces de PDF del canal (EP-20261009-2C18 / -2C15) dan 404 porque esas
+pre-órdenes se borraron con `/olvidar` (el reset del 3142079783); la firma es válida. Los 5
+«Para la oficina» de la captura son del 10-13, ANTES del throttle de 12 h (`dfa2f68`, 15:46).
+→ **`cf63f8c`** (676 passed, gate 0/0): emoji por tipo, una línea por dato, `divider` al final,
+fallback a texto plano si Slack rechaza bloques; `/preorden` 404 con página legible;
+`/interno/probar` arma pre-orden de PRUEBA y manda su enlace. Falta: verificar en producción.
 
 **2026-10-15 · Slack infalible y 2.ª ronda de auditoría** (desplegado: `8ba80a4` Slack, `a47e953` falla del modelo + CRM, `ff28fa7` bandeja de entrantes contra reinicios; 647 passed)
 Slack: 4 intentos + tabla `avisos_pendientes` reintentada cada minuto + primero avisar y después

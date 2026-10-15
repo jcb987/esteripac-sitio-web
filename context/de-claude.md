@@ -13,7 +13,7 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-15 · Slack infalible (desplegado `8ba80a4`) y 2.ª ronda de auditoría** (en curso)
+**2026-10-15 · Slack infalible y 2.ª ronda de auditoría** (desplegado: `8ba80a4` Slack, `a47e953` falla del modelo + CRM, `ff28fa7` bandeja de entrantes contra reinicios; 647 passed)
 Slack: 4 intentos + tabla `avisos_pendientes` reintentada cada minuto + primero avisar y después
 prometer; `/salud` muestra la cola. Siguiente: falla del modelo/medios → reintento y respuesta de
 respaldo; etapa del CRM con la ficha acumulada; reposición sin guarda de escalado; memoria pisada

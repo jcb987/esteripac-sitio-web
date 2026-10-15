@@ -13,6 +13,12 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-15 · Slack infalible (desplegado `8ba80a4`) y 2.ª ronda de auditoría** (en curso)
+Slack: 4 intentos + tabla `avisos_pendientes` reintentada cada minuto + primero avisar y después
+prometer; `/salud` muestra la cola. Siguiente: falla del modelo/medios → reintento y respuesta de
+respaldo; etapa del CRM con la ficha acumulada; reposición sin guarda de escalado; memoria pisada
+en la rama `ya_escalado`; SKUs que se contienen (BT10/BT102) en el catálogo.
+
 **2026-10-14 · Auditoría completa del bot (5 revisores) y arreglos** (tandas 1-4 desplegadas: `78250de`, `bb7fb85`, `574fc22`, `b377412`; 629 passed)
 
 Hotfix ya desplegado (`d4a449d`): desde el 2026-09-14 cada **negrita** del bot se mandaba como

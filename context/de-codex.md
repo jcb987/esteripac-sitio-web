@@ -13,7 +13,20 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-_(libre)_
+**2026-10-15 — ACTIVO · Revisión adversaria del backend del 12–15 de octubre**
+
+- Repo de trabajo: `../whatsapp-closer-agentkit`; no tocar `Pagina web Esteripac`,
+  `.prettierrc.json`, secretos ni la bitácora de Claude.
+- Primero: confirmar `origin/main` y revisar los 20 commits desde 2026-10-12,
+  con foco en `enviar.py`, `ciclo.py`, `servidor.py`, `turnos.py` y
+  `paso_6_handoff.py`.
+- Prioridad: comprobar y, si aplica, reproducir con prueba la inyección de
+  mrkdwn de Slack sin romper los enlaces que arma el agente. Después revisar
+  silencios, avisos perdidos/repetidos, opt-out y aislamiento entre clientes.
+- Cada defecto confirmado se arregla sólo después de una prueba roja. Si queda
+  tiempo, se atienden en orden los cuatro pendientes adicionales indicados.
+- Antes de cualquier push: suite completa y compuerta en
+  `PARCIAL · 0 errores · 0 avisos · 1 salteado`; después verificar `/salud`.
 
 ---
 

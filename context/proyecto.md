@@ -512,6 +512,18 @@ Railway. Se eligió sobre avisar a otro WhatsApp porque no consume una plantilla
 de Meta, no depende de la ventana de 24 horas y entrega un enlace clicable al
 chat del cliente.
 
+Formato del aviso (15/10, a pedido de Jerónimo): un emoji de color por tipo
+(🟢 oportunidad, 🟡 para la oficina, 🔴 urgente o falla del bot, 🔵 el bot
+retomó), un dato por línea con su etiqueta (Qué necesita, Pedido, Comprador,
+Entrega, Correo, Pre-orden en PDF, ventana, Resumen) y un bloque `divider` al
+final para que los avisos seguidos no se peguen. Si Slack rechazara los bloques,
+el mismo aviso sale en texto plano.
+
+**Baja (opt-out).** Quien pide la baja no recibe nada que inicie Esteripac
+—ninguna plantilla ni barrido— hasta que acepte explícitamente volver a recibir
+mensajes (`consentimiento_reposicion` verdadero). Si vuelve a escribir por su
+cuenta, se le contesta, pero la baja sigue. Hasta el 15/10 escribir la borraba.
+
 La compuerta del backend quedó verde en Linux en el commit `4ee2f71`: los 23
 chequeos pasaron sin errores, avisos ni salteados, incluidas 263 pruebas, el
 contrato con sus seis pasos, las cuatro comprobaciones de firmas y el censo de
@@ -602,6 +614,12 @@ Lo que hay que saber antes de tocarlo:
   Slack no puede subir archivos y a Marta no se le puede pedir que pegue un
   token en el celular. **Consecuencia: rotar `PANEL_TOKEN` invalida los enlaces
   viejos que quedaron en el historial de Slack.** El documento no se pierde.
+- **Borrar un contacto (`/olvidar`) borra sus pre-órdenes**, y sus enlaces en
+  Slack dejan de abrir. Desde el 15/10 el enlace contesta una página que lo dice
+  («ya no está en el sistema») en vez de `{"detail":"Not Found"}`; con firma
+  inválida dice sólo «enlace no válido», sin confirmar nada.
+- **Probar el PDF sin esperar una venta:** `POST /interno/probar` (con el
+  `PANEL_TOKEN`) arma una pre-orden de PRUEBA y manda su enlace al canal.
 - **El dominio lo pone Railway** (`RAILWAY_PUBLIC_DOMAIN`); verificado en
   producción el 09/10. Con dominio propio hay que cargar `PUBLIC_BASE_URL` a
   mano. `/salud` lo dice en `enlace_preorden`, calculado con la misma función

@@ -13,7 +13,31 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-15 · Los cuatro pendientes importantes de la auditoría** (en curso)
+**Libre.**
+
+---
+
+### 2026-10-12 al 2026-10-15 · Botones de bienvenida, auditoría completa, Slack infalible y avisos legibles
+
+Producción en `cf63f8c` (676 passed, gate PARCIAL 0/0 con el censo para la CI). Lo que sigue
+es el carril tal como se fue escribiendo, de lo más nuevo a lo más viejo.
+
+**Qué revisar si tocas esto:**
+- La baja ya NO se levanta porque el contacto escriba (`enviar.revisar_baneo`); sólo un
+  `consentimiento_reposicion=True` la levanta (`ciclo.py`). `test_enviar.py` cambió de nombre
+  la prueba vieja: `test_volver_a_escribir_se_contesta_y_la_baja_sigue`.
+- Las plantillas saltan las guardas de «mismo texto» y «turnos seguidos»; su previsualización
+  lleva el nombre de la plantilla. Con la ventana abierta salen igual (antes «texto vacío»).
+- El catálogo busca el SKU completo con `menciona_sku` (regex con separadores y bordes).
+- Los avisos de Slack van en bloques (`enviar.cuerpo_de_slack`) y el contexto en líneas con
+  etiqueta (`paso_6_handoff.contexto_para_la_oficina`).
+
+Pendientes menores, sin atacar: los medios descargados no se borran nunca; el panel prioriza la
+cookie sobre `?token=`; el panel muestra sólo 50 filas; un texto muy largo se sale del PDF; sin
+Supabase cada turno queda «parcial»; dos barridos simultáneos podrían mandar doble;
+`olvidar_contacto` no borra las conversaciones `interno:*` ni los medios.
+
+**2026-10-15 · Los cuatro pendientes importantes de la auditoría** (desplegado `a871f29`, formato de Slack `cf63f8c`)
 1. Catálogo: SKUs que se contienen (BT10/BT102, IT27W-1/IT27W-10) y «BT-225» con guion.
 2. Memoria: la cantidad de un pedido viejo aparece como «ya la dio» tras cambiar de referencia;
    el CRM guarda la cantidad vieja con el SKU nuevo (`guardar_lead_local` salta los None).

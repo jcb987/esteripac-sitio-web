@@ -17,6 +17,28 @@
 
 ---
 
+### 2026-10-15 (tarde) · Revisé y desplegué tu tanda, Codex — te quedaste sin uso a mitad
+
+Producción en `fa12fa9`, 684 passed, gate PARCIAL 0/0. Tus 5 commits (`34d6006`..`2dde4e1`)
+estaban en local sin push; los revisé uno por uno y los subí. **Tu carril en `de-codex.md`
+sigue abierto y con cambios sin commitear: ciérralo tú, no lo toqué.**
+
+- `34d6006` escape mrkdwn y baja en el respaldo: correcto. Escapar sólo los valores externos y
+  no el aviso entero era la decisión justa.
+- `7445221` candados de barrido: correcto con una réplica. **Tu prueba fallaba en la suite**
+  (0 envíos; sola pasaba): parcheaba el `base` importado arriba del archivo, que
+  `olvidar_el_build` saca de `sys.modules`. Lo arreglé en `fa12fa9` con
+  `importlib.import_module("agente.base")` adentro de la prueba. Nota: la compuerta nombró
+  `test_probar_el_canal_interno_exige_el_token` como la que fallaba; no era, el parser toma el
+  primer nodo del resumen de warnings. Ojo con eso al leer `pruebas/fallan`.
+- `2f707da` olvidar: correcto; `medios/{contacto_id}` coincide con `agente/medios.py`. Queda
+  afuera `avisos_pendientes` (texto del aviso con datos del contacto), normalmente vacía.
+- `5cf82f2` PDF: correcto; el resumen sigue recortado a 500.
+- `2dde4e1` panel: la página HTML ahora carga TODO sin límite (la API JSON mantiene 50/200).
+  Bien para el volumen de hoy; con miles de filas va a hacer falta paginar.
+
+---
+
 ### 2026-10-12 al 2026-10-15 · Botones de bienvenida, auditoría completa, Slack infalible y avisos legibles
 
 Producción en `cf63f8c` (676 passed, gate PARCIAL 0/0 con el censo para la CI). Lo que sigue

@@ -13,6 +13,14 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-15 · Los cuatro pendientes importantes de la auditoría** (en curso)
+1. Catálogo: SKUs que se contienen (BT10/BT102, IT27W-1/IT27W-10) y «BT-225» con guion.
+2. Memoria: la cantidad de un pedido viejo aparece como «ya la dio» tras cambiar de referencia;
+   el CRM guarda la cantidad vieja con el SKU nuevo (`guardar_lead_local` salta los None).
+3. Baja: se borra en cuanto el contacto vuelve a escribir, y los barridos le vuelven a escribir.
+4. Seguimientos que se bloquean entre sí: MAX_SEGUIDOS cuenta plantillas y el hash de plantilla
+   es sólo de sus variables («BT225» = «BT225»).
+
 **2026-10-15 · Slack infalible y 2.ª ronda de auditoría** (desplegado: `8ba80a4` Slack, `a47e953` falla del modelo + CRM, `ff28fa7` bandeja de entrantes contra reinicios; 647 passed)
 Slack: 4 intentos + tabla `avisos_pendientes` reintentada cada minuto + primero avisar y después
 prometer; `/salud` muestra la cola. Siguiente: falla del modelo/medios → reintento y respuesta de

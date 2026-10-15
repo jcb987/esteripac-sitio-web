@@ -13,7 +13,7 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-14 · Auditoría completa del bot (5 revisores) y arreglos** (en curso)
+**2026-10-14 · Auditoría completa del bot (5 revisores) y arreglos** (tandas 1-4 desplegadas: `78250de`, `bb7fb85`, `574fc22`, `b377412`; 629 passed)
 
 Hotfix ya desplegado (`d4a449d`): desde el 2026-09-14 cada **negrita** del bot se mandaba como
 carácter 0x01 (un heredoc se comió ``). Prueba nueva busca caracteres de control en el código.

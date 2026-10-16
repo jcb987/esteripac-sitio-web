@@ -504,7 +504,9 @@ como observabilidad, no como cola de aprobación obligatoria. La lista y el
 detalle identifican al contacto por su nombre de perfil y número, muestran la
 antigüedad del último mensaje entrante y permiten devolver al bot una
 conversación escalada desde la propia interfaz. La tabla de leads expone
-también dirección y correo cuando fueron declarados.
+también dirección y correo cuando fueron declarados. La vista HTML carga el
+historial completo (sin el antiguo corte silencioso de 50 filas); la API JSON
+conserva su paginación de 50 por defecto y 200 como máximo.
 
 La escalación interna usa **Slack**. `config/negocio.yaml` declara
 `canal_interno: slack`; sólo falta cargar `SLACK_WEBHOOK_URL` como secreto en
@@ -517,12 +519,22 @@ Formato del aviso (15/10, a pedido de Jerónimo): un emoji de color por tipo
 retomó), un dato por línea con su etiqueta (Qué necesita, Pedido, Comprador,
 Entrega, Correo, Pre-orden en PDF, ventana, Resumen) y un bloque `divider` al
 final para que los avisos seguidos no se peguen. Si Slack rechazara los bloques,
-el mismo aviso sale en texto plano.
+el mismo aviso sale en texto plano. Los valores que vienen del contacto o del
+modelo escapan `&`, `<` y `>` antes de entrar a `mrkdwn`; los enlaces al chat y
+al PDF que arma el propio agente siguen activos. Si un aviso encolado por una
+falla anterior se entrega directamente en un turno posterior, la copia idéntica
+se retira de `avisos_pendientes` para que el recuperador no lo repita.
+
+**Pedido armado en el catálogo (16/10).** A quien compra por primera vez, o no sabe qué elegir, el bot lo invita al catálogo: agrega productos y cantidades al pedido (sin cuenta, sin precios) y lo envía por WhatsApp con «Hola, quisiera cotizar este pedido: • SKU × cantidad». El bot toma esa lista como referencias confirmadas y la oficina responde con la cotización con precios. **El rediseño no puede cambiar ese texto ni quitar el botón sin avisar**: es lo que el bot reconoce.
 
 **Baja (opt-out).** Quien pide la baja no recibe nada que inicie Esteripac
 —ninguna plantilla ni barrido— hasta que acepte explícitamente volver a recibir
 mensajes (`consentimiento_reposicion` verdadero). Si vuelve a escribir por su
 cuenta, se le contesta, pero la baja sigue. Hasta el 15/10 escribir la borraba.
+Además, una plantilla externa no sale mientras haya un entrante de ese contacto
+en el agrupador o esperando el candado: ese entrante puede ser precisamente la
+baja y se procesa primero. Las respuestas normales y los avisos internos no se
+bloquean por esta guarda.
 
 La compuerta del backend quedó verde en Linux en el commit `4ee2f71`: los 23
 chequeos pasaron sin errores, avisos ni salteados, incluidas 263 pruebas, el
@@ -601,7 +613,9 @@ Lo que hay que saber antes de tocarlo:
 - **El PDF se arma en Python puro** (`agente/preorden.py`), sin librería de
   terceros. No es purismo: `requirements.txt` está hasheado en
   `plantillas/MANIFIESTO.json` y agregar una dependencia rompe el chequeo 02 de
-  la compuerta. Si hace falta cambiar el documento, se edita ese módulo.
+  la compuerta. Si hace falta cambiar el documento, se edita ese módulo. Los
+  valores y el resumen se parten incluso cuando traen una palabra o URL sin
+  espacios, para no salirse horizontalmente de la página ni invadir el pie.
 - **Se guarda el dato, no el archivo.** La tabla `preordenes` tiene la
   instantánea del pedido; el PDF se vuelve a generar en cada visita. El disco
   de Railway es efímero. Guardar dos veces el mismo pedido **no pisa** el
@@ -614,10 +628,12 @@ Lo que hay que saber antes de tocarlo:
   Slack no puede subir archivos y a Marta no se le puede pedir que pegue un
   token en el celular. **Consecuencia: rotar `PANEL_TOKEN` invalida los enlaces
   viejos que quedaron en el historial de Slack.** El documento no se pierde.
-- **Borrar un contacto (`/olvidar`) borra sus pre-órdenes**, y sus enlaces en
-  Slack dejan de abrir. Desde el 15/10 el enlace contesta una página que lo dice
-  («ya no está en el sistema») en vez de `{"detail":"Not Found"}`; con firma
-  inválida dice sólo «enlace no válido», sin confirmar nada.
+- **Borrar un contacto (`/olvidar`) borra sus pre-órdenes**, sus conversaciones
+  internas asociadas, sus entrantes pendientes y `medios/{contacto_id}` sin
+  tocar el directorio de otro contacto. Sus enlaces en Slack dejan de abrir.
+  Desde el 15/10 el enlace contesta una página que lo dice («ya no está en el
+  sistema») en vez de `{"detail":"Not Found"}`; con firma inválida dice sólo
+  «enlace no válido», sin confirmar nada.
 - **Probar el PDF sin esperar una venta:** `POST /interno/probar` (con el
   `PANEL_TOKEN`) arma una pre-orden de PRUEBA y manda su enlace al canal.
 - **El dominio lo pone Railway** (`RAILWAY_PUBLIC_DOMAIN`); verificado en
@@ -639,7 +655,10 @@ de una plantilla aprobada por Meta**. Las plantillas están redactadas en
 `PLANTILLAS-META.md` del repo del bot y se someten juntas cuando exista el
 número de producción. No hay temporizador en proceso: el scheduler del kit
 vive en memoria y su almacenamiento persistente está detenido sobre PostgreSQL;
-el cron es externo.
+el cron es externo. Cada tipo de barrido se serializa con su propio candado en
+proceso, de modo que dos disparos simultáneos no envían la misma plantilla dos
+veces antes de alcanzar a guardar su marca. Esta garantía depende del supuesto
+operativo documentado de una sola réplica en Railway.
 
 La solución profesional debe usar como fuente de verdad el CRM que Esteripac
 ya tenga. Si no tiene uno, hay que decidir entre ampliar el panel como CRM

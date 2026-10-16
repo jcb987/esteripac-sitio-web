@@ -20,7 +20,7 @@
 3. Pedido con varias referencias: `sku_confirmado` = «CDWA4; IT27W-1; CDWAH», `cantidad` =
    «CDWA4: 400 unidades; …». Columnas VARCHAR(80) → ampliar (Postgres corta con error).
    Oportunidad exige también cantidad. PDF: una línea por referencia; guion U+2011 → «-».
-4. Carrito/login en la web: NO, choca con la regla 3 del proyecto (sin carrito en fase 1).
+4. Carrito: no hacía falta. La web publicada ya tiene «agregar al pedido» sin cuenta ni precios que se envía por WhatsApp; el bot invita a usarlo en primera compra (`5481ae4`).
 
 ---
 

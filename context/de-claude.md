@@ -13,7 +13,14 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Libre.**
+**2026-10-16 · Prueba final de Jerónimo: bot menos insistente, avisos tempranos, PDF con varias referencias** (desplegado `d847e9b` + `6271b92`, 689 passed; sin ensayo contra GPT-5)
+1. Prompt: no repetir la lista de datos mientras el cliente tiene dudas; pedirla una vez.
+2. `traspaso_necesario` ya no por «quiere cotizar/precio» (eso lo cubre la Oportunidad); sí
+   cuando falta una ficha técnica u otro dato que el catálogo no trae.
+3. Pedido con varias referencias: `sku_confirmado` = «CDWA4; IT27W-1; CDWAH», `cantidad` =
+   «CDWA4: 400 unidades; …». Columnas VARCHAR(80) → ampliar (Postgres corta con error).
+   Oportunidad exige también cantidad. PDF: una línea por referencia; guion U+2011 → «-».
+4. Carrito/login en la web: NO, choca con la regla 3 del proyecto (sin carrito en fase 1).
 
 ---
 

@@ -21,6 +21,8 @@
    «CDWA4: 400 unidades; …». Columnas VARCHAR(80) → ampliar (Postgres corta con error).
    Oportunidad exige también cantidad. PDF: una línea por referencia; guion U+2011 → «-».
 4. Carrito: no hacía falta. La web publicada ya tiene «agregar al pedido» sin cuenta ni precios que se envía por WhatsApp; el bot invita a usarlo en primera compra (`5481ae4`).
+5. Nombre del comprador: persona natural va en `institucion` como «Nombre (persona natural)»; cierre sin prometer correo ni plazo (`ef41427`).
+6. PDF rediseñado (cabecera, recuadro del cliente, tabla con nombre del catálogo, multipágina) y pedido una línea por referencia en Slack (`bee8c46`, 694 passed).
 
 ---
 

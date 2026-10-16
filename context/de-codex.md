@@ -13,24 +13,64 @@
 > Anota acá antes de empezar una tanda; borra al terminar.
 > Si está ocupado, Claude Code trabaja en otro carril o espera.
 
-**2026-10-15 — ACTIVO · Revisión adversaria del backend del 12–15 de octubre**
-
-- Repo de trabajo: `../whatsapp-closer-agentkit`; no tocar `Pagina web Esteripac`,
-  `.prettierrc.json`, secretos ni la bitácora de Claude.
-- Primero: confirmar `origin/main` y revisar los 20 commits desde 2026-10-12,
-  con foco en `enviar.py`, `ciclo.py`, `servidor.py`, `turnos.py` y
-  `paso_6_handoff.py`.
-- Prioridad: comprobar y, si aplica, reproducir con prueba la inyección de
-  mrkdwn de Slack sin romper los enlaces que arma el agente. Después revisar
-  silencios, avisos perdidos/repetidos, opt-out y aislamiento entre clientes.
-- Cada defecto confirmado se arregla sólo después de una prueba roja. Si queda
-  tiempo, se atienden en orden los cuatro pendientes adicionales indicados.
-- Antes de cualquier push: suite completa y compuerta en
-  `PARCIAL · 0 errores · 0 avisos · 1 salteado`; después verificar `/salud`.
+_(libre)_
 
 ---
 
 ## Entradas
+
+### 2026-10-16 · Auditoría adversaria, siete defectos corregidos y CI completa
+
+**Confirmado con prueba roja antes del arreglo**
+
+- Los valores del contacto/modelo entraban crudos a `mrkdwn`: `<!channel>`
+  podía mencionar el canal y `<https://...|...>` inyectar un enlace. Ahora se
+  escapan sólo los valores no confiables; los enlaces propios al chat/PDF
+  siguen funcionando.
+- El respaldo de un turno caído podía responder a una baja aún no persistida.
+  Además, un barrido podía mandar una plantilla durante los segundos en que
+  esa baja seguía en el agrupador. Ambos caminos leen la señal más reciente y
+  no envían; respuestas normales y avisos internos siguen habilitados.
+- Un aviso fallido de Slack podía quedar en cola y, si el turno siguiente lo
+  entregaba directamente, salir otra vez al recuperarse la cola. El éxito
+  directo elimina copias idénticas pendientes.
+- Dos barridos simultáneos de reposición, pedido pendiente o entrega podían
+  mandar la misma plantilla dos veces. Cada tipo quedó serializado en proceso,
+  coherente con `numReplicas = 1`.
+- `/olvidar` dejaba conversaciones `interno:*`, entrantes pendientes y medios.
+  Ahora los borra con guarda de ruta y una prueba que conserva los datos de
+  otro comprador.
+- Un texto/URL largo se salía horizontalmente del PDF de pre-orden. Se parte
+  incluso sin espacios y se prueba también contra el pie de página.
+- El panel HTML cortaba conversaciones y leads en 50 filas. Ahora muestra todas;
+  la API conserva 50 por defecto y 200 como máximo.
+
+**Descartado tras revisar el diseño**
+
+- No encontré cruce de PDF entre compradores: el número incorpora
+  `contacto_id` en la huella y una instantánea ya archivada no se pisa.
+- No encontré estado compartido que mezcle avisos entre conversaciones; los
+  datos se arman desde el turno/contacto en curso. La superficie real era la
+  inyección `mrkdwn`, ya cerrada.
+- Las fallas del modelo/medio ya tienen reintentos, aviso interno persistente y
+  respaldo al cliente. El silencio adicional confirmado fue únicamente el caso
+  de baja, donde callar es lo correcto.
+
+**Evidencia y entrega**
+
+- Commits funcionales Codex: `34d6006`, `7445221`, `2f707da`, `5cf82f2`,
+  `2dde4e1`, `26803af` y `bdc989d`; pruebas OpenAI independientes de secretos
+  en `64c961d`.
+- El censo ya tardaba más de 20 min con 689 pruebas; el job conserva timeout,
+  ampliado a 40 min en `7ad24bd`. CI Linux `38951922664`: 689 passed, 53 campos
+  censados (49 afirmados + 4 no mutables), `PASS · 0 errores · 0 avisos · 0
+  salteados`.
+- Railway llegó a servir `7ad24bd` sano y luego avanzó con commits del carril de
+  Claude. `/salud`: Meta, PostgreSQL, modo automático y cola Slack en cero.
+- Limitación conocida: `avisos_pendientes` guarda texto pero no `contacto_id`;
+  `/olvidar` no puede identificar una copia pendiente para borrarla. Normalmente
+  la cola está vacía (confirmado en producción), pero resolver privacidad total
+  requiere migrar esa tabla y propagar la identidad al encolado.
 
 ### 2026-09-14 · Fichas PDF desplegadas en Vercel y compuerta con toda la suite
 

@@ -536,11 +536,13 @@ en el agrupador o esperando el candado: ese entrante puede ser precisamente la
 baja y se procesa primero. Las respuestas normales y los avisos internos no se
 bloquean por esta guarda.
 
-La compuerta del backend quedó verde en Linux en el commit `4ee2f71`: los 23
-chequeos pasaron sin errores, avisos ni salteados, incluidas 263 pruebas, el
+La compuerta del backend quedó verde en Linux en el commit `7ad24bd`: los 23
+chequeos pasaron sin errores, avisos ni salteados, incluidas 689 pruebas, el
 contrato con sus seis pasos, las cuatro comprobaciones de firmas y el censo de
-51 campos (47 afirmados por pruebas y 4 no mutables por diseño). La fuente de
-verdad es la CI Linux `34078084299`. La CI reconstruye antes de auditar
+53 campos (49 afirmados por pruebas y 4 no mutables por diseño). La fuente de
+verdad es la CI Linux `38951922664`. El censo sobre un clon limpio ya tarda más
+de 20 minutos porque no trae las pistas de nodos de una evidencia anterior; el
+job conserva un límite finito de 40 minutos. La CI reconstruye antes de auditar
 `config/playbook-base.yaml` y `pruebas/salida-caso-01.json`; ambos siguen
 ignorados porque son artefactos generados, no fuentes que deban versionarse.
 El golden del wire schema y su manifiesto usan LF canónico para que sus hashes
@@ -554,9 +556,10 @@ contacto haya dicho o confirmado. `cantidad` y `frecuencia_estimada` conservan
 el texto y la unidad declarados; el paso 5 los persiste en columnas de
 `leads_locales` sin borrar con nulos un dato válido de un turno anterior.
 
-Cuando `institucion`, `nit` y `sku_confirmado` están presentes a la vez, el paso
-6 envía al canal interno un aviso positivo con motivo `lead_completo` y el CRM
-usa la etapa `listo_para_cerrar`. La guarda persistente
+Cuando `nit` (o cédula), `sku_confirmado` y `cantidad` están presentes a la vez,
+el paso 6 envía al canal interno un aviso positivo con motivo `lead_completo` y
+el CRM usa la etapa `listo_para_cerrar`. La institución es opcional porque
+Esteripac también vende a personas naturales. La guarda persistente
 `conversaciones.lead_completo_avisado_en` evita repetir el aviso en cada turno;
 es independiente de `escalado_en`, por lo que no silencia al agente ni bloquea
 una escalación posterior por queja, precio o pedido de atención humana. La

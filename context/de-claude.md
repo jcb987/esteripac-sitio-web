@@ -22,6 +22,8 @@
    Oportunidad exige también cantidad. PDF: una línea por referencia; guion U+2011 → «-».
 4. Carrito: no hacía falta. La web publicada ya tiene «agregar al pedido» sin cuenta ni precios que se envía por WhatsApp; el bot invita a usarlo en primera compra (`5481ae4`).
 5. Nombre del comprador: persona natural va en `institucion` como «Nombre (persona natural)»; cierre sin prometer correo ni plazo (`ef41427`).
+8. Doble toque tras despliegue cortaba el cuestionario: `Ignorar` + bandeja no retoma lo ya contestado (`cbf6120`).
+9. EN CURSO: formulario (WhatsApp Flow) tras «Primera compra»: nombre, tipo, NIT/cédula, ciudad, dirección, correo. Apagado mientras `formulario_de_datos.flow_id` esté vacío en negocio.yaml; Jerónimo crea el Flow en WhatsApp Manager con `config/formulario_datos.flow.json`.
 7. Emojis 1-2 por mensaje; enlace `/catalogo?proceso=` por proceso; sin listar referencias tras mandar el catálogo.
 6. PDF rediseñado (cabecera, recuadro del cliente, tabla con nombre del catálogo, multipágina) y pedido una línea por referencia en Slack (`bee8c46`, 694 passed).
 

@@ -13,6 +13,21 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-17 · Aviso de privacidad y autorización de datos en WhatsApp** (en curso)
+Reunión Fathom 16/10 (min 31:25): Álvaro pide consentimiento «antes de que escriban… dando un
+clic»; Jerónimo propone primer mensaje estilo Siigo con enlace a la política. Decisiones:
+- Dos mensajes: (1) aviso con el contenido mínimo del art. 15 Decreto 1377 + enlace; (2) el menú.
+  Tocar una opción o seguir escribiendo = conducta inequívoca (art. 7); «NO ACEPTO» = rechazo.
+- Prueba (art. 8): `conversaciones.aviso_datos_en/_version`, `datos_autorizados_en` + evidencia,
+  `datos_rechazados_en`. A contactos viejos sin aviso se les manda en su próximo mensaje.
+- Enlace: hoy la política vigente de esteripac.co (incompleta: sin finalidades, WhatsApp, IA ni
+  exterior); el aviso trae eso en su texto. Al publicar la nueva `/politica-de-datos` (carril del
+  rediseño, sin commitear, `aprobada: false`) se cambia `politica_de_datos.url` en negocio.yaml.
+- NO toqué `Pagina web Esteripac` (la política nueva es del carril del rediseño). Faltan en su
+  lista de proveedores: Railway (servidor del bot) y Slack (avisos a la oficina); y Gemini sale
+  (reunión 16/10: se quita el asistente de la página).
+- Formulario (Flow) pasado a main: CI verde en la rama (run 38964804763).
+
 **2026-10-16 · Prueba final de Jerónimo: bot menos insistente, avisos tempranos, PDF con varias referencias** (desplegado `d847e9b` + `6271b92`, 689 passed; sin ensayo contra GPT-5)
 1. Prompt: no repetir la lista de datos mientras el cliente tiene dudas; pedirla una vez.
 2. `traspaso_necesario` ya no por «quiere cotizar/precio» (eso lo cubre la Oportunidad); sí

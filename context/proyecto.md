@@ -527,6 +527,8 @@ se retira de `avisos_pendientes` para que el recuperador no lo repita.
 
 **Pedido armado en el catálogo (16/10).** A quien compra por primera vez, o no sabe qué elegir, el bot lo invita al catálogo: agrega productos y cantidades al pedido (sin cuenta, sin precios) y lo envía por WhatsApp con «Hola, quisiera cotizar este pedido: • SKU × cantidad». El bot toma esa lista como referencias confirmadas y la oficina responde con la cotización con precios. **El rediseño no puede cambiar ese texto ni quitar el botón sin avisar**: es lo que el bot reconoce.
 
+**Aviso de privacidad en WhatsApp (17/10).** El primer mensaje del bot es el aviso de privacidad (Ley 1581 de 2012; Decreto 1377 de 2013, arts. 5, 7, 8 y 15) con el enlace de `politica_de_datos.url` en negocio.yaml; después va el menú. Tocar una opción o seguir escribiendo autoriza; «NO ACEPTO» rechaza y el bot no procesa nada hasta «ACEPTO». La prueba queda en `conversaciones` (aviso_datos_en, versión, autorización o rechazo con su mensaje). Hoy el enlace es la política vieja de esteripac.co; al publicar `/politica-de-datos` de la página nueva hay que cambiar esa URL y subir `version`. **El texto debe aprobarlo Esteripac con su abogado.**
+
 **Baja (opt-out).** Quien pide la baja no recibe nada que inicie Esteripac
 —ninguna plantilla ni barrido— hasta que acepte explícitamente volver a recibir
 mensajes (`consentimiento_reposicion` verdadero). Si vuelve a escribir por su

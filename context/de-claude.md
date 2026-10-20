@@ -13,6 +13,14 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-20 · El bot inventó productos: tiras de concentración de desinfectantes (HLD/OPA)** (en curso)
+Álvaro (audio en el grupo): «no manejamos esos controles… para desinfectantes ni de esa
+concentración». No están en el catálogo: los inventó el modelo, empujado por la regla «nunca diga
+que no lo manejan». Arreglo: (1) prompt: «tenemos/manejamos» sólo con ficha en el catálogo de
+este turno; (2) `no_manejamos` en negocio.yaml; (3) bloque `<esteripac_no_vende>` inyectado si la
+charla nombra esos productos. Lo demás de su lista (lupa, fotos, MW-Soil→Test-Soil) es de la
+página: lo hace Jerónimo en ese chat.
+
 **2026-10-17 · Aviso de privacidad y autorización de datos en WhatsApp** (desplegado `5c46ff9`, 712 passed; formulario Flow incluido, apagado sin `flow_id`)
 Reunión Fathom 16/10 (min 31:25): Álvaro pide consentimiento «antes de que escriban… dando un
 clic»; Jerónimo propone primer mensaje estilo Siigo con enlace a la política. Decisiones:

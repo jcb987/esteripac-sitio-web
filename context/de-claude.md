@@ -13,7 +13,7 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**2026-10-20 · El bot inventó productos: tiras de concentración de desinfectantes (HLD/OPA)** (en curso)
+**2026-10-20 · El bot inventó productos: tiras de concentración de desinfectantes (HLD/OPA)** (commit `1acbf7c`, 726 passed, gate y CI verdes; **Railway NO desplegó**: ni ese push ni el vacío `b5735d5` crearon deployment, prod sigue en `5c46ff9`. Revisar el panel de Railway)
 Álvaro (audio en el grupo): «no manejamos esos controles… para desinfectantes ni de esa
 concentración». No están en el catálogo: los inventó el modelo, empujado por la regla «nunca diga
 que no lo manejan». Arreglo: (1) prompt: «tenemos/manejamos» sólo con ficha en el catálogo de

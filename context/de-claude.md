@@ -13,6 +13,16 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-22 · Saludo de quien vuelve y burbujas repetidas** (desplegado `600f12d`, 732 passed;
+Railway volvió a desplegar y con esto sale también el fix HLD/OPA `1acbf7c`)
+- Saludo solo de un contacto que vuelve → menú «¡Hola de nuevo! 😊» sin modelo; otro saludo con el
+  menú abierto → `Ignorar`. Paso 3: `es_repetida` (difflib ≥ 0.8, 30 min) no manda una burbuja
+  casi igual a otra reciente.
+- **Ojo:** `knowledge/negocio/catalogo-esteripac.md` tiene sin commitear un export de la sesión de
+  la página (20/10 15:25: MW-SOIL→TEST-SOIL, CDWU-Z→CDWU, CDS47, BT24…). No es mío y NO lo subí:
+  rompe 2 pruebas (fichas del fabricante nombran CDWU-Z; orden de IT26-C EXTENDER) y enlaza fichas
+  que la página publicada todavía no tiene. Subirlo cuando se publique la página nueva.
+
 **2026-10-20 · El bot inventó productos: tiras de concentración de desinfectantes (HLD/OPA)** (commit `1acbf7c`, 726 passed, gate y CI verdes; **Railway NO desplegó**: ni ese push ni el vacío `b5735d5` crearon deployment, prod sigue en `5c46ff9`. Revisar el panel de Railway)
 Álvaro (audio en el grupo): «no manejamos esos controles… para desinfectantes ni de esa
 concentración». No están en el catálogo: los inventó el modelo, empujado por la regla «nunca diga

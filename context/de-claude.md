@@ -13,6 +13,15 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**2026-10-24 · Pedido web revisado y desplegado** (`50868f9`, 736 passed, gate 0/0)
+Otra sesión subió `8591a5f` (marca `[Pedido web]` en `escalar_siempre` → escala a Marta). Lo
+completé: escala ANTES del modelo (`ciclo._pedido_web`, sin tokens), Slack con rótulo 🛒 «Pedido
+web» y el carrito en el aviso, y `test_pedido_web.py` registrado (la compuerta daba aviso). El
+texto de la página (`OrderDraftBar.tsx`, rama `rediseno`) coincide; la página nueva aún NO está
+publicada (en línea no hay `[Pedido web]` ni `/politica-de-datos`). Al publicarla: subir el
+catálogo exportado (pendiente en disco), cambiar `politica_de_datos.url` y subir su `version`.
+Recordatorio del contexto de la página: **esteripac.co vence el 4 de noviembre** sin autorrenovar.
+
 **2026-10-22 · Saludo de quien vuelve y burbujas repetidas** (desplegado `600f12d`, 732 passed;
 Railway volvió a desplegar y con esto sale también el fix HLD/OPA `1acbf7c`)
 - Saludo solo de un contacto que vuelve → menú «¡Hola de nuevo! 😊» sin modelo; otro saludo con el

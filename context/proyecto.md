@@ -529,6 +529,12 @@ se retira de `avisos_pendientes` para que el recuperador no lo repita.
 
 **Aviso de privacidad en WhatsApp (17/10).** El primer mensaje del bot es el aviso de privacidad (Ley 1581 de 2012; Decreto 1377 de 2013, arts. 5, 7, 8 y 15) con el enlace de `politica_de_datos.url` en negocio.yaml; después va el menú. Tocar una opción o seguir escribiendo autoriza; «NO ACEPTO» rechaza y el bot no procesa nada hasta «ACEPTO». La prueba queda en `conversaciones` (aviso_datos_en, versión, autorización o rechazo con su mensaje). Hoy el enlace es la política vieja de esteripac.co; al publicar `/politica-de-datos` de la página nueva hay que cambiar esa URL y subir `version`. **El texto debe aprobarlo Esteripac con su abogado.**
 
+**Pedido web (24/10).** Un mensaje con `[Pedido web]` (carrito de un cliente con cuenta aprobada en la página) pasa a Marta sin llamar al modelo; en Slack llega como 🛒 «Pedido web» con el carrito. La marca vive en `escalar_siempre` de `negocio.yaml` y la pone `OrderDraftBar.tsx` de la página: si se cambia en un lado, se cambia en el otro.
+
+**Lo que Esteripac no vende (20/10).** El agente sólo afirma un producto si su ficha está en el catálogo verificado; lo demás «lo confirma con el equipo». Lo que Esteripac confirmó que NO maneja va en `no_manejamos` de `negocio.yaml` (hoy: tiras y controles de concentración de desinfectantes, HLD/OPA/glutaraldehído), con la fuente de cada entrada.
+
+**Menos tokens (22/10).** Un saludo solo de quien vuelve abre el menú de botones sin modelo; ninguna burbuja casi igual a otra enviada en los últimos 30 min vuelve a salir.
+
 **Baja (opt-out).** Quien pide la baja no recibe nada que inicie Esteripac
 —ninguna plantilla ni barrido— hasta que acepte explícitamente volver a recibir
 mensajes (`consentimiento_reposicion` verdadero). Si vuelve a escribir por su

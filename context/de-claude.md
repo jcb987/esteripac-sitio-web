@@ -13,6 +13,64 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
+**Libre.**
+
+---
+
+### 2026-10-30 · ESTADO PARA EL PRÓXIMO CHAT (bot de WhatsApp) — leer primero
+
+**Producción:** `50868f9` en Railway (`/salud` muestra la versión), 736 pruebas, compuerta
+`PARCIAL · 0 errores · 0 avisos · 1 salteado` (el salteado es el censo: corre en la CI). Todavía
+con el **número de prueba** de Meta (+1 555 676 5855); falta migrar al 315 248 2482 de la oficina
+por **coexistencia** (Regla 0: nunca borrar ni desconectar el número de la app; ver `COEXISTENCE.md`).
+
+**Cómo trabajar en `whatsapp-closer-agentkit`:**
+- `agente/` está en `.gitignore`: se versiona con `git add -f`.
+- Toda prueba nueva va en `ARCHIVOS_DE_PRUEBA` de `scripts/auditar.py` (si no, la compuerta da aviso).
+- Primero la suite (`.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider`), después
+  `scripts/auditar.py`; push a `main` sólo con `PARCIAL · 0 errores · 0 avisos`. Push a `main` =
+  despliegue en Railway; confirmar la versión en `/salud`.
+- Si el equipo está lento y la compuerta corta por tiempo (300 s): subir a una rama y lanzar la CI
+  con `gh workflow run compuerta.yml --ref <rama> -R jcb987/esteripac-whatsapp-agent`.
+- Los parches con barras invertidas se escriben con Write (los heredocs las comen).
+- Pruebas: usar `importlib.import_module("agente.x")` dentro de la prueba (otras sacan `agente.*`
+  de `sys.modules`). `pruebas/conftest.py` apaga el aviso de privacidad con
+  `PRUEBAS_SIN_AVISO_DE_DATOS`; las pruebas del aviso la quitan.
+
+**Cómo funciona hoy el bot (lo que no se puede romper):**
+- Primer mensaje: **aviso de privacidad** (Ley 1581/Decreto 1377) y después el **menú de botones**
+  (sin modelo). Tocar o seguir escribiendo autoriza; «NO ACEPTO» lo frena. Prueba en `conversaciones`.
+- Menú: necesidad → proceso → ¿cliente? → si «Primera compra», formulario de WhatsApp (Flow;
+  **apagado** hasta poner `formulario_de_datos.flow_id` en `negocio.yaml`). Un saludo solo de
+  quien vuelve abre el menú otra vez, sin modelo.
+- Primera compra o no sabe qué elegir → enlace al catálogo (filtrado por proceso) para armar el
+  pedido en la página y mandarlo por WhatsApp. Precios: siempre la oficina.
+- **Oportunidad** (🟢 en Slack + PDF de pre-orden) cuando hay NIT o cédula, referencias y
+  cantidades. Varias referencias: `sku_confirmado` «A; B» y `cantidad` «A: 400 u; B: 2 cajas».
+  Persona natural: nombre en `institucion` con « (persona natural)».
+- Traspaso «Para la oficina» sólo si falta algo que sólo Esteripac tiene (ficha técnica que no está,
+  pagos, documentos, etc.), no por querer cotizar. Urgente: reclamo, producto con problema, pide
+  persona. **Pedido web** (`[Pedido web]` de un cliente aprobado) → a Marta sin modelo.
+- Nunca afirmar un producto sin ficha en el catálogo; `no_manejamos` en `negocio.yaml` (tiras de
+  concentración HLD/OPA). Emojis 1-2 por mensaje. No prometer plazos ni medio («un asesor se va a
+  comunicar con usted»).
+
+**Pendientes, en orden:**
+1. **Dominio esteripac.co vence el 4 de noviembre sin autorrenovar** (Namecheap de Sistemas
+   Olimpia): se caen página y correo. Ver bitácora de la página.
+2. Al publicar la página nueva (rama `rediseno` de `Pagina web Esteripac`): subir el catálogo
+   exportado que está **sin commitear** en `knowledge/negocio/catalogo-esteripac.md`
+   (TEST-SOIL, CDWU, CDS47, BT24…; rompe 2 pruebas: renombrar CDWU-Z→CDWU en
+   `fichas-tecnicas-fabricante.md` y revisar el orden de IT26-C EXTENDER), y cambiar
+   `politica_de_datos.url` a `/politica-de-datos` subiendo `version`.
+3. Que Esteripac (Álvaro, ojalá con abogado) apruebe el texto del aviso y de la política.
+4. Crear el Flow en WhatsApp Manager con `config/formulario_datos.flow.json` y poner su ID.
+5. Migrar al número de la oficina (coexistencia). 51 referencias sin ficha técnica PDF (ver
+   2026-10-16): pedirlas a Esteripac/Terragene.
+6. Menores: el panel carga todo sin paginar.
+
+**Lo que salió en esta tanda (16 al 24 de octubre), del más nuevo al más viejo:**
+
 **2026-10-24 · Pedido web revisado y desplegado** (`50868f9`, 736 passed, gate 0/0)
 Otra sesión subió `8591a5f` (marca `[Pedido web]` en `escalar_siempre` → escala a Marta). Lo
 completé: escala ANTES del modelo (`ciclo._pedido_web`, sin tokens), Slack con rótulo 🛒 «Pedido

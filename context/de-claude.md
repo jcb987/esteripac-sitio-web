@@ -13,7 +13,11 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Libre.**
+**Claude · 2026-10-30 · bot (`whatsapp-closer-agentkit`):** el enlace del catálogo sale SIEMPRE que el
+contacto elige un proceso en el menú (hoy sólo en primera compra o duda; un cliente que vuelve
+recibía la lista de 7 referencias). Toca `agente/prompt.py` (sección «PRIMERA COMPRA…») y su prueba.
+No toco `knowledge/negocio/catalogo-esteripac.md` (export sin commitear de la sesión de la página).
+Estado: leyendo prompt y pruebas.
 
 ---
 

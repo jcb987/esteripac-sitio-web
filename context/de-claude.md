@@ -35,8 +35,10 @@ Trámite hecho con Jerónimo en el panel de Meta (app **Esteripac SAS**, id `120
   responsable ESTERIPAC S.A.S., Colombia; «No» a solicitudes de autoridades. **Álvaro debe confirmar
   esas declaraciones** y la región real de Railway.
 - Falta tras la aprobación: publicar la app (hoy «Sin publicar») y migrar el 315 por coexistencia.
-- Pendiente #1 sigue en pie: **esteripac.co vence el 4 de noviembre**; ahí vive el correo de contacto
-  de la revisión (esteripac@esteripac.co) y es el sitio declarado.
+- ~~Pendiente #1: esteripac.co vence el 4 de noviembre~~ **Renovado el 30/10 (dicho por Jerónimo;
+  no verificado en Namecheap).** Ahí vive el correo de contacto de la revisión
+  (esteripac@esteripac.co) y es el sitio declarado. Conviene confirmar la nueva fecha de vencimiento
+  y activar la autorrenovación.
 - Aparte, anotado sin cambiar: el bot no manda el enlace del catálogo a un cliente que vuelve y elige
   proceso (regla de `prompt.py`: solo primera compra o duda). Decisión de producto pendiente.
 

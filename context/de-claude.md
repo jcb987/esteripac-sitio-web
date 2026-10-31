@@ -17,6 +17,31 @@
 
 ---
 
+### 2026-10-30 · Revisión de la app de Meta enviada (sin cambios de código)
+
+Trámite hecho con Jerónimo en el panel de Meta (app **Esteripac SAS**, id `1205451545330442`):
+- **Verificación de acceso** (Tech Provider): enviada por Álvaro el 21 oct, sigue «En revisión».
+  Plazo de Meta para restricciones: 29/12/2026.
+- **Revisión de la app**: enviada el 30 oct con `whatsapp_business_messaging`,
+  `whatsapp_business_management` y `public_profile`. Videos de demostración en
+  `C:\Users\corch\Videos\Captures` (`esteripac-messaging-demo.mp4`, `esteripac-management-demo.mp4`).
+  Sitio declarado: https://esteripac.co. Quedó creada la plantilla de prueba
+  `esteripac_order_received` en la cuenta de prueba.
+- **Ojo, dos números de prueba distintos:** esta app tiene +1 555 677 9027 (WABA `2499077460588173`,
+  phone id `1401392899718996`); el bot de Railway responde desde +1 555 676 5855, que **no** es de
+  esta app. Al aprobarse hay que mover el bot a esta app (token y phone id en Railway).
+  Pendiente de confirmar: con qué app y proveedor de IA corre hoy (OpenAI o Anthropic).
+- «Tratamiento de datos»: proveedores declarados Railway, Slack y el del modelo (categoría TI, EE. UU.);
+  responsable ESTERIPAC S.A.S., Colombia; «No» a solicitudes de autoridades. **Álvaro debe confirmar
+  esas declaraciones** y la región real de Railway.
+- Falta tras la aprobación: publicar la app (hoy «Sin publicar») y migrar el 315 por coexistencia.
+- Pendiente #1 sigue en pie: **esteripac.co vence el 4 de noviembre**; ahí vive el correo de contacto
+  de la revisión (esteripac@esteripac.co) y es el sitio declarado.
+- Aparte, anotado sin cambiar: el bot no manda el enlace del catálogo a un cliente que vuelve y elige
+  proceso (regla de `prompt.py`: solo primera compra o duda). Decisión de producto pendiente.
+
+---
+
 ### 2026-10-30 · ESTADO PARA EL PRÓXIMO CHAT (bot de WhatsApp) — leer primero
 
 **Producción:** `50868f9` en Railway (`/salud` muestra la versión), 736 pruebas, compuerta

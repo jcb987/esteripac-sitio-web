@@ -13,11 +13,17 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Claude · 2026-10-30 · bot (`whatsapp-closer-agentkit`):** el enlace del catálogo sale SIEMPRE que el
-contacto elige un proceso en el menú (hoy sólo en primera compra o duda; un cliente que vuelve
-recibía la lista de 7 referencias). Toca `agente/prompt.py` (sección «PRIMERA COMPRA…») y su prueba.
-No toco `knowledge/negocio/catalogo-esteripac.md` (export sin commitear de la sesión de la página).
-Estado: leyendo prompt y pruebas.
+**Claude · 2026-10-31:**
+1. ✅ Enlace del catálogo siempre al elegir proceso para cotizar: `63ffbce`, desplegado (`/salud`
+   lo muestra). Toca `agente/bienvenida.py` (cierre de `bloque_de_perfil`) y `prompt.py`.
+2. EN CURSO · Aviso de Slack de «nueva solicitud de cuenta» más legible (Block Kit): repo
+   `Pagina web Esteripac`, rama `rediseno`, `api/cuentas/registro.ts` + `_supabase.ts`.
+3. EN CURSO · Copia por correo de cada aviso de Slack a esteripac@gmail.com y esteripac@esteripac.co,
+   con enlace a Slack. Decisión: un **relé de correo genérico** por HTTP (`CORREO_WEBHOOK_URL` +
+   `CORREO_WEBHOOK_TOKEN`), apagado si no está la variable; el relé recomendado es un Google Apps
+   Script en la cuenta de Gmail (no pide DNS ni SDK). Va en el bot (`agente/enviar.py`) y en la página.
+Ojo: `knowledge/negocio/catalogo-esteripac.md` del bot tiene un export sin commitear ajeno; rompe 2
+pruebas. Para correr suite/compuerta: copiar, `git show HEAD:` encima, correr, restaurar.
 
 ---
 

@@ -13,17 +13,30 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Claude · 2026-10-31:**
-1. ✅ Enlace del catálogo siempre al elegir proceso para cotizar: `63ffbce`, desplegado (`/salud`
-   lo muestra). Toca `agente/bienvenida.py` (cierre de `bloque_de_perfil`) y `prompt.py`.
-2. EN CURSO · Aviso de Slack de «nueva solicitud de cuenta» más legible (Block Kit): repo
-   `Pagina web Esteripac`, rama `rediseno`, `api/cuentas/registro.ts` + `_supabase.ts`.
-3. EN CURSO · Copia por correo de cada aviso de Slack a esteripac@gmail.com y esteripac@esteripac.co,
-   con enlace a Slack. Decisión: un **relé de correo genérico** por HTTP (`CORREO_WEBHOOK_URL` +
-   `CORREO_WEBHOOK_TOKEN`), apagado si no está la variable; el relé recomendado es un Google Apps
-   Script en la cuenta de Gmail (no pide DNS ni SDK). Va en el bot (`agente/enviar.py`) y en la página.
-Ojo: `knowledge/negocio/catalogo-esteripac.md` del bot tiene un export sin commitear ajeno; rompe 2
-pruebas. Para correr suite/compuerta: copiar, `git show HEAD:` encima, correr, restaurar.
+**Libre.**
+
+---
+
+### 2026-10-31 · Enlace del catálogo siempre, aviso de cuentas en Slack y copia por correo
+
+1. **Enlace del catálogo siempre** que el contacto elige un proceso para cotizar, sea cliente o no
+   (antes un cliente que volvía recibía la lista de 7 referencias). Causa: el cierre de
+   `bloque_de_perfil` (`agente/bienvenida.py`) decía «ofrecele lo que tiene para ese proceso».
+   Bot `63ffbce`, **desplegado** (`/salud`). Prueba en `test_bienvenida.py`.
+2. **Copia por correo** de cada aviso que entra a Slack, a esteripac@gmail.com y
+   esteripac@esteripac.co, con «Abrir en Slack». `agente/correo.py`; se llama en
+   `_avisar_por_slack` al confirmar Slack (un correo por aviso, también en reintentos). Sale por un
+   relé HTTP: Google Apps Script en la cuenta de Gmail (`docs/rele-de-correo.gs`, ahí está cómo
+   instalarlo). Railway no permite SMTP en planes chicos y así no hay DNS ni SDK. Bot `6fcc7d2`,
+   desplegado pero **apagado** hasta poner en Railway `CORREO_WEBHOOK_URL`, `CORREO_WEBHOOK_TOKEN`
+   y `SLACK_CANAL_URL`. 743 passed, compuerta `PARCIAL · 0 · 0 · 1 salteado`.
+3. **Aviso de «nueva solicitud de cuenta»** de la página con bloques de Slack (título, datos en dos
+   columnas, botón «Revisar y aprobar») y la misma copia por correo. Página `540e106`, rama
+   `rediseno`, **sin desplegar**: el permiso de despliegue a producción fue denegado en la sesión.
+   Variables en Vercel: `CORREO_WEBHOOK_URL`, `CORREO_WEBHOOK_TOKEN`, `SLACK_CUENTAS_CANAL_URL`.
+- Ojo: `knowledge/negocio/catalogo-esteripac.md` del bot sigue con el export sin commitear ajeno y
+  rompe 2 pruebas. Para la suite o la compuerta: copiarlo, poner `git show HEAD:` encima, correr y
+  restaurar la copia.
 
 ---
 

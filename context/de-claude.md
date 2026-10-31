@@ -34,6 +34,11 @@ Trámite hecho con Jerónimo en el panel de Meta (app **Esteripac SAS**, id `120
 - «Tratamiento de datos»: proveedores declarados Railway, Slack y el del modelo (categoría TI, EE. UU.);
   responsable ESTERIPAC S.A.S., Colombia; «No» a solicitudes de autoridades. **Álvaro debe confirmar
   esas declaraciones** y la región real de Railway.
+- **Verificación del negocio: ya está «Verificado» desde el 21/10/2026** (portfolio Esteripac s.a.s,
+  id `109561491232501`). Teléfono del negocio en Meta: **+57 315 248 8282**; el «2482» del estado de
+  más abajo es un error de tipeo. Sitio en Meta: https://www.esteripac.co/.
+- Centro de seguridad de Meta (sin hacer, no bloquea): sin dominios de confianza, sin passkey en un
+  usuario, cuenta publicitaria inactiva. Verificar el dominio esteripac.co ayudaría.
 - Falta tras la aprobación: publicar la app (hoy «Sin publicar») y migrar el 315 por coexistencia.
 - ~~Pendiente #1: esteripac.co vence el 4 de noviembre~~ **Renovado el 30/10 (dicho por Jerónimo;
   no verificado en Namecheap).** Ahí vive el correo de contacto de la revisión

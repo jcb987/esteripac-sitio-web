@@ -13,7 +13,13 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Libre.**
+**Ocupado por Claude (2026-11-10): botón «Pausar bot» + intento de Coexistence sin esperar revisión.**
+Pedido de Jerónimo: las dos cosas.
+- A) Bot (`whatsapp-closer-agentkit`): interruptor global persistente (BD) para pausar/reanudar el
+  bot desde el panel, usable por Marta desde el celular. Pausado = se guardan los entrantes, no
+  sale nada al cliente; Marta sigue contestando desde su app. Paso 1: leer servidor.py/ciclo.py.
+- B) Coexistence: preparar Embedded Signup v4 y probar si Meta deja entrar sin la revisión de la
+  app. **Parar antes de cualquier paso en el celular de Marta** (Regla 0).
 
 ---
 

@@ -13,25 +13,44 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Ocupado por Claude (2026-11-10): botón «Pausar bot» + intento de Coexistence sin esperar revisión.**
-Pedido de Jerónimo: las dos cosas.
-- A) Bot (`whatsapp-closer-agentkit`): interruptor global persistente (BD) para pausar/reanudar el
-  bot desde el panel, usable por Marta desde el celular. Pausado = se guardan los entrantes, no
-  sale nada al cliente; Marta sigue contestando desde su app.
-  HECHO sin commitear en el bot: tabla `estado_del_bot` + `bot_pausado/pausar_bot/reanudar_bot`
-  (base.py); corte en `correr_ciclo` tras `registrar_entrante`; panel: franja + botón y rutas
-  `GET /api/bot`, `POST /api/bot/pausar|reanudar`; `/salud.bot_pausado`; rutas sumadas a
-  00-contrato.md, auditar.py (RUTAS_DEL_CONTRATO) y test_panel.py; prueba nueva
-  `pruebas/test_pausar_bot.py` (registrada). Falta: suite completa, compuerta, commit, push.
-- B) Coexistence: preparar Embedded Signup v4 y probar si Meta deja entrar sin la revisión de la
-  app. **Parar antes de cualquier paso en el celular de Marta** (Regla 0).
-  - A commiteado y pusheado: bot `5f0260a` (747 passed, compuerta PARCIAL 0/0/1). Ver /salud.
-  - B: doc vigente pide «Solution Partner or Tech Provider» + Embedded Signup con
-    `featureType: whatsapp_business_app_onboarding`; al conectar se desvinculan WhatsApp
-    Web/escritorio de Marta. Creada en la app 1205451545330442 la configuración de Inicio de
-    sesión para empresas «registro insertado de WhatsApp, token 60 días»: **config_id
-    1125274379907258**. Meta dice ahí: «Los permisos en el acceso estándar solo se solicitarán a
-    las personas con roles en esta app» → sin revisión funciona para Álvaro/Jerónimo.
+**Libre.**
+
+---
+
+### 2026-11-10 · Interruptor del bot en producción y primer paso de Coexistence
+
+**A. Interruptor general («Pausar bot / Reanudar bot»), desplegado** (bot `5f0260a`, 747 passed,
+compuerta `PARCIAL · 0 · 0 · 1 salteado`; `/salud` muestra `version 5f0260a`, `bot_pausado:false`).
+- Tabla `estado_del_bot` (una fila) + `bot_pausado/pausar_bot/reanudar_bot` en `agente/base.py`.
+- `correr_ciclo` corta justo después de `registrar_entrante`: el mensaje queda guardado, no sale
+  nada (ni aviso de privacidad, ni menú, ni modelo, ni Slack).
+- Panel: franja arriba de todo con el estado y botón grande (con confirmación). Rutas
+  `GET /api/bot`, `POST /api/bot/pausar|reanudar` detrás del token; `/salud.bot_pausado`.
+- Rutas sumadas a `blueprint/00-contrato.md`, `scripts/auditar.py` (RUTAS_DEL_CONTRATO) y
+  `pruebas/test_panel.py`. Prueba nueva `pruebas/test_pausar_bot.py` (registrada).
+- No pausa los barridos (reposición, etc.): siguen inertes sin plantillas. Revisar si se activan.
+- Marta entra al panel con el enlace `/panel?token=…` (cookie de un mes).
+
+**B. Coexistence sin esperar la revisión de la app: el camino existe, faltan 4 cosas.**
+- Doc vigente (Onboard WhatsApp Business app users): Embedded Signup con
+  `featureType: "whatsapp_business_app_onboarding"`, `sessionInfoVersion` (v4) y `config_id`;
+  se salta el registro del número; suscribir `account_update`, `history`, `smb_app_state_sync`,
+  `smb_message_echoes`; dos POST a `/<PHONE_ID>/smb_app_data` (`smb_app_state_sync` y `history`)
+  dentro de 24 h, una sola vez. **Al conectar se desvinculan WhatsApp Web/escritorio de Marta**
+  (Windows no es compatible). Historial hasta 180 días; medios de 14.
+- Creada la configuración de Inicio de sesión para empresas «registro insertado de WhatsApp,
+  token 60 días»: **config_id `1125274379907258`** (app 1205451545330442). Meta dice ahí: «Los
+  permisos en el acceso estándar solo se solicitarán a las personas con roles en esta app» → sin
+  la revisión aprobada sirve para Álvaro o Jerónimo, que es el caso.
+- **Hallazgo:** `agente/proveedores/meta.py` sólo lee `value.messages`; los ecos de Marta llegan
+  en `message_echoes` y hoy se ignoran. No le contesta a Marta, pero tampoco sabe que ella tomó
+  el chat → bot y Marta le contestarían los dos al mismo cliente.
+- **Falta, en orden:** (1) bot: procesar `smb_message_echoes` (guardar como saliente y callar el
+  bot en esa conversación mientras Marta atiende); (2) pasar el bot a la app 1205451545330442:
+  `META_APP_SECRET`, token y `WHATSAPP_PHONE_NUMBER_ID` en Railway (los pone el humano) y el
+  webhook de esa app con los 4 campos; (3) página de Embedded Signup (SDK de JS + canje del
+  código del lado del servidor + `subscribed_apps` + las dos sincronizaciones); (4) sesión con
+  Marta: app ≥ 2.24.17, celular en mano para «Confirmar» el historial, avisarle lo de WhatsApp Web.
 
 ---
 

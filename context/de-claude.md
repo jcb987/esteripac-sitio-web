@@ -17,6 +17,62 @@
 
 ---
 
+### 2026-11-10 · ESTADO PARA EL PRÓXIMO CHAT (Coexistence del 315) — leer primero
+
+Reemplaza al del 2026-11-09 en lo de Meta; «Cómo trabajar» del 09/11 y del 30/10 sigue vigente
+(catálogo ajeno sin commitear: apartarlo para suite/compuerta y restaurarlo; `git add -f` para
+`agente/` y `panel/`; push a `main` = despliegue; confirmar en `/salud`).
+
+**Dónde estamos:**
+- Meta: la verificación de acceso de Tech Provider **ya no existe** (Meta la retiró el 9/10/2026);
+  el «En revisión» es un resto de la pantalla. La revisión de la app (30/10) sigue en curso y NO
+  hace falta esperarla: con acceso estándar, el Embedded Signup funciona para personas con rol en
+  la app. Caso de soporte `40079713624976283` abierto (lo contestó el asistente de IA de Meta).
+- Configuración de Embedded Signup creada en la app 1205451545330442: **config_id
+  `1125274379907258`** (token de usuario del sistema, 60 días; whatsapp_business_management +
+  whatsapp_business_messaging).
+- Bot en producción `5f0260a` con el **interruptor «Pausar bot / Reanudar bot»** en el panel.
+- Plan aprobado por Jerónimo (4 pasos): **(1) ecos de Marta** ← EL PRÓXIMO; (2) pasar el bot a la
+  app 1205451545330442 (META_APP_SECRET, token permanente, WHATSAPP_PHONE_NUMBER_ID en Railway:
+  los carga el humano; webhook de esa app con `messages`, `smb_message_echoes`, `history`,
+  `smb_app_state_sync`, `account_update`); (3) página de alta con Embedded Signup v4 +
+  `featureType: "whatsapp_business_app_onboarding"` + canje del código en el servidor +
+  `POST /{waba}/subscribed_apps` + los dos `POST /{phone_id}/smb_app_data` (`smb_app_state_sync`
+  e `history`) en < 24 h, una sola vez; (4) sesión con Marta.
+
+**Paso 1 — qué hay que construir (repo `whatsapp-closer-agentkit`):**
+- Hoy `agente/proveedores/meta.py:parsear_webhook` sólo lee `value.messages`. Lo que Marta escribe
+  desde la app o WhatsApp Web llega con `field: "smb_message_echoes"` y `value.message_echoes[]`
+  (cada eco: `from` = número del negocio, `to` = cliente, `id`, `timestamp`, `type`, `text.body`…;
+  **confirmar la forma exacta en la doc de Meta** antes de escribir el parser). Hoy se ignoran: el
+  bot no le contesta a Marta, pero no sabe que ella tomó el chat → los dos le contestan al cliente.
+- Lo que tiene que pasar con un eco: (a) guardarlo en `mensajes` como **saliente** de la
+  conversación `meta:{to}` (historial completo para el modelo y el panel; dedupe por `id`);
+  (b) **callar al bot en esa conversación mientras Marta atiende**; (c) nunca disparar un turno
+  ni el modelo, ni contar como mensaje del cliente.
+- Decisión a tomar (proponer y elegir, anotar en el carril): reusar la escalación existente
+  (`escalado_en` + motivo nuevo «Marta contestó desde el celular», refrescado en cada eco, y que
+  `toca_retomar` de `paso_6_handoff` cuente el eco como actividad de la oficina) **o** columna
+  nueva `marta_atiende_desde` con ventana de silencio. Tener en cuenta: el botón «Devolver al bot»
+  del panel, el aviso de «el bot retomó» a Slack, y que el ciclo ya silencia con `ya_escalado`.
+- Verificar: ¿los mensajes que manda el propio bot por la API generan eco? (la doc dice que los
+  ecos son de la app Business y dispositivos compañeros; si la API también los generara, el bot
+  se callaría solo: confirmarlo).
+- Pruebas nuevas registradas en `ARCHIVOS_DE_PRUEBA` de `scripts/auditar.py`; suite + compuerta
+  `PARCIAL · 0 · 0 · 1 salteado`; commit `[claude]`; push a `main`; `/salud` con la versión nueva.
+- No toca Railway ni Meta: el paso 1 es sólo código y se puede desplegar antes de conectar el 315
+  (sin ecos no cambia nada en producción).
+
+**Para la sesión con Marta (paso 4), anotado:** al conectar se cierran sus sesiones en otros
+dispositivos y **puede volver a vincularlas** escaneando el QR (hasta 4); **WhatsApp para Windows
+no funciona** con ese número (WhatsApp Web en el navegador sí). Preguntarle desde dónde contesta
+hoy en el computador. App ≥ 2.24.17. Celular en mano para «Confirmar» el historial (180 días;
+medios de 14). Regla 0: nunca «Eliminar mi cuenta»; salida de emergencia = Ajustes → Cuenta →
+Plataforma para empresas → Desconectar (no borra el número, pero obliga a repetir el alta).
+Pasarle el enlace del panel `/panel?token=…` para el botón de pausa.
+
+---
+
 ### 2026-11-10 · Interruptor del bot en producción y primer paso de Coexistence
 
 **A. Interruptor general («Pausar bot / Reanudar bot»), desplegado** (bot `5f0260a`, 747 passed,

@@ -25,6 +25,13 @@ Pedido de Jerónimo: las dos cosas.
   `pruebas/test_pausar_bot.py` (registrada). Falta: suite completa, compuerta, commit, push.
 - B) Coexistence: preparar Embedded Signup v4 y probar si Meta deja entrar sin la revisión de la
   app. **Parar antes de cualquier paso en el celular de Marta** (Regla 0).
+  - A commiteado y pusheado: bot `5f0260a` (747 passed, compuerta PARCIAL 0/0/1). Ver /salud.
+  - B: doc vigente pide «Solution Partner or Tech Provider» + Embedded Signup con
+    `featureType: whatsapp_business_app_onboarding`; al conectar se desvinculan WhatsApp
+    Web/escritorio de Marta. Creada en la app 1205451545330442 la configuración de Inicio de
+    sesión para empresas «registro insertado de WhatsApp, token 60 días»: **config_id
+    1125274379907258**. Meta dice ahí: «Los permisos en el acceso estándar solo se solicitarán a
+    las personas con roles en esta app» → sin revisión funciona para Álvaro/Jerónimo.
 
 ---
 

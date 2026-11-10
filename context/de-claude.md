@@ -24,6 +24,15 @@
 - Confirmado en la doc de Meta (Onboard WhatsApp Business app users): Coexistence EXIGE ser Tech
   Provider o Solution Partner → la verificación de acceso del 21/10 sí bloquea; no hay atajo.
   Ojo para después: Embedded Signup v2 quedó obsoleto el 15/10/2026, usar v4.
+- Con navegador: revisión de app «Revisión en curso» (Meta: ~20 días; enviada 30/10). Alertas,
+  Acciones requeridas y campana de Business: NADA pedido, solo confirmaciones. Caso en Business →
+  Asistencia directa (business.facebook.com/direct-support), tema «Dev: Onboarding», tipo
+  «Onboarding Status Pending», en inglés, pidiendo revisar la verificación de acceso trabada.
+  **ENVIADO 2026-11-10 8:44 am**, caso `40079713624976283`, estado Abierto, figura creado por
+  Álvaro Mejía (la sesión de Facebook del navegador es la suya); suscriptor esteripac@esteripac.co.
+  https://business.facebook.com/direct-support/case-detail/40079713624976283/?business_id=109561491232501
+- Siguiente: esperar respuesta (llega a esteripac@esteripac.co y a la página del caso). Si Meta
+  pide algo, contestar en el mismo caso.
 
 ---
 

@@ -17,6 +17,66 @@
 
 ---
 
+### 2026-11-09 · ESTADO PARA EL PRÓXIMO CHAT (bot de WhatsApp) — leer primero
+
+Reemplaza al del 2026-10-30 (más abajo, sigue valiendo para «cómo funciona el bot» y «cómo trabajar»).
+
+**Producción:** bot `6fcc7d2` en Railway (`/salud` lo muestra; modelo `gpt-5`, OpenAI; US East), 743
+pruebas, compuerta `PARCIAL · 0 errores · 0 avisos · 1 salteado` (estado normal: el salteado es el
+censo, que corre en la CI). Página: rama `rediseno`, publicada el 2026-11-01 por la sesión de la
+página, incluye el aviso de cuentas nuevo (`540e106`).
+
+**Cómo trabajar (además de lo del 30/10):**
+- `knowledge/negocio/catalogo-esteripac.md` del bot tiene un export **sin commitear y ajeno** (sesión
+  de la página) que rompe 2 pruebas (`test_fichas_del_fabricante`, IT26-C EXTENDER). No commitearlo.
+  Para suite y compuerta: copiarlo al scratchpad, `git show HEAD:<archivo> > <archivo>`, correr
+  `pytest` y DESPUÉS `scripts/auditar.py` (si no, `contrato/salida_vieja`), y restaurar la copia.
+- Commits sólo con los archivos propios (`git add -f` para `agente/`).
+- Desplegar la página a producción pide permiso explícito del humano (el clasificador lo bloquea).
+- El navegador del humano se controla con `browser-harness`; si da 403, el humano tiene que dar
+  «Allow» en `chrome://inspect/#remote-debugging`. Usar siempre `new_tab` + `switch_tab(tid)` y
+  comprobar `current_tab()` antes de actuar: dos veces cayó en una pestaña ajena (Canvas, la
+  propuesta). Hay pestañas personales del humano (universidad, correo, I-94): no tocarlas.
+  Coordenadas de clic = píxeles del screenshot ÷ 1,25.
+
+**Pendientes, en orden:**
+1. **Meta (estado sin verificar desde el 31/10):** revisión de la app enviada el 30/10 (confirmación
+   recibida: «Tu app se envió correctamente y está pendiente de revisión»); verificación de acceso
+   enviada el 21/10, «En revisión». Mirar correo esteripac@esteripac.co y la campana de
+   developers.facebook.com. Si rechazan: el mensaje dice qué corregir. Si en días no hay nada: caso
+   de soporte en Business Suite → Ayuda (la página de soporte de developers es un asistente de IA,
+   no una persona). Texto listo:
+   > Subject: Access Verification for Tech Provider pending since Oct 21, 2026. Hello, our business
+   > (Esteripac S.A.S., Business Portfolio ID 109561491232501, verified on Oct 21, 2026) submitted
+   > Access Verification for app "Esteripac SAS" (App ID 1205451545330442) on Oct 21, 2026. It has
+   > been "In review" longer than the 5 days indicated. We also submitted App Review on Oct 30, 2026
+   > for whatsapp_business_messaging and whatsapp_business_management. Could you please check
+   > whether anything is missing or whether the request is stuck? We need this to connect our own
+   > WhatsApp Business number via Coexistence. Thank you.
+   Datos de la solicitud: videos en `C:\Users\corch\Videos\Captures` (`esteripac-messaging-demo.mp4`,
+   `esteripac-management-demo.mp4`); plantilla de prueba `esteripac_order_received` creada en la
+   cuenta de prueba; instrucciones a revisores en inglés explican lo del número de prueba distinto.
+2. **Al aprobarse Meta:** publicar la app (hoy «Sin publicar»); pasar el bot a la app aprobada
+   (token permanente de usuario del sistema y `WHATSAPP_PHONE_NUMBER_ID` en Railway; hoy el bot va
+   por +1 555 676 5855, la app tiene +1 555 677 9027); conectar **+57 315 248 8282** por
+   Coexistence (Regla 0: nunca «Eliminar mi cuenta» en el celular; ver `COEXISTENCE.md`).
+3. **Encender la copia por correo** (código listo y desplegado, apagado): instalar el relé
+   `whatsapp-closer-agentkit/docs/rele-de-correo.gs` en script.google.com con esteripac@gmail.com
+   (propiedad `TOKEN`, implementar como aplicación web, «Cualquier usuario»); poner en Railway
+   `CORREO_WEBHOOK_URL`, `CORREO_WEBHOOK_TOKEN`, `SLACK_CANAL_URL`, y en Vercel las dos de correo +
+   `SLACK_CUENTAS_CANAL_URL` (y redesplegar la página). El login de Gmail lo hace el humano.
+   Después, probar con un aviso real junto con el humano (Slack + correo).
+4. **Probar el aviso de cuenta nueva** (bloques de Slack) con una cuenta de prueba en la página,
+   junto con el humano: manda avisos reales.
+5. Álvaro debe confirmar las declaraciones legales de «Tratamiento de datos» de la revisión de Meta
+   (en la solicitud se declararon Railway, Slack y el proveedor del modelo; el real es **OpenAI**:
+   si se puso Anthropic, corregir) y el texto del aviso de privacidad.
+6. Viejos que siguen: catálogo exportado sin commitear (subirlo cuando se arreglen las 2 pruebas),
+   Flow de WhatsApp sin `flow_id`, 51 referencias sin ficha PDF, panel sin paginar. Dominio: ya
+   renovado hasta 2028-11-04 y en la cuenta Namecheap de Esteripac (ver bitácora de la página).
+
+---
+
 ### 2026-10-31 · Enlace del catálogo siempre, aviso de cuentas en Slack y copia por correo
 
 1. **Enlace del catálogo siempre** que el contacto elige un proceso para cotizar, sea cliente o no
@@ -72,7 +132,7 @@ Trámite hecho con Jerónimo en el panel de Meta (app **Esteripac SAS**, id `120
 
 ---
 
-### 2026-10-30 · ESTADO PARA EL PRÓXIMO CHAT (bot de WhatsApp) — leer primero
+### 2026-10-30 · ESTADO PARA EL PRÓXIMO CHAT (bot de WhatsApp) — reemplazado por el del 2026-11-09; «Cómo trabajar» y «Cómo funciona hoy el bot» siguen vigentes
 
 **Producción:** `50868f9` en Railway (`/salud` muestra la versión), 736 pruebas, compuerta
 `PARCIAL · 0 errores · 0 avisos · 1 salteado` (el salteado es el censo: corre en la CI). Todavía

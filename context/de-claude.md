@@ -32,6 +32,16 @@ Sin cambios de código. Revisado en el navegador (sesión de Facebook de Álvaro
   https://business.facebook.com/direct-support/case-detail/40079713624976283/?business_id=109561491232501
 - Para después: Embedded Signup v2 quedó obsoleto el 15/10/2026; la conexión del 315 se hace con v4.
 - Seguir: revisar el caso y esteripac@esteripac.co; si Meta pide algo, contestar en el mismo caso.
+- **Respuesta del caso (chat, asistente de IA de Meta, 10/11):** la verificación de acceso de Tech
+  Provider **se retiró el 9/10/2026**; el «En revisión» ya no bloquea nada, ni Coexistence. Lo que
+  queda es la revisión de la app («puede tardar varias semanas»). Confirmado aparte: blog de Meta
+  2026-10-09 «retiring access verification for tech provider apps» y notas de terceros. **Corrige
+  lo de arriba: la verificación de acceso NO es el bloqueo.**
+- **Hipótesis a probar (no hecho):** la doc de Meta dice que para usar la API con activos del
+  propio negocio («Direct Developer») basta el acceso estándar, sin revisión de la app. El 315 es
+  de Esteripac y la app también → quizá se puede conectar YA por Embedded Signup v4 en modo
+  desarrollo con un admin de la app. Es irreversible a medias y toca el celular de Marta: hacerlo
+  sólo coordinado con el humano y Marta, y con `COEXISTENCE.md` a mano.
 
 ---
 

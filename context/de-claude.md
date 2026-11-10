@@ -17,7 +17,12 @@
 Pedido de Jerónimo: las dos cosas.
 - A) Bot (`whatsapp-closer-agentkit`): interruptor global persistente (BD) para pausar/reanudar el
   bot desde el panel, usable por Marta desde el celular. Pausado = se guardan los entrantes, no
-  sale nada al cliente; Marta sigue contestando desde su app. Paso 1: leer servidor.py/ciclo.py.
+  sale nada al cliente; Marta sigue contestando desde su app.
+  HECHO sin commitear en el bot: tabla `estado_del_bot` + `bot_pausado/pausar_bot/reanudar_bot`
+  (base.py); corte en `correr_ciclo` tras `registrar_entrante`; panel: franja + botón y rutas
+  `GET /api/bot`, `POST /api/bot/pausar|reanudar`; `/salud.bot_pausado`; rutas sumadas a
+  00-contrato.md, auditar.py (RUTAS_DEL_CONTRATO) y test_panel.py; prueba nueva
+  `pruebas/test_pausar_bot.py` (registrada). Falta: suite completa, compuerta, commit, push.
 - B) Coexistence: preparar Embedded Signup v4 y probar si Meta deja entrar sin la revisión de la
   app. **Parar antes de cualquier paso en el celular de Marta** (Regla 0).
 

@@ -13,7 +13,17 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Libre.**
+**Ocupado por Claude (2026-11-09 noche): estado de Meta / WhatsApp, sin código.**
+- Objetivo: ver por qué la app sigue «En revisión» (verificación de acceso 21/10, revisión de app
+  30/10) y abrir caso de soporte con Meta si no hay nada que corregir.
+- Paso 1: mirar developers.facebook.com (campana, revisión de la app) y Business Suite con
+  browser-harness. Nada enviado todavía.
+- 21:25 browser-harness bloqueado: falta «Allow» en chrome://inspect/#remote-debugging (2 intentos).
+  Gmail conectado es el personal (corchojeronimo@): no hay correos de Meta ahí; los de Meta van a
+  esteripac@esteripac.co.
+- Confirmado en la doc de Meta (Onboard WhatsApp Business app users): Coexistence EXIGE ser Tech
+  Provider o Solution Partner → la verificación de acceso del 21/10 sí bloquea; no hay atajo.
+  Ojo para después: Embedded Signup v2 quedó obsoleto el 15/10/2026, usar v4.
 
 ---
 

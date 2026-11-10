@@ -13,26 +13,25 @@
 > se corta, esto es lo único que sobrevive: que alcance para retomar.
 > Si está ocupado, Codex trabaja en otro carril o espera.
 
-**Ocupado por Claude (2026-11-09 noche): estado de Meta / WhatsApp, sin código.**
-- Objetivo: ver por qué la app sigue «En revisión» (verificación de acceso 21/10, revisión de app
-  30/10) y abrir caso de soporte con Meta si no hay nada que corregir.
-- Paso 1: mirar developers.facebook.com (campana, revisión de la app) y Business Suite con
-  browser-harness. Nada enviado todavía.
-- 21:25 browser-harness bloqueado: falta «Allow» en chrome://inspect/#remote-debugging (2 intentos).
-  Gmail conectado es el personal (corchojeronimo@): no hay correos de Meta ahí; los de Meta van a
-  esteripac@esteripac.co.
-- Confirmado en la doc de Meta (Onboard WhatsApp Business app users): Coexistence EXIGE ser Tech
-  Provider o Solution Partner → la verificación de acceso del 21/10 sí bloquea; no hay atajo.
-  Ojo para después: Embedded Signup v2 quedó obsoleto el 15/10/2026, usar v4.
-- Con navegador: revisión de app «Revisión en curso» (Meta: ~20 días; enviada 30/10). Alertas,
-  Acciones requeridas y campana de Business: NADA pedido, solo confirmaciones. Caso en Business →
-  Asistencia directa (business.facebook.com/direct-support), tema «Dev: Onboarding», tipo
-  «Onboarding Status Pending», en inglés, pidiendo revisar la verificación de acceso trabada.
-  **ENVIADO 2026-11-10 8:44 am**, caso `40079713624976283`, estado Abierto, figura creado por
-  Álvaro Mejía (la sesión de Facebook del navegador es la suya); suscriptor esteripac@esteripac.co.
+**Libre.**
+
+---
+
+### 2026-11-10 · Meta: nada pedido; caso de soporte abierto por la verificación de acceso
+
+Sin cambios de código. Revisado en el navegador (sesión de Facebook de Álvaro):
+- **Verificación de acceso (Tech Provider)**, enviada el 21/10: sigue «En revisión». **Esto es lo que
+  bloquea**: la doc de Meta (Onboard WhatsApp Business app users) dice que Coexistence exige ser Tech
+  Provider o Solution Partner. No hay atajo sin romper la Regla 0.
+- **Revisión de la app**, enviada el 30/10: «Revisión en curso»; Meta indica ~20 días, va en plazo.
+- Alertas de la app, Acciones requeridas y campana de Business: **Meta no pidió nada**; solo
+  confirmaciones de envío, aprobación del negocio y de plantillas de prueba.
+- **Caso de soporte abierto** el 10/11 8:44 am en Business → Asistencia directa (tema «Dev:
+  Onboarding», tipo «Onboarding Status Pending», en inglés, con IDs, fechas y urgencia). Caso
+  `40079713624976283`, estado Abierto, a nombre de Álvaro Mejía, suscriptor esteripac@esteripac.co:
   https://business.facebook.com/direct-support/case-detail/40079713624976283/?business_id=109561491232501
-- Siguiente: esperar respuesta (llega a esteripac@esteripac.co y a la página del caso). Si Meta
-  pide algo, contestar en el mismo caso.
+- Para después: Embedded Signup v2 quedó obsoleto el 15/10/2026; la conexión del 315 se hace con v4.
+- Seguir: revisar el caso y esteripac@esteripac.co; si Meta pide algo, contestar en el mismo caso.
 
 ---
 
@@ -59,7 +58,8 @@ página, incluye el aviso de cuentas nuevo (`540e106`).
   Coordenadas de clic = píxeles del screenshot ÷ 1,25.
 
 **Pendientes, en orden:**
-1. **Meta (estado sin verificar desde el 31/10):** revisión de la app enviada el 30/10 (confirmación
+1. **Meta (revisado el 10/11, ver entrada de ese día: nada pedido; caso de soporte
+   `40079713624976283` abierto por la verificación de acceso):** revisión de la app enviada el 30/10 (confirmación
    recibida: «Tu app se envió correctamente y está pendiente de revisión»); verificación de acceso
    enviada el 21/10, «En revisión». Mirar correo esteripac@esteripac.co y la campana de
    developers.facebook.com. Si rechazan: el mensaje dice qué corregir. Si en días no hay nada: caso

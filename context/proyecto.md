@@ -539,7 +539,9 @@ se retira de `avisos_pendientes` para que el recuperador no lo repita.
 
 **Interruptor general (10/11).** El panel tiene arriba «Pausar bot / Reanudar bot». Pausado, cada entrante se guarda pero no sale nada al cliente (ni aviso, ni menú, ni modelo): contesta Marta desde la app. Estado en la tabla `estado_del_bot`, visible en `/salud.bot_pausado`. Rutas `GET /api/bot` y `POST /api/bot/pausar|reanudar`, detrás del token.
 
-**Coexistence sin esperar la revisión (10/11).** Con acceso estándar, el Embedded Signup funciona para personas con rol en la app. Ya existe la configuración `1125274379907258` en la app 1205451545330442. Antes de conectar el 315 faltan: procesar `smb_message_echoes` (hoy se ignoran y el bot no sabe que Marta tomó un chat), pasar el bot a esa app, la página de alta y la sesión con Marta. Ver bitácora del 10/11.
+**Coexistence sin esperar la revisión (10/11).** Con acceso estándar, el Embedded Signup funciona para personas con rol en la app. Ya existe la configuración `1125274379907258` en la app 1205451545330442. Antes de conectar el 315 faltan: pasar el bot a esa app (con `smb_message_echoes` en el webhook), la página de alta y la sesión con Marta. Ver bitácora del 10/11.
+
+**Ecos de Marta (10/11, bot `dd31829`).** Lo que Marta escribe desde la app o WhatsApp Web (`smb_message_echoes`) se guarda como saliente y escala ese chat con motivo `marta_atiende`: el bot no le dice nada a ese cliente (ni aviso de privacidad, ni menú, ni modelo) y `enviar` tampoco deja salir nada a ese chat. Cada mensaje de Marta reinicia el reloj; a las **18 h** sin que ella escriba el bot retoma con el aviso 🔵 (`traspaso.horas_para_retomar_marta`; las demás escalaciones siguen en 12). Lo que manda el bot por la API no genera eco (doc de Meta). «Devolver al bot» del panel lo libera antes.
 
 **Lo que Esteripac no vende (20/10).** El agente sólo afirma un producto si su ficha está en el catálogo verificado; lo demás «lo confirma con el equipo». Lo que Esteripac confirmó que NO maneja va en `no_manejamos` de `negocio.yaml` (hoy: tiras y controles de concentración de desinfectantes, HLD/OPA/glutaraldehído), con la fuente de cada entrada.
 

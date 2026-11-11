@@ -17,6 +17,50 @@
 
 ---
 
+### 2026-11-10 · Coexistence paso 1: los ecos de Marta callan al bot (bot `dd31829`)
+
+**En producción: `/salud` muestra `version dd31829`, `ok:true`, `bot_pausado:false`.**
+
+**Qué hace ahora el bot** (repo `whatsapp-closer-agentkit`, sin tocar Railway ni Meta; sin ecos
+—hoy, con el número de prueba— no cambia nada en producción):
+- Lo que Marta escribe desde la app o WhatsApp Web llega como `smb_message_echoes`. Se guarda en
+  `mensajes` como **saliente** (`tipo = "eco"`), avanza `ultimo_saliente_en` (el reloj de la
+  retomada) y **escala el chat con motivo `marta_atiende`**. Nunca abre turno, no llama al modelo
+  ni avisa a Slack. Si el chat ya estaba escalado por otra cosa (un reclamo), conserva ese motivo
+  y sólo reinicia el reloj. Edición → reescribe el mensaje original; borrado → «[Esteripac borró
+  este mensaje]». Marta escribiéndole primero a un cliente viejo → el chat nace escalado.
+- Con un chat `marta_atiende` vigente, el cliente que escribe **no recibe nada** (ni aviso de
+  privacidad, ni menú, ni modelo), igual que con la pausa general pero por chat.
+- **18 h sin que Marta escriba → el bot retoma** con el aviso 🔵 de siempre («porque Marta lo
+  estaba atendiendo desde la app»). Decisión de Jerónimo: 18 y no 12, porque Marta sale a las
+  5-6 pm y vuelve a las 5-6 am. `traspaso.horas_para_retomar_marta: 18` en `negocio.yaml`. Las
+  demás escalaciones siguen en 12 (`horas_para_retomar`).
+- `enviar.revisar_baneo` no deja salir nada a un chat de Marta: cubre la carrera de un turno que
+  esperaba al modelo cuando ella contestó, y los barridos con plantilla.
+- «Devolver al bot» del panel ya funciona con este motivo (limpia cualquier escalación).
+
+**Doc oficial de Meta (consultada hoy):** `value.message_echoes[]` con `from` (negocio), `to`
+(wa_id; falta si el contacto sólo tiene username → `to_user_id`, BSUID), `id`, `timestamp`,
+`type` ∈ text|image|video|document|revoke|edit (`edit.original_message_id` + `edit.message`;
+`revoke.original_message_id`). **Disparadores: sólo la app Business y los dispositivos
+vinculados.** Lo que manda el bot por la Cloud API no genera eco, así que el bot no se calla solo.
+Si en la prueba real con el 315 apareciera un eco de un mensaje del bot, se nota en seguida: el
+chat quedaría `marta_atiende` tras la primera respuesta del bot.
+
+**Código:** `proveedores/meta.py` (`Eco`, `parsear_ecos`, aparte de `parsear_webhook`: no toqué el
+contrato abstracto), `servidor.py` (los ecos se registran antes que los entrantes del mismo
+webhook, deduplicados con `registrar_evento`), `base.registrar_eco`, `ciclo.py`, `paso_6_handoff`
+(`marta_atiende`, `horas_para_retomar(motivo)`), `salida.MOTIVO_MARTA_ATIENDE`, `enviar.py`.
+Prueba nueva `pruebas/test_ecos_de_marta.py` (18, registrada en `ARCHIVOS_DE_PRUEBA`). Suite
+**765 passed**, compuerta `PARCIAL · 0 · 0 · 1 salteado` (censo). Catálogo ajeno apartado y
+restaurado (sigue sin commitear).
+
+**Para el paso 2:** al suscribir el webhook de la app 1205451545330442, incluir
+`smb_message_echoes` (si no, nada de esto se activa). El panel muestra el eco como un saliente
+más; distinguir visualmente «escribió Marta» vs «escribió el bot» queda como mejora menor.
+
+---
+
 ### 2026-11-10 · ESTADO PARA EL PRÓXIMO CHAT (Coexistence del 315) — leer primero
 
 Reemplaza al del 2026-11-09 en lo de Meta; «Cómo trabajar» del 09/11 y del 30/10 sigue vigente

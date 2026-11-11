@@ -17,6 +17,17 @@
 
 ---
 
+### 2026-11-10 (noche) · La retomada pasa de 12 a 18 h para todas las escalaciones (bot `c3c8457`)
+
+Jerónimo: «Sí, súbelo a 18 también». `traspaso.horas_para_retomar: 18` en `negocio.yaml` y
+`paso_6_handoff.HORAS_PARA_RETOMAR = 18` (la clave `horas_para_retomar_marta` queda, también en
+18, por si algún día se quieren distintas). `HORAS_ENTRE_AVISOS_DE_TRASPASO` (espaciado de los
+avisos «Para la oficina») sigue en 12: no calla a nadie. Pruebas que afirmaban 12 sin parchar la
+configuración, ajustadas; una nueva: a las 13 h de noche no retoma. 766 passed, compuerta
+`PARCIAL · 0 · 0 · 1 salteado`. Corrige la línea «las demás escalaciones siguen en 12» de abajo.
+
+---
+
 ### 2026-11-10 · Coexistence paso 1: los ecos de Marta callan al bot (bot `dd31829`)
 
 **En producción: `/salud` muestra `version dd31829`, `ok:true`, `bot_pausado:false`.**

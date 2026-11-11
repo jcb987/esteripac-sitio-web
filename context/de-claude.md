@@ -17,6 +17,43 @@
 
 ---
 
+### 2026-11-10 (noche) · Coexistence paso 3: página de alta del 315 (bot `ae3ee65`)
+
+**Qué hay:** `https://esteripac-whatsapp-agent-production.up.railway.app/panel/alta?token=<PANEL_TOKEN>`
+(deja la cookie como `/panel`). Abre el registro insertado de Meta con `config_id
+1125274379907258`, `featureType: whatsapp_business_app_onboarding`, `sessionInfoVersion: "3"`.
+Avisa arriba si el bot está encendido (recomienda pausarlo antes) y recuerda la Regla 0.
+
+**Del lado del servidor** (`agente/alta.py`, `POST /api/coexistencia/canje`): canje del código
+(vive 30 s) con `META_APP_SECRET` → busca el número en `GET /{waba}/phone_numbers` si el evento
+no lo trae (elige `coexistencia.numero` de `negocio.yaml`; con varios y ninguno igual, no elige)
+→ `POST /{waba}/subscribed_apps` → **no** `/register` → `smb_app_data` contactos y después
+historial, una sola vez cada uno y dentro de 24 h, con su `request_id` en la tabla nueva
+`altas_whatsapp` → comprobación `is_on_biz_app` + `platform_type`. El token del negocio no se
+guarda ni se loguea. Si una sincronización falla, `POST /api/coexistencia/sincronizar`
+(`{phone_number_id}`) la reintenta con `WHATSAPP_TOKEN` (el usuario del sistema tiene que tener
+asignada la cuenta del 315). La página muestra el `phone_number_id` a pegar en Railway.
+
+**Doc de Meta consultada hoy:** custom-flows/onboarding-business-app-users, implementation,
+onboarding-customers-as-a-tech-provider. El evento de Coexistence es
+`FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING` y sólo promete `waba_id`. La doc sigue diciendo
+«you must already be a Solution Partner or Tech Provider»: conectar el número propio con acceso
+estándar sigue siendo hipótesis (la respuesta del asistente de IA de Meta del 10/11 dice que sí);
+se prueba en la sesión con Marta. Si no se ofrece la opción de conectar la cuenta existente, se
+cierra la ventana: no se toca nada del número.
+
+**Lo que tiene que hacer el humano antes del alta** (además del paso 2): en la app 1205451545330442,
+Inicio de sesión con Facebook para empresas → Configuración: el dominio
+`esteripac-whatsapp-agent-production.up.railway.app` en «Dominios permitidos» y
+`https://esteripac-whatsapp-agent-production.up.railway.app/panel/alta` en «URI de
+redireccionamiento de OAuth válidos»; «Inicio de sesión con el SDK de JavaScript» en Sí.
+
+Rutas en `blueprint/00-contrato.md`, `RUTAS_DEL_CONTRATO` y `RUTAS_CON_TOKEN` (24 rutas · 25
+métodos). Prueba nueva `pruebas/test_alta_coexistencia.py` (9, registrada). 775 passed,
+compuerta `PARCIAL · 0 · 0 · 1 salteado`. Catálogo ajeno apartado y restaurado.
+
+---
+
 ### 2026-11-10 (noche) · La retomada pasa de 12 a 18 h para todas las escalaciones (bot `c3c8457`)
 
 Jerónimo: «Sí, súbelo a 18 también». `traspaso.horas_para_retomar: 18` en `negocio.yaml` y

@@ -17,6 +17,19 @@
 
 ---
 
+### 2026-11-11 · La pausa del bot calla todo lo que sale al cliente (bot `c4809a7`)
+
+Para el alta del 315 con el bot pausado. Antes la pausa sólo cortaba `ciclo`; `enviar()` no la
+miraba, así que los recordatorios de cita (`calendario.recordar`), los barridos (`seguimientos`,
+`reposicion`, si alguien pone el cron) y un turno que ya iba en vuelo al pausar podían salir
+desde el número de Marta. Ahora `enviar()` devuelve «el bot está pausado desde el panel» para
+todo lo que va al cliente, salvo `por_humano=True` (aprobar un pendiente desde el panel) y los
+avisos internos (`a_numero_interno`). Prueba nueva en `pruebas/test_pausar_bot.py`. 776 passed,
+compuerta `PARCIAL · 0 · 0 · 1 salteado`, `/salud` en `c4809a7`. Catálogo ajeno apartado y
+restaurado.
+
+---
+
 ### 2026-11-10 (noche) · Coexistence paso 3: página de alta del 315 (bot `ae3ee65`)
 
 **Qué hay:** `https://esteripac-whatsapp-agent-production.up.railway.app/panel/alta?token=<PANEL_TOKEN>`

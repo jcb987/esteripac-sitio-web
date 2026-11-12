@@ -17,6 +17,19 @@
 
 ---
 
+### 2026-11-12 · El alta del 315 por Embedded Signup FALLA sin acceso avanzado
+
+Paso 2 hecho y probado: el bot contesta en el número de prueba +1 555 677 9027 con la app
+1205451545330442 (hubo que hacer `POST /2499077460588173/subscribed_apps`; antes sólo estaba
+suscrita «WA DevX Webhook Events 1P App» y los webhooks llegaban con 401). Bot pausado.
+En `/panel/alta`, la ventana de Meta mostró el flujo de **número nuevo** («No tienes ningún número
+existente. Crea uno nuevo.») y el error #2655111: «La app de socio no tiene los permisos avanzados
+de mensajes y administración de WhatsApp Business necesarios para el registro. Solicita estos
+permisos a través del proceso de revisión de apps». La hipótesis del acceso estándar quedó
+descartada: hace falta acceso avanzado de `whatsapp_business_messaging` y
+`whatsapp_business_management` (revisión de app) o un socio. No se pulsó Siguiente; el 315 no se
+tocó.
+
 ### 2026-11-11 · La pausa del bot calla todo lo que sale al cliente (bot `c4809a7`)
 
 Para el alta del 315 con el bot pausado. Antes la pausa sólo cortaba `ciclo`; `enviar()` no la

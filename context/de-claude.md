@@ -17,6 +17,47 @@
 
 ---
 
+### 2026-11-15 · Revisión a fondo bot + página: sitio oficial, catálogo, cliente nuevo y tokens
+
+Pedida por Jerónimo. El bot sigue PAUSADO a propósito (alta del 315 en revisión de Meta).
+
+**Qué estaba mal y quedó corregido**
+- **El bot mandaba a la página vieja.** `sitio` era `esteripac.vercel.app`, que sirve otro build
+  que `esteripac.co`. Ahora `sitio: https://esteripac.co`; la política apunta a `/politica-de-datos`.
+- **Catálogo desfasado en producción** (`f9a3ce1`): el HEAD tenía 9 referencias que la página ya no
+  vende y le faltaban 7. El export sin commitear que venía «ajeno» desde octubre era el correcto:
+  lo comprobé idéntico a una corrida nueva de `scripts/export-catalogo-bot.py` y lo commiteé, con
+  `## CDWU-Z` → `## CDWU` en el archivo del fabricante. **Ya no hay que apartarlo para correr la
+  suite.**
+- **Cliente nuevo** (`80693bf`): (a) el enlace del catálogo sale SIEMPRE en el primer contacto, sin
+  modelo: dentro del primer menú (`bienvenida.decidir(enlace=…)`) o, si abre con contenido propio,
+  como burbuja después de la respuesta (`ciclo._mandar_el_catalogo`; no se manda si el modelo ya lo
+  puso, si viene de la lista del catálogo o si el turno escaló). Texto: «Mientras tanto, puede ver
+  nuestro catálogo aquí: <enlace>» (`bienvenida.LINEA_DEL_CATALOGO`). (b) «Nuevo» para la bienvenida
+  ya no es «no existía la fila del contacto» sino «el agente todavía no le contestó»
+  (`base.el_bot_ya_contesto`, sin contar ecos de Marta ni el aviso de privacidad): quien escribió
+  con el bot pausado quedaba como conocido y nunca veía el menú.
+- **Tokens:** `modelo.py` registra el consumo de cada llamada (`tokens · openai gpt-5 · entrada=…
+  (en caché=…) · salida=… (razonamiento=…)`) y manda `prompt_cache_key`. Lo fijo del catálogo
+  (política, registros, enlace general, reseña, índice de procesos: ~5.000 caracteres) pasó del
+  mensaje de cada turno al prompt de sistema (`catalogo.catalogo_fijo`), que es el prefijo que se
+  cachea; entran las mismas fichas que antes (`56f0dd4`). `servidor.py` hace visibles los INFO de `esteripac.*`
+  (sin eso la línea de tokens no se veía en Railway).
+
+**Qué debe saber Codex**
+- Las pruebas apagan el enlace de bienvenida con `PRUEBAS_SIN_ENLACE_DE_BIENVENIDA` (conftest),
+  igual que el aviso de privacidad; `pruebas/test_enlace_de_bienvenida.py` la quita.
+- `catalogo_relevante(…, con_fijo=False)` es lo que usa el ciclo; el default sigue devolviendo todo.
+- No se cambió el modelo ni `reasoning_effort`: con una semana de la línea de tokens se decide.
+
+790 passed, compuerta `PARCIAL · 0 errores · 0 avisos · 1 salteado` (censo, corre en la CI). Subido a
+`main` (`56f0dd4`).
+
+**Pendiente del humano:** reanudar el bot cuando Meta apruebe; probar en el +1 555 677 9027
+(requiere reanudar: la pausa es global).
+
+---
+
 ### 2026-11-12 · El alta del 315 por Embedded Signup FALLA sin acceso avanzado
 
 Paso 2 hecho y probado: el bot contesta en el número de prueba +1 555 677 9027 con la app

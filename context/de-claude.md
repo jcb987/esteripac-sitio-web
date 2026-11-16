@@ -17,6 +17,15 @@
 
 ---
 
+### 2026-11-16 · Meta aprobó la revisión de la app y la app quedó publicada
+
+Revisión (enviada de nuevo el 15/11 19:29 CST) **aprobada**: `whatsapp_business_messaging`,
+`whatsapp_business_management` y `public_profile` con acceso avanzado. La app 1205451545330442 pasó
+a modo activo («Publicada») el 16/11. Bot `56f0dd4` en línea y pausado; `/panel/alta` responde 401
+sin token. Siguiente: repetir el alta del 315 con Marta desde `/panel/alta` (si la ventana vuelve a
+ofrecer sólo «Crea uno nuevo», parar), pegar el phone id en Railway y asignar la WABA nueva a
+Bot-Whatsapp.
+
 ### 2026-11-15 · Revisión a fondo bot + página: sitio oficial, catálogo, cliente nuevo y tokens
 
 Pedida por Jerónimo. El bot sigue PAUSADO a propósito (alta del 315 en revisión de Meta).

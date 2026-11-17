@@ -17,6 +17,44 @@
 
 ---
 
+### 2026-11-17 · Revisión de los módulos secundarios del bot (`fae6ae2`, `aa76a6b`)
+
+Leídos línea por línea: `seguimientos.py`, `reposicion.py`, `preorden.py`, `medios.py`,
+`adjuntos.py`, `turnos.py`, `integraciones/calendario.py` y `crm.py`, `proveedores/meta.py`,
+`panel/panel.py` y `firmas.py`. **No** se tocó `alta.py` ni la config del 315 (es de otro chat).
+
+Corregido:
+- **Pre-orden (`fae6ae2`).** `renglones_del_pedido` le daba a cada referencia el primer tramo de
+  cantidad que la *contuviera*. El catálogo tiene 9 pares donde un código es el comienzo de otro
+  (BT10/BT102, CDWAH/CDWAH-U, CDWU/CDWU-H, IC10/20 / IC10/20FR / IC10/20FRLCD, IT27W-1/IT27W-10,
+  KBD8948X/KBD8948X/1, LUMENIA L1/L122): en un pedido con los dos, el corto se llevaba la
+  cantidad del largo en el PDF que se archiva para INVIMA. Ahora manda la coincidencia exacta y,
+  si no hay, una que lo contenga sin ser de una referencia más larga del mismo pedido.
+- **Entrantes sin número (`aa76a6b`).** Con nombres de usuario, Meta puede mandar el mensaje sin
+  `from` y con el BSUID en `from_user_id` (y `user_id` en `contacts[]`). `parsear_webhook` sólo
+  miraba `from` y descartaba ese mensaje sin rastro. Ahora el chat queda `meta:<BSUID>`, como ya
+  hacían los ecos; con número, sigue mandando el número. **Sin verificar:** si la Cloud API acepta
+  el BSUID en `to` al contestar; si no, el envío falla con su motivo en el log y el mensaje igual
+  queda guardado para la oficina.
+
+Revisado y bien: los barridos (`reposicion`, `pendiente`, `entrega`) no envían con el bot pausado
+(lo frena `enviar()`), usan el mismo `conversacion_id` que el ciclo y no marcan si Meta no
+confirma. Imágenes: el bloque de Anthropic se convierte a `image_url` para OpenAI. Panel: clave
+con `compare_digest` y mínimo 32 caracteres, cookie `httponly` + `samesite=strict`, todo dato de
+chat con `html.escape` o `textContent`; webhooks salientes con chequeo de destino público. Firmas
+de Meta sobre cuerpo crudo con `compare_digest`.
+
+Anotado, sin tocar (bajo impacto o decisión del humano):
+- `transcribir()` declara siempre `audio/ogg` y el archivo va sin extensión. Las notas de voz
+  funcionan (verificado en vivo); un audio reenviado mp3/m4a podría fallar y el bot pide texto.
+- Agenda (`paso_4` + `calendario.py`) y CRM externo están inactivos (sin credenciales de Google
+  ni de Supabase en Railway, y el paso 4 sólo corre con `horario_elegido`, que WhatsApp no trae).
+  Si se encienden, los recordatorios de cita viven en memoria y se pierden en cada despliegue.
+- `?token=` del panel puede quedar en los logs de acceso de Railway (es el flujo de entrada:
+  redirige al instante y deja la cookie).
+
+794 pruebas; auditar `PARCIAL · 0 errores · 0 avisos · 1 salteado`.
+
 ### 2026-11-17 · Prueba de sincronía del catálogo con la página (bot)
 
 `pruebas/test_catalogo_sincronizado.py` corre `Pagina web Esteripac/scripts/export-catalogo-bot.py`

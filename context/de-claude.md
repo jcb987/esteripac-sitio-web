@@ -17,6 +17,16 @@
 
 ---
 
+### 2026-11-16 · Config nueva de Embedded Signup v4 para el alta del 315 (bot `7112c05`)
+
+Con la revisión aprobada, `/panel/alta` seguía abriendo el flujo de número nuevo («Crea uno
+nuevo»), sin la opción de conectar la app existente. Causa probable: la config `1125274379907258`
+era v2/v3 (obsoletas desde el 15/10/2026) y Meta ignoraba `featureType`. Jerónimo creó la config
+**«bot-whatsapp» `1109748208515124`** (Embedded Signup, solo WhatsApp Cloud API, sin Marketing
+Messages; activo Cuentas de WhatsApp con permiso por defecto «Administrar»; permisos
+`whatsapp_business_management` + `whatsapp_business_messaging`). Cambiado en `config/negocio.yaml`
+y en la prueba. 790 passed, compuerta PARCIAL 0/0/1, `/salud` en `7112c05`, bot pausado.
+
 ### 2026-11-16 · Meta aprobó la revisión de la app y la app quedó publicada
 
 Revisión (enviada de nuevo el 15/11 19:29 CST) **aprobada**: `whatsapp_business_messaging`,

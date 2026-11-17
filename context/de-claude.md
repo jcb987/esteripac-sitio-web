@@ -17,6 +17,20 @@
 
 ---
 
+### 2026-11-17 · Prueba de sincronía del catálogo con la página (bot)
+
+`pruebas/test_catalogo_sincronizado.py` corre `Pagina web Esteripac/scripts/export-catalogo-bot.py`
+y exige que su salida sea idéntica a `knowledge/negocio/catalogo-esteripac.md`. Si alguien cambia
+`src/data/catalog.ts` de la página y no regenera el catálogo del bot, la suite falla en local. En
+CI se saltea (no está la carpeta de la página). Registrada en `ARCHIVOS_DE_PRUEBA`. Comprobado que
+falla al alterar el catálogo. 791 pruebas; auditar `PARCIAL · 0 errores · 0 avisos · 1 salteado`.
+
+Otros cambios de esta tanda, en la página (`rediseno`, publicados en esteripac.co): límite por
+visitante en crear cuenta/ingresar (firewall de Vercel), Supabase caído ya no da 500 y el cron
+avisa a Slack. El relé de correo quedó a medias en Apps Script (falta autorizar): ni el bot ni la
+página tienen `CORREO_WEBHOOK_URL`/`CORREO_WEBHOOK_TOKEN`, así que **hoy ningún aviso sale por
+correo**, solo por Slack. Detalle en `Pagina web Esteripac/context/de-claude.md`.
+
 ### 2026-11-16 · Config nueva de Embedded Signup v4 para el alta del 315 (bot `7112c05`)
 
 Con la revisión aprobada, `/panel/alta` seguía abriendo el flujo de número nuevo («Crea uno
